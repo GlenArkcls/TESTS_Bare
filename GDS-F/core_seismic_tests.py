@@ -49,17 +49,17 @@ class SeismicTestCase(unittest.TestCase):
     
     def testCreateSeismicCollection(self):
         seisColID=self.repo.createSeismicCollection(SEISMIC_COL_0)
-        self.assertFalse(seisColID==None or seisColID==0,GDSErr(self.server,"Failed to create Seismic Collection:"))
+        self.assertFalse(seisColID is None or seisColID==0,GDSErr(self.server,"Failed to create Seismic Collection:"))
     
     def testGetSeisColIDList(self):
         seisColIDList=GeoDataSync("getSeisColIDList",self.server)
-        self.assertFalse(seisColIDList==None or seisColIDList==0,GDSErr(self.server,"Failed GDS call to getSeisColIDList."))
+        self.assertFalse(seisColIDList is None or seisColIDList==0,GDSErr(self.server,"Failed GDS call to getSeisColIDList."))
         
     def testVerifySeismicCollection(self):
         seisColID=self.repo.getSeismicCollectionID(SEISMIC_COL_0)
         seisColIDList=GeoDataSync("getSeisColIDList",self.server)
         
-        self.assertFalse(seisColID==None or seisColID==0,GDSErr(self.server,"Failed GDS call to getSeisColIDList"))
+        self.assertFalse(seisColID is None or seisColID==0,GDSErr(self.server,"Failed GDS call to getSeisColIDList"))
         self.assertTrue(IDInList(IDComparison,seisColID,seisColIDList),"created seismic collection not found in collection list")
           
     def testCreate3DSeismic(self):
@@ -67,12 +67,12 @@ class SeismicTestCase(unittest.TestCase):
         geom=makeCreationGeometryFromFullGeometry(self.config.get3DSeismicGeometry())
         args.extend(list(geom.values()))
         seisID=self.repo.create3DSeismic(SEISMIC3D_0,*args);
-        self.assertFalse(seisID==None or seisID==0,GDSErr(self.server,"Failed create3DSeismic"))
+        self.assertFalse(seisID is None or seisID==0,GDSErr(self.server,"Failed create3DSeismic"))
         
         
     def testGet3DSeisIDList(self):
         colList=GeoDataSync("get3DSeisIDList",self.server)
-        self.assertFalse(colList==None or colList==0,GDSErr(self.server,"Failed GDS call to get3DSeisIDList"))
+        self.assertFalse(colList is None or colList==0,GDSErr(self.server,"Failed GDS call to get3DSeisIDList"))
        
     def testVerify3DSeismicInCollection(self):
         seisColID=self.repo.getSeismicCollectionID(SEISMIC_COL_0)
@@ -83,7 +83,7 @@ class SeismicTestCase(unittest.TestCase):
     
     def testGetGeometry(self):
         seisGeom=GeoDataSync("get3DSeisGeom",self.server,self.repo.get3DSeismicID(SEISMIC3D_0))
-        self.assertFalse(seisGeom==None or seisGeom==0,GDSErr(self.server,"Failed GDS call get3DSeisGeom"))
+        self.assertFalse(seisGeom is None or seisGeom==0,GDSErr(self.server,"Failed GDS call get3DSeisGeom"))
         testGeom=self.config.get3DSeismicGeometry()
         for k in self.config.get3DSeismicGeometry().keys():
             with self.subTest(k=k):

@@ -153,6 +153,24 @@ switch fnName
         sig=["[c","id"];
     case "putPointSetData"
         sig=["id","i32","[d","[d","[d","i32"];
+	case "createWellRoot"
+        sig=[];
+	case "createWell"
+        sig=["[c"];
+	case "putWellHead"
+        sig=["id","d","d"];
+	case "putWellTrack"
+        sig=["id","[d","[d","[d","[c","d"];
+	case "createLog"
+        sig=["id","[c"];
+	case "putLogData"
+        sig=["id","[d","d","d"];
+	case "getWellGeom"
+        sig=["id"];
+	case "getWellTrajectory"
+        sig=["id"];
+	case "getWellData"
+        sig=["id"];
     otherwise
         fprintf("signature for function %s not found.\n",fnName),
         sig=[];

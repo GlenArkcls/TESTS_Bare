@@ -29,6 +29,20 @@ def getNearestIntegerInRange(rng,testVal):
         ret-=rng.step
     return ret
 
+def compareNestedFloatLists(l0,l1):
+    '''
+    Compare two float list of lists that element wise are within the tolerance
+    ''' 
+    if l0 is None or l1 is None:
+        return l0 is None and l1 is None
+    
+    if len(l0)!=len(l1):
+        return False
+    for i in range(0,len(l0)):
+        if not compareFloatLists(l0[i],l1[i]):
+            return False
+    return True
+
 def compareFloatLists(l0,l1):
     '''
     Compare two float lists that element wise are within the tolerance
@@ -40,7 +54,8 @@ def compareFloatLists(l0,l1):
         return False
     for i in range(0,len(l0)):
         if math.isnan(l0[i]) or math.isnan(l1[i]):
-            return math.isnan(l0[i]) and math.isnan(l1[i])
+            if not math.isnan(l0[i]) and math.isnan(l1[i]):
+                return False
         if abs(l0[i]-l1[i])>FLOAT_COMP_TOL:
             return False
     return True

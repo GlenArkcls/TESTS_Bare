@@ -202,6 +202,8 @@ class HorizonTestCase(unittest.TestCase):
         self.assertTrue(compareFloatLists(values,hzVals[b'PropVals']),GDSErr(self.server,"Failed to recall hz property values in put3DHorzPropValuesSpec"))
         #reset back to original values because we might be doing a comparison of output ??
         self.testPut3DHorzPropValues()
+        
+        
             
     def getTestSuite(server,repo,config):
         suite=unittest.TestSuite()

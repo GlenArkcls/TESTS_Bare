@@ -29,6 +29,8 @@ class ObjectType(Enum):
     HORIZON=9
     SURFACE=10
     HORIZON_PROPERTY=11
+    WELL=12
+    WELL_LOG=13
     
     
     
@@ -46,7 +48,9 @@ class AssetRepository:
                       ObjectType.POINTSET:{},
                       ObjectType.HORIZON:{},
                       ObjectType.FOLDER:{},
-                      ObjectType.HORIZON_PROPERTY:{}
+                      ObjectType.HORIZON_PROPERTY:{},
+                      ObjectType.WELL:{},
+                      ObjectType.WELL_LOG:{}
                       }
     
     def initServer(self,server):
@@ -105,10 +109,10 @@ class AssetRepository:
         if success:
             self.objects[ObjectType.HORIZON][name]=id
         return id
-    def createHorizonProperty(self,hzid,name):
-        '''Unfortunaterlky need special handling - arguments do not follow pattern
+    def createHorizonProperty(self,hzID,name):
+        '''Unfortunatelky need special handling - arguments do not follow pattern
         '''
-        createdID=GeoDataSync("create3DHorzProp",self.server,hzid,name)
+        createdID=GeoDataSync("create3DHorzProp",self.server,hzID,name)
         if createdID==None or createdID==0:
             print(GeoDataSync("getLastError",self.server))
             return None
@@ -119,6 +123,20 @@ class AssetRepository:
         if success:
             self.objects[ObjectType.POINTSET][name]=id
         return id
+    def createWell(self,name,*args):
+        success,id=self.createObject("createWell",name,*args)
+        if success:
+            self.objects[ObjectType.WELL][name]=id
+        return id
+    def createWellLog(self,wellID,name):
+        '''Unfortunatelky need special handling - arguments do not follow pattern
+        '''
+        createdID=GeoDataSync("createLog",self.server,wellID,name)
+        if createdID==None or createdID==0:
+            print(GeoDataSync("getLastError",self.server))
+            return None
+        self.objects[ObjectType.WELL_LOG][name]=createdID
+        return createdID
     '''
     getXXXID Methods
     Retrieve object by name
@@ -141,6 +159,10 @@ class AssetRepository:
         return self.objects[ObjectType.HORIZON_PROPERTY].get(name)
     def getPointSetID(self,name):
         return self.objects[ObjectType.POINTSET].get(name)
+    def getWellID(self,name):
+        return self.objects[ObjectType.WELL].get(name)
+    def getWellLogID(self,name):
+        return self.objects[ObjectType.WELL_LOG].get(name)
     
     '''
     putXXXID Methods
@@ -156,7 +178,18 @@ class AssetRepository:
         self.objects[ObjectType.SEISMIC_COLLECTION][name]=ident
     def putSurfaceID(self,name,ident):
         self.objects[ObjectType.SURFACE][name]=ident
-        
+    def putWaveletID(self,name,ident):
+        self.objects[ObjectType.WAVELET][name]=ident
+    def putHorizonID(self,name,ident):
+        self.objects[ObjectType.HORIZON][name]=ident
+    def putHorizonPropertyID(self,name,ident):
+        self.objects[ObjectType.HORIZON_PROPERTY][name]=ident
+    def putPointSetID(self,name,ident):
+        self.objects[ObjectType.POINTSET][name]=ident
+    def putWellID(self,name,ident):
+        self.objects[ObjectType.WELL][name]=ident
+    def putWellLogID(self,name,ident):
+        self.objects[ObjectType.WELL_LOG][name]=ident
         
 def initModule(geodatasyncFn):
     global GeoDataSync

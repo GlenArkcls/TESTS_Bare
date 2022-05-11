@@ -4,7 +4,7 @@ Created on Thu Mar 17 10:36:27 2022
 
 @author: lewthwju
 """
-
+import math
 import test_config
 from seismicgeometry import SeismicGeometry
 
@@ -106,3 +106,23 @@ class BlankProjectTestConfig(test_config.TestConfig):
         xlines=(geom.getMaxXline()-geom.getMinXline())/geom.getXlineInc()+1
         return [1.0 -0.1*float(il-geom.getMinInline()) +0.1*float(xl-geom.getMinXline()) for il in range(0,int(inlines)) for xl in range(0,int(xlines))]
    
+    def getWellHeadCoordinates(self,name=None):
+        geom=self.get3DSeismicGeometry()
+        return [(geom.getX1()+geom.getX0())/2,(geom.getY1()+geom.getY0())/2]
+    
+    def getWellTrack(self,name=None):
+        geom=self.get3DSeismicGeometry()
+        xcoords=[-((geom.getX1()+geom.getX0())/2+math.exp(x/30.)) for x in range(0,100)]
+        ycoords=[-((geom.getY1()+geom.getY0())/2+math.exp(-y/20.)) for y in range(0,100)]
+        z=[10.*z for z in range(0,100)]
+        reftype=b"KB"
+        reflevel=-25.
+        return {"X":xcoords,"Y":ycoords,"Z":z,"reftype":reftype,"reflevel":reflevel}
+    
+    def getWellLogData0(self,name=None):
+        logVals=[math.sin(x)*10 for x in range(0,100)]
+        return {"Values":logVals,"Start":10.,"Interval":10.}
+    def getWellLogData1(self,name=None):
+        logVals=[math.cos(x)*10 for x in range(0,100)]
+        return {"Values":logVals,"Start":10.,"Interval":10.}
+        
