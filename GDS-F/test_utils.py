@@ -52,6 +52,7 @@ def GDSErr(server,baseMsg):
     '''
     try:
         errMsg=GeoDataSync("getLastError",server)
+        #print("ERRMSG:" +str(errMsg))
         return baseMsg+str(" "+errMsg)
     except:
         return baseMsg+"(No GDS err)"
@@ -110,12 +111,12 @@ def initModule(geodatasyncFn):
     global GeoDataSync
     GeoDataSync=geodatasyncFn
     
-if __name__=="__main__":
-    print(getNearestIntegerInRange(range(5,28,4),6.7))
-    print(getNearestIntegerInRange(range(5,28,4),23.1))
-    print(getNearestIntegerInRange(range(5,28,4),27))
-    for x in range(5,28,4):
-        print(x)
+# if __name__=="__main__":
+#     print(getNearestIntegerInRange(range(5,28,4),6.7))
+#     print(getNearestIntegerInRange(range(5,28,4),23.1))
+#     print(getNearestIntegerInRange(range(5,28,4),27))
+#     for x in range(5,28,4):
+#         print(x)
         
 
     

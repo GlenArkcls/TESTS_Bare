@@ -56,6 +56,7 @@ class ProjectTestCase(unittest.TestCase):
         self.assertFalse(projDir==None or projDir==0,GDSErr(self.server,"Failed GDS call to getProjectDirectory"))
     
     def testCreateSeismicProject(self):
+        self.longMessage=False
         success=GeoDataSync("createSeismicProject",self.server)
         self.assertTrue(success,GDSErr(self.server,"Failed GDS call to createSeismicProject"))
         

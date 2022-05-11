@@ -74,6 +74,8 @@ switch fnName
         sig=["id","[d","[d"];
     case "getInlineCrosslineFromXY"
         sig=["id","[d","[d"];
+    case "getInlineCrosslineFromXYExact"
+        sig=["id","[d","[d"];
     case "create2DSeis"
         sig=["[c","i32","[d","[d","i32","d","d","id"];
     case "get2DSeisIDList"
@@ -127,8 +129,26 @@ switch fnName
 %              GSOType.tnInt32];
     case "create3DHorz"
         sig=["[c","i32","id","id"];
+    case "get3DHorzGeom"
+        sig=["id"];
     case "put3DHorzValues"
         sig=["id","[s"];
+    case "get3DHorzVals"
+        sig=["id"];
+    case "get3DHorzValsInXl"
+        sig=["id","i32","i32","i32","i32"];
+    case "put3DHorzValuesSpec"
+        sig=["id","[s","[d","[d"];
+    case "create3DHorzProp"
+        sig=["id","[c"];
+    case "put3DHorzPropValues"
+        sig=["id","[s"];
+    case "get3DHorzPropVals"
+        sig=["id"];
+    case "get3DHorzPropValsInXl"
+        sig=["id","i32","i32","i32","i32"];
+    case "put3DHorzPropValuesSpec"
+        sig=["id","[s","[d","[d"];
     case "createPointSet"
         sig=["[c","id"];
     case "putPointSetData"

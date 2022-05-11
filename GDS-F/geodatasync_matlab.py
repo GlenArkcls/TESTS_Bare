@@ -56,8 +56,8 @@ import pathlib
 eng=None
 
 def start():
-    '''Starts the MATLAB engine
-    '''
+   '''Starts the MATLAB engine
+   '''
    global eng
    #start MATLAB engine (no GUI)
    eng=matlab.engine.start_matlab()
