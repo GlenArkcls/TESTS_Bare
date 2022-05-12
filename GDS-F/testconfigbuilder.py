@@ -79,7 +79,7 @@ class TestConfigBuilder:
             self.__server=self.__startTheConnection()
             self.__assetRepo.initServer(self.__server)
             self.__testConfig.initialise(self.__server,self.__assetRepo)
-            #self.__geodatasyncFn("hideErrorMessages",self.__server,2)
+            self.__geodatasyncFn("hideErrorMessages",self.__server,2)
         except Exception as e:
             print("getServer EXCEPTION "+str(e))
             return False,self.__server,"Failed" + str(e)

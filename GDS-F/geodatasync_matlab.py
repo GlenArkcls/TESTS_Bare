@@ -131,8 +131,12 @@ def translateOutputDict(input):
         #matlab array types need converted to normal python lists
         if isMatlabArray(v):
             v=translateMLArray(v)
+        elif type(v) is list:
+            v=translateOutputList(v)
+        elif type(v) is str:
+            v=stringToBytes(v)
         #Unpack these arrays-currently packaged as nested lists
-        if k=="Inlines" or k=="Xlines" or k=="XCoords" or k=="YCoords" or k=="SurfVals" or k=="HorzVals":
+        if k in ["Inlines","Xlines","XCoords","YCoords","ZCoords","SurfVals","HorzVals"]:
             v=v[0]
         #Alter the key to a byte string (ie ASCII) rather than string type
         ret[stringToBytes(k)]=v

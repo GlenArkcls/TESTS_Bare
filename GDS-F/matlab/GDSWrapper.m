@@ -28,17 +28,12 @@ tmpOutput=GeoDataSync(fn,server,args);
 % e.g. a list of IDs. However, an actual ID should not be collapsed so
 % we need to check for that as a special case - other cases may arise
 % and developers of the test system need to be aware of this
-outsz=size(tmpOutput);
-shouldRemap=iscell(tmpOutput) && outsz(2)>1 &&~isIDFunction(fn);
-if shouldRemap
-    %Make an N*1 cell array for output
-    response=cell(outsz(1),1);
-    for i=1:outsz(1)
-        %And into each of these cells map an 1*M cell array
-        response{i,:}=tmpOutput(i,:);
-    end
+if iscell(tmpOutput) && size(tmpOutput,2)>1 &&~isIDFunction(fn)
+    response=remapCellArray(tmpOutput);
+elseif isstruct(tmpOutput)
+    response=remapStruct(tmpOutput);
 else
-    %structures,N*1 cell arrays and 1*N arrays that are IDs
+    %N*1 cell arrays and 1*N arrays that are IDs
     %go straight through
     response=tmpOutput;
 end
@@ -46,5 +41,36 @@ end
 end
 
 
+function [remapped]=remapStruct(inp)
+    remapped=struct;
+    fn=fieldnames(inp);
+    for i=1:size(fn,1)
+        v=inp.(fn{i});
+        outsz=size(v);
+        if iscell(v) && outsz(2)>1 &&~isIDField(fn{i})
+            v=remapCellArray(v);
+        end
+        remapped.(fn{i})=v;
+    end
+end
+
+function [remapped] = remapCellArray(inp)
+%Make an N*1 cell array for output
+    outsz=size(inp);
+    remapped=cell(outsz(1),1);
+    for i=1:outsz(1)
+        remapped{i,:}=inp(i,:);
+    end
+end
+
+function [out] = isIDFunction(fnName)
+%isIDFunction returns true of the GDS function returns a single ID
+%  
+out=strcmpi(fnName(1:6),"create") || strcmpi(fnName,"getParentID");
+end
+
+function ret=isIDField(name)
+    ret=strcmpi(name(end-1:end),"ID");
+end
 
 
