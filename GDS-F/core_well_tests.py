@@ -111,8 +111,6 @@ class WellTestCase(unittest.TestCase):
         idList=data[b'LogIDs']
         self.assertTrue(IDInList(IDComparison,self.repo.getWellLogID(WELL_LOG_0),idList),"Well log not in ID list in getWellData")
         self.assertTrue(IDInList(IDComparison,self.repo.getWellLogID(WELL_LOG_1),idList),"Well log not in ID list in getWellData")
-        print(data0["Values"])
-        print(data[b"LogVals"][0])
         for i in range(0,len(idList)):
             if IDComparison(idList[i],self.repo.getWellLogID(WELL_LOG_0)):
                 self.assertTrue(compareFloatLists(data0["Values"],data[b"LogVals"][i]),"Well log data does not match")    
@@ -129,6 +127,7 @@ class WellTestCase(unittest.TestCase):
         suite.addTest(WellTestCase(server,repo,config,"testPutWellTrack"))
         suite.addTest(WellTestCase(server,repo,config,"testCreateWellLog"))
         suite.addTest(WellTestCase(server,repo,config,"testPutLogData"))
+        suite.addTest(WellTestCase(server,repo,config,"testGetLogData"))
         suite.addTest(WellTestCase(server,repo,config,"testGetWellGeom"))
         suite.addTest(WellTestCase(server,repo,config,"testGetWellTrajectory"))
         suite.addTest(WellTestCase(server,repo,config,"testGetWellData"))

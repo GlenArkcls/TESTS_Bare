@@ -197,7 +197,7 @@ class AssetRepository:
         self.objects[ObjectType.WELL][name]=ident
     def putWellLogID(self,name,ident):
         self.objects[ObjectType.WELL_LOG][name]=ident
-    def putfAULTID(self,name,ident):
+    def putFaultID(self,name,ident):
         self.objects[ObjectType.FAULT][name]=ident
         
 def initModule(geodatasyncFn):

@@ -24,15 +24,9 @@ import unittest
 
 
 from executor import TestExecutor
-
-
 from test_utils import GDSErr 
 from test_utils import compareFloatLists
-from test_utils import IDInList
-
-
 from constants import FAULT_0
-
 
 
 

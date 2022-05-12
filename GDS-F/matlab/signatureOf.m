@@ -1,5 +1,7 @@
 function sig = signatureOf(fnName)
 switch fnName
+    case "hideErrorMessages"
+        sig=["i32"];
     case "getSystemType"
         sig=[];
     case "getVersion"
@@ -164,12 +166,20 @@ switch fnName
 	case "createLog"
         sig=["id","[c"];
 	case "putLogData"
-        sig=["id","[d","d","d"];
+        sig=["id","[f","d","d"];
+    case "getLogData"
+        sig=["id"];
 	case "getWellGeom"
         sig=["id"];
 	case "getWellTrajectory"
         sig=["id"];
 	case "getWellData"
+        sig=["id"];
+    case "createFault"
+        sig=["[c","i32"];
+    case "putFaultData"
+        sig=["id","i32","[i32","[d","[d","[d"];
+    case "getFaultGeom"
         sig=["id"];
     otherwise
         fprintf("signature for function %s not found.\n",fnName),

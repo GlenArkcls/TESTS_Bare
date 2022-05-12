@@ -22,6 +22,7 @@ import core_project_tests
 import core_horizon_tests
 import core_pointset_tests
 import core_well_tests
+import core_fault_tests
 
 
 
@@ -32,6 +33,7 @@ def initModule(geodatasyncFn,idCompFn):
     core_horizon_tests.initModule(geodatasyncFn, idCompFn)
     core_pointset_tests.initModule(geodatasyncFn, idCompFn)
     core_well_tests.initModule(geodatasyncFn, idCompFn)
+    core_fault_tests.initModule(geodatasyncFn, idCompFn)
 
 def getTestSuite(server,repo,config):
     suite=unittest.TestSuite()
@@ -41,6 +43,7 @@ def getTestSuite(server,repo,config):
     suite.addTests(core_horizon_tests.getTestSuite(server,repo,config))
     suite.addTests(core_pointset_tests.getTestSuite(server,repo,config))
     suite.addTests(core_well_tests.getTestSuite(server,repo,config))
+    suite.addTests(core_fault_tests.getTestSuite(server,repo,config))
     return suite
 
 

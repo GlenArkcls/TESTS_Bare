@@ -28,7 +28,6 @@ from test_utils import getNearestIntegerInRange
 from constants import SEISMIC_COL_0
 from constants import SEISMIC_COL_1
 from constants import SEISMIC3D_0
-from constants import SEISMIC3D_1
 from constants import SEISMIC2D_0
 
 GeoDataSync=None
