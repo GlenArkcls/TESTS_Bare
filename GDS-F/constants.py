@@ -29,6 +29,8 @@ WELL_0=b"TestWell0"
 WELL_LOG_0=b"TestLog0"
 WELL_LOG_1=b"TestLog1"
 
+FAULT_0=b"TestFault0"
+
 
 INTERP_COL_0=b"InterpretationCollection0"
 INTERP_COL_1=b"InterpretationCollection1"

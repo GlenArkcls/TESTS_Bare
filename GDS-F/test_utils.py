@@ -57,6 +57,7 @@ def compareFloatLists(l0,l1):
             if not math.isnan(l0[i]) and math.isnan(l1[i]):
                 return False
         if abs(l0[i]-l1[i])>FLOAT_COMP_TOL:
+            print("cFL failed on " + str(l0[i]) + " " +str(l1[i]))
             return False
     return True
 

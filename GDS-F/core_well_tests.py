@@ -77,6 +77,13 @@ class WellTestCase(unittest.TestCase):
         success=GeoDataSync("putLogData",self.server,logID,log["Values"],log["Start"],log["Interval"])
         self.assertFalse(success==0,GDSErr(self.server,"Failed putLogData"))
         
+    def testGetLogData(self):
+        logID=self.repo.getWellLogID(WELL_LOG_0)
+        log=self.config.getWellLogData0()
+        logData=GeoDataSync("getLogData",self.server,logID)
+        self.assertFalse(logData is None or logData==0,GDSErr(self.server,"Failed getLogData"))
+        self.assertTrue(compareFloatLists(log["Values"],logData[b"LogVals"]))
+        
     def testGetWellGeom(self):
         wellID=self.repo.getWellID(WELL_0)
         knowntrack=self.config.getWellTrack()
@@ -104,6 +111,8 @@ class WellTestCase(unittest.TestCase):
         idList=data[b'LogIDs']
         self.assertTrue(IDInList(IDComparison,self.repo.getWellLogID(WELL_LOG_0),idList),"Well log not in ID list in getWellData")
         self.assertTrue(IDInList(IDComparison,self.repo.getWellLogID(WELL_LOG_1),idList),"Well log not in ID list in getWellData")
+        print(data0["Values"])
+        print(data[b"LogVals"][0])
         for i in range(0,len(idList)):
             if IDComparison(idList[i],self.repo.getWellLogID(WELL_LOG_0)):
                 self.assertTrue(compareFloatLists(data0["Values"],data[b"LogVals"][i]),"Well log data does not match")    

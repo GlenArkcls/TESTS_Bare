@@ -125,4 +125,12 @@ class BlankProjectTestConfig(test_config.TestConfig):
     def getWellLogData1(self,name=None):
         logVals=[math.cos(x)*10 for x in range(0,100)]
         return {"Values":logVals,"Start":10.,"Interval":10.}
+    
+    def getFaultData(self,name=None):
+        xcoords=[608300.,608301.,608302.,608320.,608324.,608330.,608330.,608340.,608346.,608348.]
+        ycoords=[6076200.,6076203.,6076208.,6076230.,6076236.,6076240.,6076240.,6076290.,6076298.,6076302.]
+        zcoords=[1.0,1.1,1.2,1.05,1.16,1.21,1.23,1.11,1.20,1.26]
+        fdata={"sticks":3,"points":[3,4,3],"xcoords":xcoords,"ycoords":ycoords,"zcoords":zcoords}
+        return fdata
+        
         

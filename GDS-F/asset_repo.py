@@ -137,6 +137,11 @@ class AssetRepository:
             return None
         self.objects[ObjectType.WELL_LOG][name]=createdID
         return createdID
+    def createFault(self,name,*args):
+        success,id=self.createObject("createFault",name,*args)
+        if success:
+            self.objects[ObjectType.FAULT][name]=id
+        return id
     '''
     getXXXID Methods
     Retrieve object by name
@@ -163,6 +168,8 @@ class AssetRepository:
         return self.objects[ObjectType.WELL].get(name)
     def getWellLogID(self,name):
         return self.objects[ObjectType.WELL_LOG].get(name)
+    def getFaultID(self,name):
+        return self.objects[ObjectType.FAULT].get(name)
     
     '''
     putXXXID Methods
@@ -190,6 +197,8 @@ class AssetRepository:
         self.objects[ObjectType.WELL][name]=ident
     def putWellLogID(self,name,ident):
         self.objects[ObjectType.WELL_LOG][name]=ident
+    def putfAULTID(self,name,ident):
+        self.objects[ObjectType.FAULT][name]=ident
         
 def initModule(geodatasyncFn):
     global GeoDataSync

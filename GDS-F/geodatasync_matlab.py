@@ -136,8 +136,16 @@ def translateOutputDict(input):
         elif type(v) is str:
             v=stringToBytes(v)
         #Unpack these arrays-currently packaged as nested lists
-        if k in ["Inlines","Xlines","XCoords","YCoords","ZCoords","SurfVals","HorzVals"]:
-            v=v[0]
+        if k in ["Inlines","Xlines","XCoords","YCoords","ZCoords","SurfVals","HorzVals","LogVals"]:
+            if not v is None and len(v)>0:
+                v=v[0]
+        if k in ["LogVals"]:
+            if not v is None and len(v)>0:
+                v1=[]
+                for el in v:
+                    if not el is None and len(el)>0:
+                        v1.append(el[0])
+                v=v1
         #Alter the key to a byte string (ie ASCII) rather than string type
         ret[stringToBytes(k)]=v
     return ret
