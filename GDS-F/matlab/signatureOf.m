@@ -129,6 +129,8 @@ switch fnName
 %              GSOType.tnInt32,...
 %              GSOType.tnInt32,...
 %              GSOType.tnInt32];
+    case "get3DHorzIDList"
+        sig=[];
     case "create3DHorz"
         sig=["[c","i32","id","id"];
     case "get3DHorzGeom"
@@ -159,12 +161,20 @@ switch fnName
         sig=["id"];
 	case "createWellRoot"
         sig=[];
+    case "getWellCollectionIDList"
+        sig=[];
+    case "getWellIDList"
+        sig=[];
 	case "createWell"
         sig=["[c"];
 	case "putWellHead"
         sig=["id","d","d"];
 	case "putWellTrack"
         sig=["id","[d","[d","[d","[c","d"];
+    case "getWellIDListGlobal"
+        sig=[];
+    case "getLogIDList"
+        sig=["id"];
 	case "createLog"
         sig=["id","[c"];
 	case "putLogData"
@@ -177,17 +187,29 @@ switch fnName
         sig=["id"];
 	case "getWellData"
         sig=["id"];
+    case "getFaultIDList"
+        sig=[];
     case "createFault"
         sig=["[c","i32"];
     case "putFaultData"
         sig=["id","i32","[i32","[d","[d","[d"];
     case "getFaultGeom"
         sig=["id"];
+    case "getWaveletIDList"
+         sig=[];
     case "createWavelet"
         sig=["[c","id"];
     case "putWaveletData"
         sig=["id","d","[d"];
     case "getWaveletData"
+        sig=["id"];
+    case "getPolygonIDList"
+        sig=[];
+    case "createPolygon"
+        sig=["[c","id"];
+    case "putPolygonData"
+        sig=["id","i32","[i32","[d","[d","[d","i32","[i32"];
+    case "getPolygonData"
         sig=["id"];
     otherwise
         fprintf("signature for function %s not found.\n",fnName),

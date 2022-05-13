@@ -39,13 +39,13 @@ def initModule(geodatasyncFn,idCompFn):
 
 def getTestSuite(server,repo,config):
     suite=unittest.TestSuite()
-    #suite.addTests(core_project_tests.getTestSuite(server,repo,config))
+    suite.addTests(core_project_tests.getTestSuite(server,repo,config))
     suite.addTests(core_seismic_tests.getTestSuite(server,repo,config))
-    #suite.addTests(core_surface_tests.getTestSuite(server,repo,config))
-    #suite.addTests(core_horizon_tests.getTestSuite(server,repo,config))
+    suite.addTests(core_surface_tests.getTestSuite(server,repo,config))
+    suite.addTests(core_horizon_tests.getTestSuite(server,repo,config))
     suite.addTests(core_pointset_tests.getTestSuite(server,repo,config))
-    #suite.addTests(core_well_tests.getTestSuite(server,repo,config))
-    #suite.addTests(core_fault_tests.getTestSuite(server,repo,config))
+    suite.addTests(core_well_tests.getTestSuite(server,repo,config))
+    suite.addTests(core_fault_tests.getTestSuite(server,repo,config))
     suite.addTests(core_wavelet_tests.getTestSuite(server,repo,config))
     return suite
 
