@@ -44,6 +44,7 @@ class AssetRepository:
                       ObjectType.SEISMIC3D:{},
                       ObjectType.SEISMIC2D:{},
                       ObjectType.FAULT:{},
+                      ObjectType.WAVELET:{},
                       ObjectType.SURFACE:{},
                       ObjectType.POINTSET:{},
                       ObjectType.HORIZON:{},
@@ -142,6 +143,11 @@ class AssetRepository:
         if success:
             self.objects[ObjectType.FAULT][name]=id
         return id
+    def createWavelet(self,name,*args):
+        success,id=self.createObject("createWavelet",name,*args)
+        if success:
+            self.objects[ObjectType.WAVELET][name]=id
+        return id
     '''
     getXXXID Methods
     Retrieve object by name
@@ -170,6 +176,7 @@ class AssetRepository:
         return self.objects[ObjectType.WELL_LOG].get(name)
     def getFaultID(self,name):
         return self.objects[ObjectType.FAULT].get(name)
+    
     
     '''
     putXXXID Methods

@@ -31,6 +31,10 @@ WELL_LOG_1=b"TestLog1"
 
 FAULT_0=b"TestFault0"
 
+WAVELET_0=b"TestWavelet0"
+
+POLYGON_0=b"TestPolygon0"
+
 
 INTERP_COL_0=b"InterpretationCollection0"
 INTERP_COL_1=b"InterpretationCollection1"

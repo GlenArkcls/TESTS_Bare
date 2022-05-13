@@ -127,10 +127,20 @@ class BlankProjectTestConfig(test_config.TestConfig):
         return {"Values":logVals,"Start":10.,"Interval":10.}
     
     def getFaultData(self,name=None):
-        xcoords=[608300.,608301.,608302.,608320.,608324.,608330.,608330.,608340.,608346.,608348.]
-        ycoords=[6076200.,6076203.,6076208.,6076230.,6076236.,6076240.,6076240.,6076290.,6076298.,6076302.]
+        xcoords=[608300.2,608301.3,608302.5,608320.1,608324.3,608330.2,608330.4,608340.3,608346.2,608348.2]
+        ycoords=[6076200.1,6076203.2,6076208.3,6076230.5,6076236.3,6076240.4,6076240.6,6076290.4,6076298.3,6076302.2]
         zcoords=[1.0,1.1,1.2,1.05,1.16,1.21,1.23,1.11,1.20,1.26]
         fdata={"sticks":3,"points":[3,4,3],"xcoords":xcoords,"ycoords":ycoords,"zcoords":zcoords}
         return fdata
+    
+    def getPointSetData(self,name=None):
+        xcoords=[608300.2,608301.3,608302.5,608320.1,608324.3,608330.2,608330.4,608340.3,608346.2,608348.2]
+        ycoords=[6076200.1,6076203.2,6076208.3,6076230.5,6076236.3,6076240.4,6076240.6,6076290.4,6076298.3,6076302.2]
+        zcoords=[1.0,1.1,1.2,1.05,1.16,1.21,1.23,1.11,1.20,1.26]
+        return {"XCoords":xcoords,"YCoords":ycoords,"ZCoords":zcoords}
+    
+    def getWaveletData(self,name=None):
+        v=[(10*math.cos(x-50))/((x-50)*(x-50)+1) for x in range(0,101)]
+        return {"SampleInt":0.01,"Wavelet":v}
         
         

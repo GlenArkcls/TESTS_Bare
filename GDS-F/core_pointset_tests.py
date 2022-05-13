@@ -20,7 +20,6 @@ import unittest
 from executor import TestExecutor
 
 from test_utils import compareFloatLists    
-from test_utils import makeCreationGeometryFromFullGeometry 
 from test_utils import IDInList
 from test_utils import GDSErr 
 
@@ -51,13 +50,19 @@ class PointSetTestCase(unittest.TestCase):
         self.assertFalse(psID==None or psID==0,GDSErr(self.server,"Failed createPointSet at top level"))
     
     def testPutPointSetData(self):
-        xcoords=[63000.0,63010.0,63020.0,63030.0]
-        ycoords=[45000.0]*4
-        times=[1.0]*4
-        success=GeoDataSync("putPointSetData",self.server,self.repo.getPointSetID(POINTSET_0),4,xcoords,ycoords,times,0)
+        psID=self.repo.getPointSetID(POINTSET_0)
+        data=self.config.getPointSetData()
+        success=GeoDataSync("putPointSetData",self.server,psID,len(data["XCoords"]),data["XCoords"],data["YCoords"],data["ZCoords"],0)
         self.assertTrue(success==1,GDSErr(self.server,"Failed GDS call to putPointSetData"))
     
-   
+    def testGetPointSetData(self):
+        psID=self.repo.getPointSetID(POINTSET_0)
+        knowndata=self.config.getPointSetData()
+        data=GeoDataSync("getPointSetData",self.server,psID)
+        self.assertFalse(data is None or data==0,GDSErr(self.server,"Failed GDS call to getPointSetData"))
+        self.assertTrue(compareFloatLists(data[b"XCoords"],knowndata["XCoords"]),"XCoords do not match in getPointSetData")
+        self.assertTrue(compareFloatLists(data[b"YCoords"],knowndata["YCoords"]),"YCoords do not match in getPointSetData")
+        self.assertTrue(compareFloatLists(data[b"Values"],knowndata["ZCoords"]),"Values (ZCoords) do not match in getPointSetData")
         
         
  
@@ -66,6 +71,7 @@ class PointSetTestCase(unittest.TestCase):
         suite=unittest.TestSuite()
         suite.addTest(PointSetTestCase(server,repo,config,"testCreatePointSet"))
         suite.addTest(PointSetTestCase(server,repo,config,"testPutPointSetData"))
+        suite.addTest(PointSetTestCase(server,repo,config,"testGetPointSetData"))
        
         return suite
     

@@ -136,7 +136,7 @@ def translateOutputDict(input):
         elif type(v) is str:
             v=stringToBytes(v)
         #Unpack these arrays-currently packaged as nested lists
-        if k in ["Inlines","Xlines","XCoords","YCoords","ZCoords","SurfVals","HorzVals"]:
+        if k in ["Inlines","Xlines","XCoords","YCoords","ZCoords","SurfVals","HorzVals","Values","Data"]:
             if not v is None and len(v)>0:
                 v=v[0]
         #LogVals can appear in two contexts and needs this messy handling
