@@ -31,6 +31,7 @@ class ObjectType(Enum):
     HORIZON_PROPERTY=11
     WELL=12
     WELL_LOG=13
+    POLYGON=14
     
     
     
@@ -44,6 +45,7 @@ class AssetRepository:
                       ObjectType.SEISMIC3D:{},
                       ObjectType.SEISMIC2D:{},
                       ObjectType.FAULT:{},
+                      ObjectType.POLYGON:{},
                       ObjectType.WAVELET:{},
                       ObjectType.SURFACE:{},
                       ObjectType.POINTSET:{},
@@ -148,6 +150,11 @@ class AssetRepository:
         if success:
             self.objects[ObjectType.WAVELET][name]=id
         return id
+    def createPolygon(self,name,*args):
+        success,id=self.createObject("createPolygon",name,*args)
+        if success:
+            self.objects[ObjectType.POLYGON][name]=id
+        return id
     '''
     getXXXID Methods
     Retrieve object by name
@@ -176,6 +183,8 @@ class AssetRepository:
         return self.objects[ObjectType.WELL_LOG].get(name)
     def getFaultID(self,name):
         return self.objects[ObjectType.FAULT].get(name)
+    def getPolygonID(self,name):
+        return self.objects[ObjectType.POLYGON].get(name)
     
     
     '''
@@ -183,7 +192,8 @@ class AssetRepository:
     These are for initialising a repo with known names
     if we want to do tests against a known project
     '''
-    
+    def putFolderID(self,name,ident):
+        self.objects[ObjectType.FOLDER][name]=ident
     def put3DSeismicID(self,name,ident):
         self.objects[ObjectType.SEISMIC3D][name]=ident
     def put2DSeismicID(self,name,ident):
@@ -206,6 +216,8 @@ class AssetRepository:
         self.objects[ObjectType.WELL_LOG][name]=ident
     def putFaultID(self,name,ident):
         self.objects[ObjectType.FAULT][name]=ident
+    def putPolygonID(self,name,ident):
+        self.objects[ObjectType.POLYGON][name]=ident
         
 def initModule(geodatasyncFn):
     global GeoDataSync

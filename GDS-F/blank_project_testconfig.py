@@ -142,5 +142,15 @@ class BlankProjectTestConfig(test_config.TestConfig):
     def getWaveletData(self,name=None):
         v=[(10*math.cos(x-50))/((x-50)*(x-50)+1) for x in range(0,101)]
         return {"SampleInt":0.01,"Wavelet":v}
+    
+    def getPolygonData(self,name=None):
+        polylines=3
+        pointsInLine=[3,4,3]
+        xcoords=[608300.2,608301.3,608302.5,608320.1,608324.3,608330.2,608330.4,608340.3,608346.2,608348.2]
+        ycoords=[6076200.1,6076203.2,6076208.3,6076230.5,6076236.3,6076240.4,6076240.6,6076290.4,6076298.3,6076302.2]
+        zcoords=[1.0,1.0,1.0,1.05,1.05,1.2,1.2,1.4,1.4,1.4]
+        isDepth=0
+        areClosed=[0,1,0]
+        return {"Polylines":polylines,"Points":pointsInLine,"XCoords":xcoords,"YCoords":ycoords,"ZCoords":zcoords,"IsDepth":isDepth,"Closed":areClosed}
         
         
