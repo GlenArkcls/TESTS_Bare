@@ -67,8 +67,7 @@ def GDSErr(server,baseMsg):
     '''
     try:
         errMsg=GeoDataSync("getLastError",server)
-        #print("ERRMSG:" +str(errMsg))
-        return baseMsg+str(" "+errMsg)
+        return baseMsg+" "+str(errMsg)
     except:
         return baseMsg+"(No GDS err)"
 
