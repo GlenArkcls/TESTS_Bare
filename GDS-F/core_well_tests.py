@@ -69,17 +69,17 @@ class WellTestCase(unittest.TestCase):
         
     def testPutLogData(self):
         logID=self.repo.getWellLogID(WELL_LOG_0)
-        log=self.config.getWellLogData0()
+        log=self.config.getWellLogData(0)
         success=GeoDataSync("putLogData",self.server,logID,log["Values"],log["Start"],log["Interval"])
         self.assertFalse(success==0,GDSErr(self.server,"Failed putLogData"))
         logID=self.repo.getWellLogID(WELL_LOG_1)
-        log=self.config.getWellLogData1()
+        log=self.config.getWellLogData(1)
         success=GeoDataSync("putLogData",self.server,logID,log["Values"],log["Start"],log["Interval"])
         self.assertFalse(success==0,GDSErr(self.server,"Failed putLogData"))
         
     def testGetLogData(self):
         logID=self.repo.getWellLogID(WELL_LOG_0)
-        log=self.config.getWellLogData0()
+        log=self.config.getWellLogData(0)
         logData=GeoDataSync("getLogData",self.server,logID)
         self.assertFalse(logData is None or logData==0,GDSErr(self.server,"Failed getLogData"))
         self.assertTrue(compareFloatLists(log["Values"],logData[b"LogVals"]))
@@ -104,8 +104,8 @@ class WellTestCase(unittest.TestCase):
         
     def testGetWellData(self):
         wellID=self.repo.getWellID(WELL_0)
-        data0=self.config.getWellLogData0()
-        data1=self.config.getWellLogData1()
+        data0=self.config.getWellLogData(0)
+        data1=self.config.getWellLogData(1)
         data=GeoDataSync("getWellData",self.server,wellID)
         self.assertFalse(data is None or data==0,GDSErr(self.server,"Failed getWellData"))
         idList=data[b'LogIDs']

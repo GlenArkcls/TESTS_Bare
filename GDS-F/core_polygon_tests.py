@@ -53,7 +53,7 @@ class PolygonTestCase(unittest.TestCase):
     
     def testGetPolygonData(self):
         plID=self.repo.getPolygonID(POLYGON_0)
-        knowndata=self.config.getPolygonData()
+        knowndata=self.config.getPolygonData(False)
         data=GeoDataSync("getPolygonData",self.server,plID)
         self.assertFalse(data is None or data==0,GDSErr(self.server,"Failed GDS call to getPolygonData"))
         self.assertEqual(data[b"NumPolylines"],knowndata["Polylines"],"Number of polylines do not match in getPolygonData")

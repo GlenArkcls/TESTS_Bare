@@ -51,13 +51,13 @@ class PointSetTestCase(unittest.TestCase):
     
     def testPutPointSetData(self):
         psID=self.repo.getPointSetID(POINTSET_0)
-        data=self.config.getPointSetData()
-        success=GeoDataSync("putPointSetData",self.server,psID,len(data["XCoords"]),data["XCoords"],data["YCoords"],data["ZCoords"],0)
+        data=self.config.getPointSetData(False)
+        success=GeoDataSync("putPointSetData",self.server,psID,len(data["XCoords"]),data["XCoords"],data["YCoords"],data["ZCoords"],data["isDepth"])
         self.assertTrue(success==1,GDSErr(self.server,"Failed GDS call to putPointSetData"))
     
     def testGetPointSetData(self):
         psID=self.repo.getPointSetID(POINTSET_0)
-        knowndata=self.config.getPointSetData()
+        knowndata=self.config.getPointSetData(False)
         data=GeoDataSync("getPointSetData",self.server,psID)
         self.assertFalse(data is None or data==0,GDSErr(self.server,"Failed GDS call to getPointSetData"))
         self.assertTrue(compareFloatLists(data[b"XCoords"],knowndata["XCoords"]),"XCoords do not match in getPointSetData")

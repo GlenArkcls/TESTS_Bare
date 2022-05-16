@@ -63,7 +63,7 @@ class SeismicTestCase(unittest.TestCase):
           
     def testCreate3DSeismic(self):
         args=[self.repo.getSeismicCollectionID(SEISMIC_COL_0)]
-        geom=makeCreationGeometryFromFullGeometry(self.config.get3DSeismicGeometry())
+        geom=makeCreationGeometryFromFullGeometry(self.config.get3DSeismicGeometry(False))
         args.extend(list(geom.values()))
         seisID=self.repo.create3DSeismic(SEISMIC3D_0,*args);
         self.assertFalse(seisID is None or seisID==0,GDSErr(self.server,"Failed create3DSeismic"))
@@ -83,8 +83,8 @@ class SeismicTestCase(unittest.TestCase):
     def testGetGeometry(self):
         seisGeom=GeoDataSync("get3DSeisGeom",self.server,self.repo.get3DSeismicID(SEISMIC3D_0))
         self.assertFalse(seisGeom is None or seisGeom==0,GDSErr(self.server,"Failed GDS call get3DSeisGeom"))
-        testGeom=self.config.get3DSeismicGeometry()
-        for k in self.config.get3DSeismicGeometry().keys():
+        testGeom=self.config.get3DSeismicGeometry(False)
+        for k in testGeom.keys():
             with self.subTest(k=k):
                 self.assertAlmostEqual(seisGeom[k],testGeom[k],4)
         
@@ -92,7 +92,7 @@ class SeismicTestCase(unittest.TestCase):
     Put the fidicual data into the cube
     '''
     def testPut3DSeisTraces(self):
-         geom=self.config.get3DSeismicGeometry()
+         geom=self.config.get3DSeismicGeometry(False)
          ilines,xlines=geom.get3DGeometryILXLPairs()
          samps=round((geom[b'MaxZ']-geom[b'MinZ'])/geom[b'ZInc'])+1
          volumeData=self.config.get3DSeismicData()
@@ -116,7 +116,7 @@ class SeismicTestCase(unittest.TestCase):
         self.assertAlmostEqual(maxvalue,minmax[b'MaxValue'],4,"Maximum value mismatch")
     
     def testGet3DSeisTracesAll(self):
-        geom=self.config.get3DSeismicGeometry()
+        geom=self.config.get3DSeismicGeometry(False)
         '''
         Trim the z's by a sample at top and base to ensure
         correct handling of that aspect
@@ -138,7 +138,7 @@ class SeismicTestCase(unittest.TestCase):
         
         
     def testGet3DSeisValuesSpec(self):
-         geom=self.config.get3DSeismicGeometry()
+         geom=self.config.get3DSeismicGeometry(False)
          '''
          Trim the z's by a sample at top and base to ensure
           correct handling of that aspect
@@ -164,7 +164,7 @@ class SeismicTestCase(unittest.TestCase):
     Get the values from the volume expressed by the ranges. 
     '''
     def testGet3DSeisTracesRange(self):
-        geom=self.config.get3DSeismicGeometry()
+        geom=self.config.get3DSeismicGeometry(False)
         '''
         Trim the z's by a sample at top and base to ensure
         correct handling of that aspect
@@ -190,7 +190,7 @@ class SeismicTestCase(unittest.TestCase):
     Volume is assumed to be complete - ie no missing traces (even if they are filled with NaNs)
     '''      
     def testGet3DSeisTracesInXIInline(self):
-        geom=self.config.get3DSeismicGeometry()
+        geom=self.config.get3DSeismicGeometry(False)
        
         ilCount=round((geom[b'MaxInline']-geom[b'MinInline'])/geom[b'InlineInc'])+1
         xlCount=round((geom[b'MaxXline']-geom[b'MinXline'])/geom[b'XlineInc'])+1
@@ -224,7 +224,7 @@ class SeismicTestCase(unittest.TestCase):
     Volume is assumed to be complete - ie no missing traces (even if they are filled with NaNs)
     '''
     def testGet3DSeisTracesInXICrossline(self):
-        geom=self.config.get3DSeismicGeometry()
+        geom=self.config.get3DSeismicGeometry(False)
        
         ilCount=round((geom[b'MaxInline']-geom[b'MinInline'])/geom[b'InlineInc'])+1
         xlCount=round((geom[b'MaxXline']-geom[b'MinXline'])/geom[b'XlineInc'])+1
@@ -257,7 +257,7 @@ class SeismicTestCase(unittest.TestCase):
         pass
     
     def testGetInlineCrosslineFromXY(self):
-        geom=self.config.get3DSeismicGeometry()
+        geom=self.config.get3DSeismicGeometry(False)
         ilines=geom.getInlineList()
         xlines=geom.getCrosslineList()
         ils=[float(x) +0.7 for x in ilines[0:len(ilines):3]]
@@ -277,7 +277,7 @@ class SeismicTestCase(unittest.TestCase):
         
     
     def testGetInlineCrosslineFromXYExact(self):
-        geom=self.config.get3DSeismicGeometry()
+        geom=self.config.get3DSeismicGeometry(False)
         ilines=geom.getInlineList()
         xlines=geom.getCrosslineList()
         ils=[float(x) +0.7 for x in ilines[0:len(ilines):3]]
@@ -293,7 +293,7 @@ class SeismicTestCase(unittest.TestCase):
         
    
     def testGetXYFromInlineCrossline(self):
-        geom=self.config.get3DSeismicGeometry()
+        geom=self.config.get3DSeismicGeometry(False)
         ilines=geom.getInlineList()
         xlines=geom.getCrosslineList()
         ils=[float(x) for x in ilines[0:len(ilines):3]]
@@ -314,7 +314,7 @@ class SeismicTestCase(unittest.TestCase):
     '''
     def testCoordinateTransformRoundTrip(self):
         #Lets do a combo of every 3rd il/xl
-        geom=self.config.get3DSeismicGeometry()
+        geom=self.config.get3DSeismicGeometry(False)
         ilines=geom.getInlineList()
         xlines=geom.getCrosslineList()
         #ils=[float(x) for x in ilines[0:len(ilines):3]]
@@ -339,7 +339,7 @@ class SeismicTestCase(unittest.TestCase):
         self.assertFalse(seisColID==None or seisColID==0,GDSErr(self.server,"Failed to get create seismic collection for 2D"))
     
     def testCreate2DSeismic(self):
-        geom=self.config.get2DSeismicGeometry()
+        geom=self.config.get2DSeismicGeometry(False)
         args=list(geom.values())
         args.append(self.repo.getSeismicCollectionID(SEISMIC_COL_1))
         seisID=self.repo.create2DSeismic(SEISMIC2D_0,*args)
@@ -365,9 +365,10 @@ class SeismicTestCase(unittest.TestCase):
     def testGet2DSeisGeom(self):
         geom=GeoDataSync("get2DSeisGeom",self.server,self.repo.get2DSeismicID(SEISMIC2D_0))
         self.assertFalse(geom is None or geom==0,GDSErr(self.server,"Failed GDS call to get2DSeisGeom"))
-        knowngeom=self.config.get2DSeismicGeometry()
+        knowngeom=self.config.get2DSeismicGeometry(False)
         self.assertTrue(compareFloatLists(geom[b'XCoords'],knowngeom[b'XCoords']),"Mismatched XCoords from GDS get2DSeisGeom")
         self.assertTrue(compareFloatLists(geom[b'YCoords'],knowngeom[b'YCoords']),"Mismatched YCoords from GDS get2DSeisGeom")
+        self.assertEqual(geom[b'isDepth'],knowngeom[b'isDepth'],"Mismatched isDepth from GDS  get2DSeisGeom")
         self.assertAlmostEqual(geom[b'MinZ'],knowngeom[b'MinZ'],4,"Mismatched MinZ from GDS  get2DSeisGeom")
         self.assertAlmostEqual(geom[b'MaxZ'],knowngeom[b'ZInc']*(knowngeom[b'TraceLength']-1)+knowngeom[b'MinZ'],4,"Mismatched MaxZ from GDS  get2DSeisGeom")
         
@@ -381,8 +382,6 @@ class SeismicTestCase(unittest.TestCase):
         self.assertFalse(gotData is None or gotData==0,GDSErr(self.server,"Failed GDS call to get2DSeisTracesAll"))
         lineData=self.config.get2DLineData()
         traceData=gotData[b'Traces']
-        #print(lineData)
-        #print(traceData)
         self.assertTrue(len(traceData)==len(lineData),"Mismatched no of traces from get2DSeisTracesAll")
         for i in range(len(traceData)):
             with self.subTest(i=i):

@@ -63,7 +63,7 @@ class HorizonTestCase(unittest.TestCase):
         hzID=self.repo.getHorizonID(HORIZON_0)
         hzGeom=GeoDataSync("get3DHorzGeom",self.server,hzID)
         self.assertFalse(hzGeom==None or hzGeom==0,GDSErr(self.server,"Failed to retrieve horizon geometry"))
-        testGeom=self.config.get3DSeismicGeometry()
+        testGeom=self.config.get3DSeismicGeometry(False)
         hzGeom.pop(b'HorzID')
         for k in hzGeom.keys():
             with self.subTest(k=k):
@@ -82,7 +82,7 @@ class HorizonTestCase(unittest.TestCase):
         
     def testGet3DHorzValsInXl(self):
         hzID=self.repo.getHorizonID(HORIZON_0)
-        geom=self.config.get3DSeismicGeometry()
+        geom=self.config.get3DSeismicGeometry(False)
         #Set some ranges that are within the cube (unless its really small)
         xlines=(geom.getMaxXline()-geom.getMinXline())/geom.getXlineInc()+1
         loIL=geom.getMinInline()
@@ -117,7 +117,7 @@ class HorizonTestCase(unittest.TestCase):
         
     def testPut3DHorzValuesSpec(self):
         hzID=self.repo.getHorizonID(HORIZON_0)
-        geom=self.config.get3DSeismicGeometry()
+        geom=self.config.get3DSeismicGeometry(False)
         ilines=list(range(geom.getMinInline(),geom.getMaxInline()+1,geom.getInlineInc()))
         xlines=list(range(geom.getMinXline(),geom.getMaxXline()+1,geom.getXlineInc()))
         ilxls=[[il,xl] for il in ilines for xl in xlines]
@@ -153,7 +153,7 @@ class HorizonTestCase(unittest.TestCase):
         
     def testGet3DHorzPropValsInXl(self):
         hzPropID=self.repo.getHorizonPropertyID(HORIZON_PROP_0)
-        geom=self.config.get3DSeismicGeometry()
+        geom=self.config.get3DSeismicGeometry(False)
         #Set some ranges that are within the cube (unless its really small)
         xlines=(geom.getMaxXline()-geom.getMinXline())/geom.getXlineInc()+1
         loIL=geom.getMinInline()
@@ -188,7 +188,7 @@ class HorizonTestCase(unittest.TestCase):
         
     def testPut3DHorzPropValuesSpec(self):
         hzPropID=self.repo.getHorizonPropertyID(HORIZON_PROP_0)
-        geom=self.config.get3DSeismicGeometry()
+        geom=self.config.get3DSeismicGeometry(False)
         ilines=list(range(geom.getMinInline(),geom.getMaxInline()+1,geom.getInlineInc()))
         xlines=list(range(geom.getMinXline(),geom.getMaxXline()+1,geom.getXlineInc()))
         ilxls=[[il,xl] for il in ilines for xl in xlines]
