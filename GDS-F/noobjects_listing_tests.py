@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 """
+This file contains functions that test the result of calling listing functions
+when there is no result.It should be run against an empty project.
+Currently these functions return 0, which usually indicates a failure,rather 
+than an empty list. We therefore check the error message (not necessarily all 
+of it depending on whether it mentions 'Petrel' specifically for instance).
+
 Created on Mon May 16 13:28:29 2022
 
 @author: lewthwju
@@ -16,12 +22,8 @@ sys.path.append(file_dir)
 
 import unittest
 
-
 from executor import TestExecutor
 from test_utils import GDSErr 
-from test_utils import compareFloatLists
-
-
 
 
 GeoDataSync=None
@@ -108,6 +110,38 @@ class NoObjectsTestCase(unittest.TestCase):
         find=err.find("Could not find any Well or Log in this project!")
         self.assertFalse(find==-1,"Correct error message not shown from getLogIDListGlobal with empty list: "+err)
         
+    def testGetFaultIDList(self):
+        ret=GeoDataSync("getFaultIDList",self.server)
+        self.assertTrue(ret==0,GDSErr(self.server,"Returned data from getFaultIDList that should be empty"))
+        err=GeoDataSync("getLastError",self.server)
+        err=str(err,"utf-8")
+        find=err.find("Could not find any Fault interpretation in this project!")
+        self.assertFalse(find==-1,"Correct error message not shown from getFaultIDList with empty list: "+err)
+    
+    def testGetWaveletIDList(self):
+        ret=GeoDataSync("getWaveletIDList",self.server)
+        self.assertTrue(ret==0,GDSErr(self.server,"Returned data from getWaveletIDList that should be empty"))
+        err=GeoDataSync("getLastError",self.server)
+        err=str(err,"utf-8")
+        find=err.find("Could not find any wavelet in this project!")
+        self.assertFalse(find==-1,"Correct error message not shown from getWaveletIDList with empty list: "+err)
+        
+    def testGetPolygonIDList(self):
+        ret=GeoDataSync("getPolygonIDList",self.server)
+        self.assertTrue(ret==0,GDSErr(self.server,"Returned data from getPolygonIDList that should be empty"))
+        err=GeoDataSync("getLastError",self.server)
+        err=str(err,"utf-8")
+        find=err.find("Could not find any Polygons in this project!")
+        self.assertFalse(find==-1,"Correct error message not shown from getPolygonIDList with empty list: "+err)
+        
+    def testGetPointSetIDList(self):
+        ret=GeoDataSync("getPointSetIDList",self.server)
+        self.assertTrue(ret==0,GDSErr(self.server,"Returned data from getPointSetIDList that should be empty"))
+        err=GeoDataSync("getLastError",self.server)
+        err=str(err,"utf-8")
+        find=err.find("Could not find any Pointsets in this project!")
+        self.assertFalse(find==-1,"Correct error message not shown from getPointSetIDList with empty list: "+err)
+        
     def getTestSuite(server,repo,config):
         suite=unittest.TestSuite()
         suite.addTest(NoObjectsTestCase(server,repo,config,"testGetSeisColIDList"))
@@ -119,6 +153,10 @@ class NoObjectsTestCase(unittest.TestCase):
         suite.addTest(NoObjectsTestCase(server,repo,config,"testGetWellIDList"))
         suite.addTest(NoObjectsTestCase(server,repo,config,"testGetWellCollectionIDList"))
         suite.addTest(NoObjectsTestCase(server,repo,config,"testGetLogIDListGlobal"))
+        suite.addTest(NoObjectsTestCase(server,repo,config,"testGetFaultIDList"))
+        suite.addTest(NoObjectsTestCase(server,repo,config,"testGetWaveletIDList"))
+        suite.addTest(NoObjectsTestCase(server,repo,config,"testGetPolygonIDList"))
+        suite.addTest(NoObjectsTestCase(server,repo,config,"testGetPointSetIDList"))
         
         
         
