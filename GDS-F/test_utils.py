@@ -67,7 +67,7 @@ def GDSErr(server,baseMsg):
     '''
     try:
         errMsg=GeoDataSync("getLastError",server)
-        return baseMsg+" "+str(errMsg)
+        return baseMsg+" "+str(errMsg,"utf-8")
     except:
         return baseMsg+"(No GDS err)"
 

@@ -4,6 +4,7 @@ Created on Fri May  6 20:18:39 2022
 
 @author: lewthwju
 """
+import sys
 import argparse
 import unittest
 from testconfigbuilder import TestConfigBuilder
@@ -39,7 +40,7 @@ class TestExecutor:
                 #Build the tests for this module
                 suite=self.__getTestSuite(server,assetRepo,config)
                 #Create a test runner and execute
-                runner=unittest.TextTestRunner(verbosity=2)
+                runner=unittest.TextTestRunner(verbosity=2,stream=sys.stdout)
                 result=runner.run(suite)
         
         except Exception as e:
