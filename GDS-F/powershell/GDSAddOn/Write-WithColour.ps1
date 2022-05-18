@@ -1,4 +1,4 @@
-﻿Function Echo-WithColour
+﻿Function Write-WithColour
 {
     [CmdletBinding()]
     param
@@ -9,8 +9,7 @@
         $line
     )
     BEGIN{
-     $v="beginning"
-     Out-Host $v
+     
     }
     PROCESS
     {
@@ -40,6 +39,19 @@
         }
         Write-Host $pre -NoNewLine
         Write-Host "FAIL" -ForegroundColor RED -NoNewLine
+        Write-Host $post
+    }
+	elseif($line.IndexOf("ERROR") -ne -1)
+    {
+        $ix=$line.IndexOf("ERROR")
+        $pre=$line.Substring(0,$ix)
+        $post=""
+        if($ix+5 -lt $line.Length-1)
+        {
+            $post=$line.Substring($ix+5)
+        }
+        Write-Host $pre -NoNewLine
+        Write-Host "ERROR" -ForegroundColor YELLOW -NoNewLine
         Write-Host $post
     }
     else

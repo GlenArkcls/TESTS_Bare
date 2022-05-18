@@ -1,1 +1,1 @@
-$PSScriptRoot\Echo-WithColour.ps1
+. $PSScriptRoot\Write-WithColour.ps1
