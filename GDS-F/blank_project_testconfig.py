@@ -157,8 +157,8 @@ class BlankProjectTestConfig(test_config.TestConfig):
     
     def getWellTrack(self,name=None):
         geom=self.get3DSeismicGeometry(False)
-        xcoords=[-((geom.getX1()+geom.getX0())/2+math.exp(x/30.)) for x in range(0,100)]
-        ycoords=[-((geom.getY1()+geom.getY0())/2+math.exp(-y/20.)) for y in range(0,100)]
+        xcoords=[((geom.getX1()+geom.getX0())/2+math.exp(x/30.)) for x in range(0,100)]
+        ycoords=[((geom.getY1()+geom.getY0())/2+math.exp(-y/20.)) for y in range(0,100)]
         z=[10.*z for z in range(0,100)]
         reftype=b"KB"
         reflevel=-25.

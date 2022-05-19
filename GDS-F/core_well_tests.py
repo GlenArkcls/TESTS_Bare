@@ -117,7 +117,10 @@ class WellTestCase(unittest.TestCase):
             elif IDComparison(idList[i],self.repo.getWellLogID(WELL_LOG_1)):
                 self.assertTrue(compareFloatLists(data1["Values"],data[b"LogVals"][i]),"Well log data does not match") 
         
-        
+    def testGetWellInfo(self):
+        wellID=self.repo.getWellID(WELL_0)
+        info=GeoDataSync("getWellInfo",self.server,wellID)
+        self.assertFalse(info==None or info==0,GDSErr(self.server,"Failed call to getWellInfo"))
         
     def getTestSuite(server,repo,config):
         suite=unittest.TestSuite()
@@ -131,6 +134,7 @@ class WellTestCase(unittest.TestCase):
         suite.addTest(WellTestCase(server,repo,config,"testGetWellGeom"))
         suite.addTest(WellTestCase(server,repo,config,"testGetWellTrajectory"))
         suite.addTest(WellTestCase(server,repo,config,"testGetWellData"))
+        suite.addTest(WellTestCase(server,repo,config,"testGetWellInfo"))
         
         return suite
         
