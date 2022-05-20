@@ -120,6 +120,18 @@ def makeCreationGeometryFromFullGeometry(geometry):
         b'isDepth':geometry[b'isDepth']
         } 
 
+def compareSurfGeometries(geom1,geom2):
+       return (geom1[b'SizeI']==geom2[b'SizeI'] and
+               geom1[b'SizeJ']==geom2[b'SizeJ'] and
+               geom1[b'SpacingI']-geom2[b'SpacingI'] <FLOAT_COMP_TOL and
+               geom1[b'SpacingJ']-geom2[b'SpacingJ'] <FLOAT_COMP_TOL and
+               geom1[b'OriginX']-geom2[b'OriginX'] <FLOAT_COMP_TOL and
+               geom1[b'OriginY']-geom2[b'OriginY'] <FLOAT_COMP_TOL and
+               geom1[b'Theta']-geom2[b'Theta'] <FLOAT_COMP_TOL and
+               geom1[b'isDepth']==geom2[b'isDepth'])
+   
+        
+
 
 def initModule(geodatasyncFn):
     global GeoDataSync

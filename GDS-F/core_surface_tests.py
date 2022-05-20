@@ -20,6 +20,7 @@ from executor import TestExecutor
 
 from test_utils import compareFloatLists    
 from test_utils import GDSErr 
+from test_utils import IDInList
 
 
 from constants import SEISMIC3D_0
@@ -43,6 +44,12 @@ class SurfaceTestCase(unittest.TestCase):
         args.extend(list(geom.values()))
         surfID=self.repo.createSurface(SURFACE_0,*args)
         self.assertFalse(surfID==None or surfID==0,GDSErr(self.server,"Failed createSurface at top level"))
+        
+    def testGetSurfIDList(self):
+        surfIDList=GeoDataSync("getSurfIDList",self.server)
+        self.assertFalse(surfIDList==0 or surfIDList==None,GDSErr(self.server,"Failed call to getSurfIDList"))
+        surfID=self.repo.getSurfaceID(SURFACE_0)
+        self.assertTrue(IDInList(IDComparison,surfID,surfIDList),"Created surface ID not found in list from getSurfIDList")
     
     def testGetSurfGeom(self):
         surfGeom=GeoDataSync("getSurfGeom",self.server,self.repo.getSurfaceID(SURFACE_0))
@@ -50,7 +57,7 @@ class SurfaceTestCase(unittest.TestCase):
         fidgeom=self.config.getSurfGeometry()
         for k in list(fidgeom.keys()):
             with self.subTest(k=k):
-                self.assertAlmostEqual(surfGeom[k],fidgeom[k],4)
+                self.assertAlmostEqual(surfGeom[k],fidgeom[k],4,"Failed geometry comparison")
     
     def testPutSurfVals(self):
         surfVals=self.config.getSurfVals()
@@ -103,15 +110,12 @@ class SurfaceTestCase(unittest.TestCase):
         maxXline=seisGeom[b'MaxXline']-deltaXL
         
         surfVals=GeoDataSync("getSurfValsRangeIlXl",self.server,surfID,seisID,minIline,maxIline,minXline,maxXline)
-        #print(surfVals[b'Inlines'])
-        #print(surfVals[b'Xlines'])
         self.assertFalse(surfVals is None or surfVals==0,GDSErr(self.server,"Failed GDS call to getSurfValsRangeIlXl"))
         for i in range(len(surfVals[b'Inlines'])):
              with self.subTest(i=i):
                  self.assertTrue(surfVals[b'Inlines'][i]>=minIline and surfVals[b'Inlines'][i]<=maxIline,"Returned Inline out of given range from getSurfValsRangeIlXl")
                  self.assertTrue(surfVals[b'Xlines'][i]>=minXline and surfVals[b'Xlines'][i]<=maxXline,"Returned Crossline out of given range from getSurfValsRangeIlXl")
-
-        #self.assertTrue(compareFloatLists(surfVals[b'SurfVals'],self.config.getSurfVals()))
+        self.assertTrue(compareFloatLists(surfVals[b'SurfVals'],self.config.getSurfVals()))
         
     
         
@@ -122,6 +126,8 @@ class SurfaceTestCase(unittest.TestCase):
         suite=unittest.TestSuite()
         suite.addTest(SurfaceTestCase(server,repo,config,"testCreateTopLevelSurface"))
         suite.addTest(SurfaceTestCase(server,repo,config,"testGetSurfGeom"))
+        suite.addTest(SurfaceTestCase(server,repo,config,"testGetSurfIDList"))
+        
         suite.addTest(SurfaceTestCase(server,repo,config,"testPutSurfVals"))
         suite.addTest(SurfaceTestCase(server,repo,config,"testGetSurfDataRange"))
         suite.addTest(SurfaceTestCase(server,repo,config,"testGetSurfVals"))
@@ -132,7 +138,7 @@ class SurfaceTestCase(unittest.TestCase):
 def initModule(geodatasyncFn,idCompFn):
      global GeoDataSync
      GeoDataSync=geodatasyncFn
-     global IdComparison
+     global IDComparison
      IDComparison=idCompFn
      
      
