@@ -23,7 +23,7 @@ def inPath(filename):
             return True
     return False
 
-parser=argparse.ArgumentParser(description="Run GDSAutoTests")
+parser=argparse.ArgumentParser(description="Run GDSAutoTests via PETREL")
 parser.add_argument('-c','--client', choices=['python','matlab'],default="python")
 parser.add_argument('-t','--type', choices=["blank","bootstrapped"],default="blank")
 parser.add_argument('--file',help="Python test file to run",required=True)
@@ -52,6 +52,6 @@ cmdstr=""
 if args.port is None:
   cmdstr=str.format("{} -runWorkflow {} -sparm client={},config={},testfile={} -licensePackage {} {}",PETREL_PATH,WORKFLOW,args.client,args.type,args.file,args.license,args.project) 
 else:
-  cmdstr==str.format("{} -runWorkflow {} -sparm client={},config={},testfile={} -nparm port={} -licensePackage {} {}",PETREL_PATH,WORKFLOW,args.client,args.type,args.file,args.port,args.license,args.project)   
+  cmdstr=str.format("{} -runWorkflow {} -sparm client={},config={},testfile={} -nparm port={} -licensePackage {} {}",PETREL_PATH,WORKFLOW,args.client,args.type,args.file,args.port,args.license,args.project)   
 
 subprocess.Popen(cmdstr)
