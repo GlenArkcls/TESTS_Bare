@@ -62,8 +62,8 @@ class AssetRepository:
     def createObject(self,createAction,name,*args):
         createdID=GeoDataSync(createAction,self.server,name,*args)
         if createdID==None or createdID==0:
-            print(GeoDataSync("getLastError",self.server))
-            return False,None
+            #print(GeoDataSync("getLastError",self.server))
+            return False,0
         return True,createdID
         
     '''
@@ -117,8 +117,8 @@ class AssetRepository:
         '''
         createdID=GeoDataSync("create3DHorzProp",self.server,hzID,name)
         if createdID==None or createdID==0:
-            print(GeoDataSync("getLastError",self.server))
-            return None
+            #print(GeoDataSync("getLastError",self.server))
+            return 0
         self.objects[ObjectType.HORIZON_PROPERTY][name]=createdID
         return createdID
     def createPointSet(self,name,*args):
@@ -136,8 +136,8 @@ class AssetRepository:
         '''
         createdID=GeoDataSync("createLog",self.server,wellID,name)
         if createdID==None or createdID==0:
-            print(GeoDataSync("getLastError",self.server))
-            return None
+            #print(GeoDataSync("getLastError",self.server))
+            return 0
         self.objects[ObjectType.WELL_LOG][name]=createdID
         return createdID
     def createFault(self,name,*args):

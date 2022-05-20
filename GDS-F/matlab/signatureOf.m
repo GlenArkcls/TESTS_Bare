@@ -169,6 +169,8 @@ switch fnName
         sig=["[c"];
 	case "putWellHead"
         sig=["id","d","d"];
+	case "getWellInfo"
+        sig=["id"];
 	case "putWellTrack"
         sig=["id","[d","[d","[d","[c","d"];
     case "getWellIDListGlobal"
