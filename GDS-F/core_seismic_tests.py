@@ -112,7 +112,7 @@ class SeismicTestCase(unittest.TestCase):
                 maxvalue=tmax
         minmax=GeoDataSync("get3DSeisDataRange",self.server,self.repo.get3DSeismicID(SEISMIC3D_0))
         self.assertFalse(minmax==None or minmax==0,GDSErr(self.server,"Failed GDS call to get3DSeisDataRange"))
-        self.assertAlmostEqual(minvalue,minmax[b'MinValue'],4,"Minimum value mismatch")
+        self.assertAlmostEqual(minvalue,minmax[b'MinValue'],4,"Minimum value mismatch, {} {}".format(minvalue,minmax[b'MinValue']))
         self.assertAlmostEqual(maxvalue,minmax[b'MaxValue'],4,"Maximum value mismatch")
     
     def testGet3DSeisTracesAll(self):
@@ -263,13 +263,14 @@ class SeismicTestCase(unittest.TestCase):
         ils=[float(x) +0.7 for x in ilines[0:len(ilines):3]]
         xls=[float(x) +0.3 for x in xlines[0:len(xlines):3]]
         ilxls=list(zip(ils,xls))
+       
         coordsFromGeom=[geom.transformILXL(ilxl) for ilxl in ilxls]
         xcoords=[x[0] for x in coordsFromGeom]
         ycoords=[x[1] for x in coordsFromGeom]
         ilsRange=range(geom.getMinInline(),geom.getMaxInline()+1,geom.getInlineInc())
         xlsRange=range(geom.getMinXline(),geom.getMaxXline()+1,geom.getXlineInc())
-        testIls=[getNearestIntegerInRange(ilsRange,x) for x in ils]
-        testXls=[getNearestIntegerInRange(xlsRange,x) for x in xls]
+        testIls=[getNearestIntegerInRange(ilsRange,x[0]) for x in ilxls]
+        testXls=[getNearestIntegerInRange(xlsRange,x[1]) for x in ilxls]
         ilxlsret=GeoDataSync("getInlineCrosslineFromXY",self.server,self.repo.get3DSeismicID(SEISMIC3D_0),xcoords,ycoords)
         self.assertFalse(ilxlsret==0,GDSErr(self.server,"Failed call to getInlineCrosslineFromXY"))
         self.assertTrue(compareFloatLists(ilxlsret[b'Inlines'],testIls),GDSErr(self.server,"Inlines from transform not correct"))
@@ -283,6 +284,8 @@ class SeismicTestCase(unittest.TestCase):
         ils=[float(x) +0.7 for x in ilines[0:len(ilines):3]]
         xls=[float(x) +0.3 for x in xlines[0:len(xlines):3]]
         ilxls=list(zip(ils,xls))
+        ils=[x[0] for x in ilxls]
+        xls=[x[1] for x in ilxls]
         coordsFromGeom=[geom.transformILXL(ilxl) for ilxl in ilxls]
         xcoords=[x[0] for x in coordsFromGeom]
         ycoords=[x[1] for x in coordsFromGeom]
@@ -299,11 +302,14 @@ class SeismicTestCase(unittest.TestCase):
         ils=[float(x) for x in ilines[0:len(ilines):3]]
         xls=[float(x) for x in xlines[0:len(xlines):3]]
         ilxls=list(zip(ils,xls))
+        ils=[x[0] for x in ilxls]
+        xls=[x[1] for x in ilxls]
         coordsFromGeom=[geom.transformILXL(ilxl) for ilxl in ilxls]
         xcoords=[x[0] for x in coordsFromGeom]
         ycoords=[x[1] for x in coordsFromGeom]
+       
         coords=GeoDataSync("getXYFromInlineCrossline",self.server,self.repo.get3DSeismicID(SEISMIC3D_0),ils,xls)
-        self.assertFalse(coords==0,GDSErr(self.server,"Failed call to getXTFromInlineCrossline"))
+        self.assertFalse(coords==0,GDSErr(self.server,"Failed call to getXYFromInlineCrossline"))
         self.assertTrue(compareFloatLists(xcoords,coords[b'XCoords']),GDSErr(self.server,"Coordinates from transform not correct"))
         self.assertTrue(compareFloatLists(ycoords,coords[b'YCoords']),GDSErr(self.server,"Coordinates from transform not correct"))
     '''
@@ -317,10 +323,10 @@ class SeismicTestCase(unittest.TestCase):
         geom=self.config.get3DSeismicGeometry(False)
         ilines=geom.getInlineList()
         xlines=geom.getCrosslineList()
-        #ils=[float(x) for x in ilines[0:len(ilines):3]]
-        #xls=[float(x) for x in xlines[0:len(xlines):3]]
-        ils=[float(x) for x in ilines[0:len(ilines):3]]
-        xls=[float(x) for x in xlines[0:len(xlines):3]]
+        arlen=min(len(ilines),len(xlines))
+        ils=[float(x) for x in ilines[0:arlen:3]]
+        xls=[float(x) for x in xlines[0:arlen:3]]
+        
        
         coords=GeoDataSync("getXYFromInlineCrossline",self.server,self.repo.get3DSeismicID(SEISMIC3D_0),ils,xls)
         
