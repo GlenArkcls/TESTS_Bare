@@ -276,10 +276,12 @@ class SeismicTestCase(unittest.TestCase):
     def testGet3DSeisTracesTransect(self):
         geom=self.config.get3DSeismicGeometry()
         seisID = self.repo.get3DSeismicID(SEISMIC3D_0)
-        x0 = geom[b'X0']+25+24
-        y0 = geom[b'Y0']+24
-        x1 = geom[b'X0']+25+24
-        y1 = geom[b'Y0']+124
+        xinc=(geom[b'X1']-geom[b'X0'])/10.0
+        yinc=(geom[b'Y1']-geom[b'Y0'])/10.0
+        x0 = geom[b'X0']+xinc*3
+        y0 = geom[b'Y0']+yinc*6
+        x1 = geom[b'X0']+xinc*8
+        y1 = geom[b'Y0']+yinc*2
         minZ = geom[b'MinZ']
         maxZ = geom[b'MinZ']+geom[b'ZInc'] #geom[b'MaxZ']
         numTraces = 5
@@ -325,6 +327,37 @@ class SeismicTestCase(unittest.TestCase):
             #print(distXL)
             interpTrace=bilinearTraceInterp(distIL,distXL,traces[b'Traces'])
             interpTraces.append(interpTrace)
+        #print(interpTraces)
+        reshapedInterps=[[interpTraces[i][j] for i in range(0,len(interpTraces))] for j in range(0,len(interpTraces[0]))]
+        #print(reshapedInterps)
+        seisTransect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, x0, y0, x1, y1, minZ, maxZ, numTraces)
+        self.assertFalse(seisTransect==None or seisTransect==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesTransect"))
+        nTraces = seisTransect[b'NumTraces']
+        tracesLength = seisTransect[b'TraceLength']
+        #print(seisTransect)
+        self.assertFalse(nTraces==None or nTraces==0,GDSErr(self.server,"Incorrect no. of Traces from get3DSeisTracesTransect"))
+        self.assertFalse(tracesLength==None or tracesLength==0,GDSErr(self.server,"Incorrect Traces length from get3DSeisTracesTransect"))
+        for i in range(0,tracesLength):
+                self.assertTrue(compareFloatLists(seisTransect[b'Traces'][i],reshapedInterps[i]),"get3DSeisTracesTransect data values do not match")
+                
+    def testGet3DSeisTracesTransectCorners(self):
+        geom=self.config.get3DSeismicGeometry()
+        seisID = self.repo.get3DSeismicID(SEISMIC3D_0)
+        x0 = geom[b'X0']
+        y0 = geom[b'Y0']
+        x1=geom[b'X1']
+        y1=(geom[b'Y1'])
+        minZ = geom[b'MinZ']
+        maxZ = geom[b'MinZ']+geom[b'ZInc'] #geom[b'MaxZ']
+        numTraces = 2
+        
+        ilxls=[geom.transformUTM([x0,y0]),geom.transformUTM([x1,y1])]
+        interpTraces=[]
+        for ilxl in ilxls:
+            nil=round(ilxl[0])
+            nxl=round(ilxl[1])
+            traces=GeoDataSync("get3DSeisTracesRange",self.server,seisID,nil,nil,nxl,nxl,minZ,maxZ)
+            interpTraces.append(traces[b'Traces'])
         #print(interpTraces)
         reshapedInterps=[[interpTraces[i][j] for i in range(0,len(interpTraces))] for j in range(0,len(interpTraces[0]))]
         #print(reshapedInterps)
@@ -527,6 +560,7 @@ class SeismicTestCase(unittest.TestCase):
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesInXIInline"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesInXICrossline"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransect"))
+       suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransectCorners"))
        
        suite.addTest(SeismicTestCase(server,repo,config,"testGetInlineCrosslineFromXY"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGetInlineCrosslineFromXYExact"))
