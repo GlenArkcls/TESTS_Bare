@@ -81,18 +81,28 @@ class SeismicGeometry:
     def values(self):
         return self.gdsGeom().values()
     
-    '''
-    Derive the inline list from the geometry and return it
-    '''
+    def getInlineRange(self):
+        return range(self.getMinInline(),self.getMaxInline()+1,self.getInlineInc())
+    
+    def getCrosslineRange(self):
+        return range(self.getMinXline(),self.getMaxXline()+1,self.getXlineInc())
+   
+    def gridPtInCube(self,il,xl):
+        return il>=self.getMinInline() and il<=self.getMaxInline() and xl>=self.getMinXline() and xl<=self.getMaxXline()
+    
     def getInlineList(self):
+        '''
+        Derive the inline list from the geometry and return it
+        '''
         minIL=self[b"MinInline"]
         maxIL=self[b"MaxInline"]
         incIL=self[b"InlineInc"]
         return [x for x in range(minIL,maxIL+1,incIL)]
-    '''
-    Derive the list of crosslines from the geometry and return that list
-    '''
+    
     def getCrosslineList(self):
+        '''
+        Derive the list of crosslines from the geometry and return that list
+        '''
         minXL=self[b"MinXline"]
         maxXL=self[b"MaxXline"]
         incXL=self[b"XlineInc"]

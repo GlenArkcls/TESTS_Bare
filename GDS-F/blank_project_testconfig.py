@@ -32,7 +32,7 @@ DefaultSeisGeometry={
         b'MaxInline': 218,
         b'InlineInc': 2,
         b'MinXline': 400,
-        b'MaxXline': 427,
+        b'MaxXline': 433,
         b'XlineInc': 3,
         b'X0': 608271.29,
         b'Y0': 6076131.66,
@@ -40,11 +40,11 @@ DefaultSeisGeometry={
         b'Y1': 6076218.128075472,
         b'X2': 608264.37,
         b'Y2': 6076377.14,
-        b'MinZ': 0.014,
-        b'MaxZ': 1.858,
+        b'MinZ': 2.014,
+        b'MaxZ': 3.858,
         b'ZInc': 0.004,
         b'InlineSep': 23.687,
-        b'XlineSep': 27.2863908,
+        b'XlineSep': 22.325228807,
         b'isDepth': 0
         }
 
@@ -57,7 +57,7 @@ DefaultDepthSeisGeometry={
         b'MaxInline': 218,
         b'InlineInc': 2,
         b'MinXline': 400,
-        b'MaxXline': 427,
+        b'MaxXline': 433,
         b'XlineInc': 3,
         b'X0': 608271.29,
         b'Y0': 6076131.66,
@@ -69,7 +69,7 @@ DefaultDepthSeisGeometry={
         b'MaxZ': 2003.,
         b'ZInc': 5.,
         b'InlineSep': 23.687,
-        b'XlineSep': 27.2863908,
+         b'XlineSep': 22.325228807,
         b'isDepth': 1
         }
 
@@ -100,7 +100,7 @@ class BlankProjectTestConfig(test_config.TestConfig):
     def initialise(self,server,repo):
         pass
 
-    def get3DSeismicGeometry(self,isDepth):
+    def get3DSeismicGeometry(self,isDepth=False):
         if isDepth:
             return SeismicGeometry(DefaultDepthSeisGeometry)
         else:
@@ -140,10 +140,13 @@ class BlankProjectTestConfig(test_config.TestConfig):
         return [x +0.1 for x in range(0,self.getSurfGeometry()[b'SizeI']*self.getSurfGeometry()[b'SizeJ'])]
     
     def getHorizonVals(self,name=None):
-        geom=self.get3DSeismicGeometry(False)
-        inlines=(geom.getMaxInline()-geom.getMinInline())/geom.getInlineInc()+1
-        xlines=(geom.getMaxXline()-geom.getMinXline())/geom.getXlineInc()+1
-        return [1.0 +0.1*float(il-geom.getMinInline()) -0.1*float(xl-geom.getMinXline()) for il in range(0,int(inlines)) for xl in range(0,int(xlines))]
+       geom=self.get3DSeismicGeometry(False)
+       inlines=(geom.getMaxInline()-geom.getMinInline())/geom.getInlineInc()+1
+       xlines=(geom.getMaxXline()-geom.getMinXline())/geom.getXlineInc()+1
+       minz=geom.getMinZ()
+       maxz=geom.getMaxZ()
+       z0=(minz+maxz)/2
+       return [z0 +0.001*float(il-geom.getMinInline()) -0.001*float(xl-geom.getMinXline()) for il in range(0,int(inlines)) for xl in range(0,int(xlines))]
     
     def getHorizonPropertyVals(self,name=None):
         geom=self.get3DSeismicGeometry(False)

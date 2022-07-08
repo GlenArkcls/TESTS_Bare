@@ -77,9 +77,24 @@ class WellTestCase(unittest.TestCase):
         success=GeoDataSync("putLogData",self.server,logID,log["Values"],log["Start"],log["Interval"])
         self.assertFalse(success==0,GDSErr(self.server,"Failed putLogData"))
         
+    def testGetLogDataRange(self):
+        logID=self.repo.getWellLogID(WELL_LOG_0)
+        log=self.config.getWellLogData(0)
+        minv=min(log["Values"])
+        maxv=max(log["Values"])
+        ret=GeoDataSync("getLogDataRange",self.server,logID)
+        self.assertFalse(ret==0,GDSErr(self.server,"Failed getLogDataRange"))
+        self.assertTrue(minv==ret[b'MinValue'],"Mismatched min value in getLogDataRange")
+        self.assertTrue(maxv==ret[b'MaxValue'],"Mismatched max value in getLogDataRange")
+        
     def testGetLogData(self):
         logID=self.repo.getWellLogID(WELL_LOG_0)
         log=self.config.getWellLogData(0)
+        logData=GeoDataSync("getLogData",self.server,logID)
+        self.assertFalse(logData is None or logData==0,GDSErr(self.server,"Failed getLogData"))
+        self.assertTrue(compareFloatLists(log["Values"],logData[b"LogVals"]))
+        logID=self.repo.getWellLogID(WELL_LOG_1)
+        log=self.config.getWellLogData(1)
         logData=GeoDataSync("getLogData",self.server,logID)
         self.assertFalse(logData is None or logData==0,GDSErr(self.server,"Failed getLogData"))
         self.assertTrue(compareFloatLists(log["Values"],logData[b"LogVals"]))
@@ -109,13 +124,13 @@ class WellTestCase(unittest.TestCase):
         data=GeoDataSync("getWellData",self.server,wellID)
         self.assertFalse(data is None or data==0,GDSErr(self.server,"Failed getWellData"))
         idList=data[b'LogIDs']
-        self.assertTrue(IDInList(IDComparison,self.repo.getWellLogID(WELL_LOG_0),idList),"Well log not in ID list in getWellData")
-        self.assertTrue(IDInList(IDComparison,self.repo.getWellLogID(WELL_LOG_1),idList),"Well log not in ID list in getWellData")
+        self.assertTrue(IDInList(IDComparison,self.repo.getWellLogID(WELL_LOG_0),idList),"Well log 0 not in ID list in getWellData")
+        self.assertTrue(IDInList(IDComparison,self.repo.getWellLogID(WELL_LOG_1),idList),"Well log 1 not in ID list in getWellData")
         for i in range(0,len(idList)):
             if IDComparison(idList[i],self.repo.getWellLogID(WELL_LOG_0)):
-                self.assertTrue(compareFloatLists(data0["Values"],data[b"LogVals"][i]),"Well log data does not match")    
+                self.assertTrue(compareFloatLists(data0["Values"],data[b"LogVals"][i]),"Well log 0 data does not match")    
             elif IDComparison(idList[i],self.repo.getWellLogID(WELL_LOG_1)):
-                self.assertTrue(compareFloatLists(data1["Values"],data[b"LogVals"][i]),"Well log data does not match") 
+                self.assertTrue(compareFloatLists(data1["Values"],data[b"LogVals"][i]),"Well log 1 data does not match") 
         
     def testGetWellInfo(self):
         wellID=self.repo.getWellID(WELL_0)

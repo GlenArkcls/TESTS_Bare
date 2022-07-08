@@ -21,6 +21,7 @@ SEISMIC2D_0=b"Seismic2D0"
 SURFACE_0=b"TestSurface0"
 
 HORIZON_0=b"TestHorizon0"
+HORIZON_1=b"TestHorizon1"
 HORIZON_PROP_0=b'TestHzProp0'
 
 POINTSET_0=b"TestPointSet0"

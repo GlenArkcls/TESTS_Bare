@@ -62,7 +62,7 @@ class AssetRepository:
     def createObject(self,createAction,name,*args):
         createdID=GeoDataSync(createAction,self.server,name,*args)
         if createdID==None or createdID==0:
-            #print(GeoDataSync("getLastError",self.server))
+            print(GeoDataSync("getLastError",self.server))
             return False,0
         return True,createdID
         

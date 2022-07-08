@@ -92,6 +92,7 @@ class SurfaceTestCase(unittest.TestCase):
         self.assertFalse(seisGeom is None or seisGeom==0,GDSErr(self.server,"Could not get seismic geometry"))
         deltaIL=seisGeom[b'MaxInline']-seisGeom[b'MinInline']
         deltaXL=seisGeom[b'MaxXline']-seisGeom[b'MinXline']
+        
         if deltaIL>7:
             deltaIL=2
         elif deltaIL>5:
@@ -108,13 +109,13 @@ class SurfaceTestCase(unittest.TestCase):
         maxIline=seisGeom[b'MaxInline']-deltaIL
         minXline=seisGeom[b'MinXline']+deltaXL
         maxXline=seisGeom[b'MaxXline']-deltaXL
-        
+               
         surfVals=GeoDataSync("getSurfValsRangeIlXl",self.server,surfID,seisID,minIline,maxIline,minXline,maxXline)
         self.assertFalse(surfVals is None or surfVals==0,GDSErr(self.server,"Failed GDS call to getSurfValsRangeIlXl"))
         for i in range(len(surfVals[b'Inlines'])):
-             with self.subTest(i=i):
+             #with self.subTest(i=i):
                  self.assertTrue(surfVals[b'Inlines'][i]>=minIline and surfVals[b'Inlines'][i]<=maxIline,"Returned Inline out of given range from getSurfValsRangeIlXl")
-                 self.assertTrue(surfVals[b'Xlines'][i]>=minXline and surfVals[b'Xlines'][i]<=maxXline,"Returned Crossline out of given range from getSurfValsRangeIlXl")
+                 self.assertTrue(surfVals[b'Xlines'][i]>=minXline and surfVals[b'Xlines'][i]<=maxXline,"Returned Crossline out of given range from getSurfValsRangeIlXl index {}".format(i))
         self.assertTrue(compareFloatLists(surfVals[b'SurfVals'],self.config.getSurfVals()))
         
     

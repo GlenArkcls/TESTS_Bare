@@ -44,8 +44,8 @@ class BootstrappedTestConfig(test_config.TestConfig):
          self.__repo=repo
          seis3DIDList=GeoDataSync("get3DSeisIDList",self.__server)
          self.__repo.put3DSeismicID(BOOTSTRAPPED_3DSEISMIC0,seis3DIDList[0])
-         seis2DIDList=GeoDataSync("get2DSeisIDList",self.__server)
-         self.__repo.put2DSeismicID(BOOTSTRAPPED_2DSEISMIC0,seis2DIDList[0])
+         #seis2DIDList=GeoDataSync("get2DSeisIDList",self.__server)
+         #self.__repo.put2DSeismicID(BOOTSTRAPPED_2DSEISMIC0,seis2DIDList[0])
          surfIDList=GeoDataSync("getSurfIDList",self.__server)
          if not surfIDList==0:
              self.__repo.putSurfaceID(BOOTSTRAPPED_SURFACE0,surfIDList[0])
@@ -57,9 +57,12 @@ class BootstrappedTestConfig(test_config.TestConfig):
                  self.__repo.putHorizonPropertyID(BOOTSTRAPPED_HORIZONPROP0,hz3DPropIDList[b'HorzPropIDList'][0])
          wellIDList=GeoDataSync("getWellIDList",self.__server)
          if not wellIDList==0:
+             #print(wellIDList[0])
              self.__repo.putWellID(BOOTSTRAPPED_WELL0,wellIDList[0])
              logIDList=GeoDataSync("getLogIDList",self.__server,wellIDList[0])
              if not logIDList==0:
+                 #print(logIDList[b'LogIDList'][0])
+                 #print(logIDList[b'LogIDList'][1])
                  self.__repo.putWellLogID(BOOTSTRAPPED_WELLLOG0,logIDList[b'LogIDList'][0])
                  self.__repo.putWellLogID(BOOTSTRAPPED_WELLLOG1,logIDList[b'LogIDList'][1])
          psIDList=GeoDataSync("getPointSetIDList",self.__server)

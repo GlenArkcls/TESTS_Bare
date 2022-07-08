@@ -45,6 +45,7 @@ class ProjectTestCase(unittest.TestCase):
     
     def testGetVersion(self):
         version=GeoDataSync("getVersion",self.server)
+        print(version)
         self.assertFalse(version==None or version==0,GDSErr(self.server,"Failed GDS call to getVersion"))
     
     def testGetProjectName(self):

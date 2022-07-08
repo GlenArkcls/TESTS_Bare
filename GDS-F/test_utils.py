@@ -25,7 +25,7 @@ def getNearestIntegerInRange(rng,testVal):
         return rng.start
     normTest=(testVal-rng.start)/rng.step
     ret= round(normTest)*rng.step+rng.start
-    if ret>rng.stop:
+    while ret>rng.stop:
         ret-=rng.step
     return ret
 
@@ -43,6 +43,31 @@ def compareNestedFloatLists(l0,l1):
             return False
     return True
 
+def bilinearValueInterp(cornerVals,dist0,dist1):
+    a=(cornerVals[0]*(1-dist0)*(1-dist1))
+    b=(cornerVals[1]*(1-dist0)*(dist1))
+    c=(cornerVals[2]*(dist0)*(1-dist1))
+    d=(cornerVals[3]*(dist0)*(dist1))
+    ret=a
+    if not math.isnan(b):
+        ret=ret+b
+    if not math.isnan(c):
+        ret=ret+c
+    if not math.isnan(d):
+        ret=ret+d
+    return ret
+    
+def bilinearTraceInterp(dist0,dist1,cornerTraces):
+    '''
+    dist0,dist1 are the two normalised (ie in range 0,1) distances fromj the corners
+    cornerTraces are the four traces (just data) at these corner points
+    '''
+    ret=[]
+    for i in range(0,len(cornerTraces)):
+        vals=[cornerTraces[i][0],cornerTraces[i][1],cornerTraces[i][2],cornerTraces[i][3]]
+        ret.append(bilinearValueInterp(vals,dist0,dist1))
+    return ret
+
 def compareFloatLists(l0,l1):
     '''
     Compare two float lists that element wise are within the tolerance
@@ -54,9 +79,10 @@ def compareFloatLists(l0,l1):
         return False
     for i in range(0,len(l0)):
         if math.isnan(l0[i]) or math.isnan(l1[i]):
-            if not math.isnan(l0[i]) and math.isnan(l1[i]):
+            if not (math.isnan(l0[i]) and math.isnan(l1[i])):
                 return False
-        if abs(l0[i]-l1[i])>FLOAT_COMP_TOL:
+        elif abs(l0[i]-l1[i])>FLOAT_COMP_TOL:
+            #print("Failed at {} {} {}".format(i,l0[i],l1[i]))
             return False
     return True
 
@@ -108,9 +134,9 @@ def makeCreationGeometryFromFullGeometry(geometry):
         b'MinXline': geometry[b'MinXline'],
         b'MaxXline': geometry[b'MaxXline'],
         b'XlineInc': geometry[b'XlineInc'],
-        b'MinZ': geometry[b'MinZ'],
-        b'MaxZ': geometry[b'MaxZ'],
-        b'ZInc': geometry[b'ZInc'],
+        b'MinZ': float(geometry[b'MinZ']),
+        b'MaxZ': float(geometry[b'MaxZ']),
+        b'ZInc': float(geometry[b'ZInc']),
         b'X0': geometry[b'X0'],
         b'Y0': geometry[b'Y0'],
         b'X1':geometry[ b'X1'],
@@ -119,6 +145,7 @@ def makeCreationGeometryFromFullGeometry(geometry):
         b'Y2': geometry[b'Y2'],
         b'isDepth':geometry[b'isDepth']
         } 
+    
 
 def compareSurfGeometries(geom1,geom2):
        return (geom1[b'SizeI']==geom2[b'SizeI'] and

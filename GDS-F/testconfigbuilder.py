@@ -64,6 +64,10 @@ class TestConfigBuilder:
             import bootstrapped_testconfig
             self.__testConfig=bootstrapped_testconfig.BootstrappedTestConfig()
             bootstrapped_testconfig.initModule(self.__geodatasyncFn)
+        elif self.__configType=="simple":
+            import simple_testconfig
+            self.__testConfig=simple_testconfig.SimpleTestConfig()
+            
            
     def getFunctions(self):
         return self.__geodatasyncFn,self.__idComparisonFn

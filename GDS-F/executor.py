@@ -22,7 +22,7 @@ class TestExecutor:
         parser=argparse.ArgumentParser(description="Run GDSAutoTests")
         parser.add_argument('-c','--client', choices=['python','matlab'],default="python")
         parser.add_argument('-s','--server', choices=["petrel"],default="petrel")
-        parser.add_argument('-t','--type', choices=["blank","bootstrapped"],default="blank")
+        parser.add_argument('-t','--type', choices=["blank","bootstrapped","simple"],default="blank")
         parser.add_argument('-p','--port',type=int)
         args=parser.parse_args()
         try:    
