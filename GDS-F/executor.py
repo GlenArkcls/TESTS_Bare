@@ -24,7 +24,10 @@ class TestExecutor:
         parser.add_argument('-s','--server', choices=["petrel"],default="petrel")
         parser.add_argument('-t','--type', choices=["blank","bootstrapped","simple"],default="blank")
         parser.add_argument('-p','--port',type=int)
+        parser.add_argument('-w','--wait',action="store_true",default=False)
         args=parser.parse_args()
+        if args.wait:
+            input("Hit enter to continue.")    
         try:    
             #Create the configuration
             configBuilder=TestConfigBuilder(args.client,args.server,args.type,args.port)
