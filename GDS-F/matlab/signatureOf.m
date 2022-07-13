@@ -72,6 +72,8 @@ switch fnName
         sig=["id","i32","i32","i32","i32","d","d"];
     case "get3DSeisTracesInXl"
         sig=["id","i32","i32","d","d"];
+    case "get3DSeisTracesTransect"
+        sig=["id","d","d","d","d","d","d","i32"];
     case "getXYFromInlineCrossline"
         sig=["id","[d","[d"];
     case "getInlineCrosslineFromXY"
@@ -91,6 +93,8 @@ switch fnName
     case "put2DSeisTraces"
         sig=["id","[[s"];
         %sig=[GSOType.tnVStr8,GSOType.tnVFloat];
+    case "get2DSeisDataRange"
+        sig=["id"];
     case "get2DSeisTracesAll"
         sig=["id"];
         %sig=[GSOType.tnVStr8];
@@ -153,6 +157,12 @@ switch fnName
         sig=["id","i32","i32","i32","i32"];
     case "put3DHorzPropValuesSpec"
         sig=["id","[s","[d","[d"];
+    case "get3DHorzDataRange"
+        sig=["id"];
+    case "get3DHorzPropDataRange"
+        sig=["id"];
+    case "getSeismicValsFromHorizon"
+        sig=["id","id","i32","i32","i32","i32","d","d"];
     case "createPointSet"
         sig=["[c","id"];
     case "putPointSetData"
