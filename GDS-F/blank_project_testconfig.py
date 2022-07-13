@@ -27,6 +27,8 @@ TestSurfGeometry={
 Hopefully a sufficiently irregular geometry - actually its theta is 88 degress, probably make it more
 rotated
 '''
+
+
 DefaultSeisGeometry={
         b'MinInline': 200,
         b'MaxInline': 218,

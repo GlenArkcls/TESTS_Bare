@@ -146,11 +146,11 @@ class SeismicTestCase(unittest.TestCase):
         incZ=geom[b"ZInc"]
         minZ=3.000
         maxZ=3.000+4*incZ
-        print(minZ,maxZ)
+        #print(minZ,maxZ)
         gotData=GeoDataSync("get3DSeisTracesAll",self.server,self.repo.get3DSeismicID(SEISMIC3D_0),minZ,maxZ)
         self.assertFalse(gotData==None or gotData==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesAll"))
         returnedTraces=gotData[b'Traces']
-        print(gotData[b'Z0'])
+        #print(gotData[b'Z0'])
         self.assertTrue(len(returnedTraces)==5,"No. samples mismatch in returned data from get3DSeisTracesAll")
        
         
@@ -319,6 +319,7 @@ class SeismicTestCase(unittest.TestCase):
             traces=GeoDataSync("get3DSeisTracesRange",self.server,seisID,sil,lil,sxl,lxl,minZ,maxZ)
             distIL=(ilxl[0]-sil)/geom.getInlineInc();
             distXL=(ilxl[1]-sxl)/geom.getXlineInc();
+            #print(traces)
             interpTrace=bilinearTraceInterp(distIL,distXL,traces[b'Traces'])
             interpTraces.append(interpTrace)
         reshapedInterps=[[interpTraces[i][j] for i in range(0,len(interpTraces))] for j in range(0,len(interpTraces[0]))]
@@ -335,10 +336,8 @@ class SeismicTestCase(unittest.TestCase):
     def testGet3DSeisTracesTransectCorners(self):
         geom=self.config.get3DSeismicGeometry()
         seisID = self.repo.get3DSeismicID(SEISMIC3D_0)
-        x0 = geom[b'X0']+10
+        x0 = geom[b'X0']
         y0 = geom[b'Y0']
-        #x1=geom[b'X1']
-        #y1=(geom[b'Y1'])
         x1=geom[b'X1']
         y1=(geom[b'Y1'])
         minZ = geom[b'MinZ']
@@ -353,13 +352,13 @@ class SeismicTestCase(unittest.TestCase):
             interpTraces.append(traces[b'Traces'])
         reshapedInterps=[[interpTraces[i][j] for i in range(0,len(interpTraces))] for j in range(0,len(interpTraces[0]))]
         seisTransect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, x0, y0, x1, y1, minZ, maxZ, numTraces)
-        self.assertFalse(seisTransect==None or seisTransect==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesTransect"))
+        self.assertFalse(seisTransect==None or seisTransect==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesTransect at corners"))
         nTraces = seisTransect[b'NumTraces']
         tracesLength = seisTransect[b'TraceLength']
-        self.assertFalse(nTraces==None or nTraces==0,GDSErr(self.server,"Incorrect no. of Traces from get3DSeisTracesTransect"))
-        self.assertFalse(tracesLength==None or tracesLength==0,GDSErr(self.server,"Incorrect Traces length from get3DSeisTracesTransect"))
+        self.assertFalse(nTraces==None or nTraces==0,GDSErr(self.server,"Incorrect no. of Traces from get3DSeisTracesTransect at corners"))
+        self.assertFalse(tracesLength==None or tracesLength==0,GDSErr(self.server,"Incorrect Traces length from get3DSeisTracesTransect at corners"))
         for i in range(0,tracesLength):
-                self.assertTrue(compareFloatLists(seisTransect[b'Traces'][i],reshapedInterps[i]),"get3DSeisTracesTransect data values do not match")
+                self.assertTrue(compareFloatLists(seisTransect[b'Traces'][i],reshapedInterps[i]),"get3DSeisTracesTransect at corners data values do not match")
         
     
     def testGetInlineCrosslineFromXY(self):
