@@ -350,7 +350,7 @@ class SeismicTestCase(unittest.TestCase):
             nxl=round(ilxl[1])
             traces=GeoDataSync("get3DSeisTracesRange",self.server,seisID,nil,nil,nxl,nxl,minZ,maxZ)
             interpTraces.append(traces[b'Traces'])
-        reshapedInterps=[[interpTraces[i][j] for i in range(0,len(interpTraces))] for j in range(0,len(interpTraces[0]))]
+        reshapedInterps=[[interpTraces[i][j][0] for i in range(0,len(interpTraces))] for j in range(0,len(interpTraces[0]))]
         seisTransect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, x0, y0, x1, y1, minZ, maxZ, numTraces)
         self.assertFalse(seisTransect==None or seisTransect==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesTransect at corners"))
         nTraces = seisTransect[b'NumTraces']

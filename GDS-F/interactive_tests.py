@@ -40,12 +40,43 @@ class InteractiveTestCase(unittest.TestCase):
     def testSelectFolder(self):
         master=Tk()
         master.withdraw()
-        messagebox.showinfo("Select Folder Test","Select a folder in PETREL then click OK");
+        messagebox.showinfo("Select Folder Test","Select a folder then click OK");
         folderID=GeoDataSync("getFolderIDSel",self.server)
         self.assertFalse(folderID==0,GDSErr(self.server,"Failed getFolderIDSel"))
         msg="Confirm selected folder is {}".format(str(folderID[0],"utf-8"))
         ret=messagebox.askyesno("Yes|No",msg)
         self.assertTrue(ret,"Wrong folder identified as selected")
+    
+    def testSelectInterpretationCollection(self):
+        master=Tk()
+        master.withdraw()
+        messagebox.showinfo("Select Interpretation Collection Test","Select an interpretation collection then click OK");
+        icID=GeoDataSync("getInterpretationCollectionIDSel",self.server)
+        self.assertFalse(icID==0,GDSErr(self.server,"Failed getInterpretationCollectionIDSel"))
+        msg="Confirm selected interpretation collection is {}".format(str(icID[0],"utf-8"))
+        ret=messagebox.askyesno("Yes|No",msg)
+        self.assertTrue(ret,"Wrong interpretation collection identified as selected")
+    
+    def testSelectSeismicCollection(self):  
+        master=Tk()
+        master.withdraw()
+        messagebox.showinfo("Select Seismic Collection Test","Select a seismic collection then click OK");
+        seisID=GeoDataSync("getSeisColIDSel",self.server)
+        print(seisID)
+        self.assertFalse(seisID==0,GDSErr(self.server,"Failed get3DSeisColIDSel"))
+        msg="Confirm selected seismic collection is {}".format(str(seisID[0],"utf-8"))
+        ret=messagebox.askyesno("Yes|No",msg)
+        self.assertTrue(ret,"Wrong Seismic Collection identified as selected")
+        
+    def testSelect3DSeismic(self):  
+        master=Tk()
+        master.withdraw()
+        messagebox.showinfo("Select 3D Seismic Test","Select a 3D seismic then click OK");
+        seisID=GeoDataSync("get3DSeisIDSel",self.server)
+        self.assertFalse(seisID==0,GDSErr(self.server,"Failed get3DSeisIDSel"))
+        msg="Confirm selected seismic is {}".format(str(seisID[0],"utf-8"))
+        ret=messagebox.askyesno("Yes|No",msg)
+        self.assertTrue(ret,"Wrong 3D Seismic identified as selected")
         
     def testSelect3DSeisIntersection(self):
         master=Tk()
@@ -191,19 +222,22 @@ class InteractiveTestCase(unittest.TestCase):
     def getTestSuite(server,repo,config):
        suite=unittest.TestSuite()
        #suite.addTest(InteractiveTestCase(server,repo,config,"testSelectFolder"))
-       #suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DSeisIntersection"))
-       #suite.addTest(InteractiveTestCase(server,repo,config,"testSelect2DSeisLine"))
-       #suite.addTest(InteractiveTestCase(server,repo,config,"testSelectSurface"))
-       #suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DHorizon"))
-       #suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DHorizonProperty"))
-       #suite.addTest(InteractiveTestCase(server,repo,config,"testSelect2DHorizon"))
-       #suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWell"))
-       #suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWellCollection"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectLog"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWavelet"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectFault"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectPointSet"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectPolygon"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectInterpretationCollection"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectSeismicCollection"))
+       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DSeismic"))
+       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DSeisIntersection"))
+       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelect2DSeisLine"))
+       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectSurface"))
+       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DHorizon"))
+       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DHorizonProperty"))
+       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelect2DHorizon"))
+       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWell"))
+       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWellCollection"))
+       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectLog"))
+       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWavelet"))
+       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectFault"))
+       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectPointSet"))
+       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectPolygon"))
        return suite
    
 def initModule(geodatasyncFn,idCompFn):

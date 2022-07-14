@@ -20,6 +20,8 @@ end
 % Call the GDS system
 tmpOutput=GeoDataSync(fn,server,args);
 
+
+
 % Now we may need to remap the outputs
 % If we have a cell array that is not 1*N or N*1 we cannot pass that back to
 % Python, so we are going to pack each row into a single cell.
@@ -67,6 +69,9 @@ function [out] = isIDFunction(fnName)
 %isIDFunction returns true of the GDS function returns a single ID
 %  
 out=strcmpi(fnName(1:6),"create") || strcmpi(fnName,"getParentID");
+if ~out
+    out=strcmpi(fnName(end-4:end),"IDSel") && ~strcmpi(fnName(10:15),"Inters");
+end
 end
 
 function ret=isIDField(name)

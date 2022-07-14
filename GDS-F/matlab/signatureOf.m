@@ -223,6 +223,43 @@ switch fnName
         sig=["id","i32","[i32","[d","[d","[d","i32","[i32"];
     case "getPolygonData"
         sig=["id"];
+    %%Interactive functions
+    case "getFolderIDSel"
+        sig=[];
+    case "getSeis3DIntersectionIDSel"
+        sig=[]
+    case "get2DSeisIDSel"
+        sig=[]
+    case "getInterpretationCollectionIDSel"
+        sig=[]
+    case "get3DSeisIDSel"
+        sig=[]
+    case "get3DSeisColIDSel"
+        sig=[]
+    case "getSurfIDSel"
+        sig=[]
+    case "getSurfPropIDSel"
+        sig=[]
+    case "get3DHorzIDSel"
+        sig=[]
+    case "get3DHorzPropIDSel"
+        sig=[]
+    case "get2DHorzIDSel"
+        sig=[]
+    case "getWellIDSel"
+        sig=[]
+    case "getWellCollectionIDSel"
+        sig=[]
+    case "getLogIDSel"
+        sig=[]
+    case "getWaveletIDSel"
+        sig=[]
+    case "getFaultIDSel"
+        sig=[]
+    case "getPointSetIDSel"
+        sig=[]
+    case "getPolygonIDSel"
+        sig=[]
     otherwise
         fprintf("signature for function %s not found.\n",fnName),
         sig=[];

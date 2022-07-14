@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Fri Jun 24 23:00:25 2022
+
+@author: lewthwju
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Thu Mar 17 10:36:27 2022
 
 @author: lewthwju
@@ -8,45 +15,38 @@ import math
 import test_config
 from seismicgeometry import SeismicGeometry
 
-'''
-Ideally we should have unequal spacing
-'''
+
 TestSurfGeometry={
-        b'SizeI': 7,
-        b'SizeJ': 9,
-        b'SpacingI': 23.0,
-        b'SpacingJ': 13.0,
-        b'OriginX': 608271.0,
-        b'OriginY': 6076131.0,
+        b'SizeI': 10,
+        b'SizeJ': 10,
+        b'SpacingI': 25.0,
+        b'SpacingJ': 25.0,
+        b'OriginX': 608000.0,
+        b'OriginY': 6076000.0,
         b'Theta': 0.0,
         b'isDepth': 0
         }
 
 
-'''
-Hopefully a sufficiently irregular geometry - it is rotated actually its theta is 88 degress, probably make it more
-rotated, it is also not orthogonal.
-'''
-
 
 DefaultSeisGeometry={
-        b'MinInline': 200,
-        b'MaxInline': 218,
-        b'InlineInc': 2,
-        b'MinXline': 400,
-        b'MaxXline': 433,
-        b'XlineInc': 3,
-        b'X0': 608271.29,
-        b'Y0': 6076131.66,
-        b'X1': 608406.363659533,
-        b'Y1': 6076218.128075472,
-        b'X2': 608264.37,
-        b'Y2': 6076377.14,
-        b'MinZ': 2.014,
-        b'MaxZ': 3.858,
-        b'ZInc': 0.004,
-        b'InlineSep': 23.687,
-        b'XlineSep': 22.325228807,
+        b'MinInline': 0,#200,
+        b'MaxInline': 20,#220,
+        b'InlineInc': 1,
+        b'MinXline': 0,#400,
+        b'MaxXline': 20,#420,
+        b'XlineInc': 1,
+        b'X0': 0.0,#608000.0,
+        b'Y0': 0.0,#6076000.0,
+        b'X1': 200.0,#608500.0,
+        b'Y1': 200.0,#6076500.0,
+        b'X2': 0.0,#608000.0,
+        b'Y2': 200.0,#6076500.0,
+        b'MinZ': 0.000,
+        b'MaxZ': 0.1,#1.000,#0.800,
+        b'ZInc': 0.01,#0.005,
+        b'InlineSep': 10.0,#25.0,
+        b'XlineSep': 10.0,#25.0,
         b'isDepth': 0
         }
 
@@ -91,7 +91,7 @@ DefaultDepth2DSeisGeometry={
         b'ZInc':5.,
         }
 
-class BlankProjectTestConfig(test_config.TestConfig):
+class SimpleTestConfig(test_config.TestConfig):
     def __init__(self):
         pass
         
@@ -139,13 +139,13 @@ class BlankProjectTestConfig(test_config.TestConfig):
         return [x +0.1 for x in range(0,self.getSurfGeometry()[b'SizeI']*self.getSurfGeometry()[b'SizeJ'])]
     
     def getHorizonVals(self,name=None):
-       geom=self.get3DSeismicGeometry(False)
-       inlines=(geom.getMaxInline()-geom.getMinInline())/geom.getInlineInc()+1
-       xlines=(geom.getMaxXline()-geom.getMinXline())/geom.getXlineInc()+1
-       minz=geom.getMinZ()
-       maxz=geom.getMaxZ()
-       z0=(minz+maxz)/2
-       return [z0 +0.001*float(il-geom.getMinInline()) -0.001*float(xl-geom.getMinXline()) for il in range(0,int(inlines)) for xl in range(0,int(xlines))]
+        geom=self.get3DSeismicGeometry(False)
+        inlines=(geom.getMaxInline()-geom.getMinInline())/geom.getInlineInc()+1
+        xlines=(geom.getMaxXline()-geom.getMinXline())/geom.getXlineInc()+1
+        minz=geom.getMinZ()
+        maxz=geom.getMaxZ()
+        z0=(minz+maxz)/2
+        return [z0 +0.001*float(il-geom.getMinInline()) -0.001*float(xl-geom.getMinXline()) for il in range(0,int(inlines)) for xl in range(0,int(xlines))]
     
     def getHorizonPropertyVals(self,name=None):
         geom=self.get3DSeismicGeometry(False)
