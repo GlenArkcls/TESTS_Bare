@@ -16,7 +16,7 @@ from functools import partial
 
 '''
 Hopefully a sufficiently irregular geomerty - actually its theta is 88 degress, probably make it more
-rotated
+rotated - used for testing this class only
 '''
 DefaultSeisGeometry={
         b'MinInline': 200,

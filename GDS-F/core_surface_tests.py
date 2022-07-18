@@ -22,6 +22,9 @@ from test_utils import compareFloatLists
 from test_utils import GDSErr 
 from test_utils import IDInList
 
+from surfacegeometry import SurfaceGeometry
+from seismicgeometry import SeismicGeometry
+
 
 from constants import SEISMIC3D_0
 from constants import SURFACE_0
@@ -88,7 +91,7 @@ class SurfaceTestCase(unittest.TestCase):
         seisID=self.repo.get3DSeismicID(SEISMIC3D_0)
         if seisID==None:
             self.skipTest("Required 3D Seismic with asset repository name '{}' not found".format(SEISMIC3D_0))
-        seisGeom=GeoDataSync("get3DSeisGeom",self.server,seisID)
+        seisGeom=SeismicGeometry(GeoDataSync("get3DSeisGeom",self.server,seisID))
         self.assertFalse(seisGeom is None or seisGeom==0,GDSErr(self.server,"Could not get seismic geometry"))
         deltaIL=seisGeom[b'MaxInline']-seisGeom[b'MinInline']
         deltaXL=seisGeom[b'MaxXline']-seisGeom[b'MinXline']
@@ -109,14 +112,33 @@ class SurfaceTestCase(unittest.TestCase):
         maxIline=seisGeom[b'MaxInline']-deltaIL
         minXline=seisGeom[b'MinXline']+deltaXL
         maxXline=seisGeom[b'MaxXline']-deltaXL
-               
+        #print(minIline,maxIline,minXline,maxXline)
+        surfGeom=self.config.getSurfGeometry()
+        sg=SurfaceGeometry(surfGeom)
+        surfVals=self.config.getSurfVals()
+        vals=[]
+        for i in range(0,sg.getSizeI()):
+            for j in range(0,sg.getSizeJ()):
+                utm=sg.transformGridCoord([i,j])
+                ilxl=seisGeom.transformUTM(utm)
+                if ilxl[0]>=minIline and ilxl[0]<=maxIline and ilxl[1]>=minXline and ilxl[1]<=maxXline:
+                    #val=surfVals[i*sg.getSizeJ()+j]
+                    #print(i,j,val,utm,ilxl)
+                    vals.append(surfVals[i*sg.getSizeJ()+j])
+        #print("Vals:",vals,len(vals))
         surfVals=GeoDataSync("getSurfValsRangeIlXl",self.server,surfID,seisID,minIline,maxIline,minXline,maxXline)
+        #print("Inlines:",surfVals[b"Inlines"])
+        #print("XLines:",surfVals[b"Xlines"])
+       # print("XCoortds:",surfVals[b"XCoords"])
+       # print("YCoords:",surfVals[b"YCoords"])
+        #print("SutfVals:",surfVals[b"SurfVals"])
         self.assertFalse(surfVals is None or surfVals==0,GDSErr(self.server,"Failed GDS call to getSurfValsRangeIlXl"))
+        #print(len(surfVals[b'Inlines']))
         for i in range(len(surfVals[b'Inlines'])):
              #with self.subTest(i=i):
-                 self.assertTrue(surfVals[b'Inlines'][i]>=minIline and surfVals[b'Inlines'][i]<=maxIline,"Returned Inline out of given range from getSurfValsRangeIlXl")
-                 self.assertTrue(surfVals[b'Xlines'][i]>=minXline and surfVals[b'Xlines'][i]<=maxXline,"Returned Crossline out of given range from getSurfValsRangeIlXl index {}".format(i))
-        self.assertTrue(compareFloatLists(surfVals[b'SurfVals'],self.config.getSurfVals()))
+                 self.assertTrue(surfVals[b'Inlines'][i]>=minIline and surfVals[b'Inlines'][i]<=maxIline,"Returned Inline out of given range from getSurfValsRangeIlXl {}".format(surfVals[b'Inlines'][i]))
+                 self.assertTrue(surfVals[b'Xlines'][i]>=minXline and surfVals[b'Xlines'][i]<=maxXline,"Returned Crossline out of given range from getSurfValsRangeIlXl index {}".format(surfVals[b'Xlines'][i]))
+        self.assertTrue(compareFloatLists(surfVals[b'SurfVals'],vals),"Mismatched values from getSurfValsRangeIlXl" )
         
     
         

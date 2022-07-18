@@ -18,7 +18,7 @@ TestSurfGeometry={
         b'SpacingJ': 13.0,
         b'OriginX': 608271.0,
         b'OriginY': 6076131.0,
-        b'Theta': 0.0,
+        b'Theta': 0.0,#340.0,
         b'isDepth': 0
         }
 
@@ -136,7 +136,11 @@ class BlankProjectTestConfig(test_config.TestConfig):
            return TestSurfGeometry
     
     def getSurfVals(self,name=None):
-        return [x +0.1 for x in range(0,self.getSurfGeometry()[b'SizeI']*self.getSurfGeometry()[b'SizeJ'])]
+        geom=self.get3DSeismicGeometry(False)
+        minz=geom.getMinZ()
+        maxz=geom.getMaxZ()
+        z0=(minz+maxz)/2
+        return [-z0 -0.001*x for x in range(0,self.getSurfGeometry()[b'SizeI']*self.getSurfGeometry()[b'SizeJ'])]
     
     def getHorizonVals(self,name=None):
        geom=self.get3DSeismicGeometry(False)

@@ -48,6 +48,12 @@ class PointSetTestCase(unittest.TestCase):
             self.skipTest("Required Seismic Collection with asset repository name '{}' not found".format(SEISMIC_COL_0))
         psID=self.repo.createPointSet(POINTSET_0,seisColID)
         self.assertFalse(psID==None or psID==0,GDSErr(self.server,"Failed createPointSet at top level"))
+        
+    def testGetPointSetListAndVerify(self):
+        psIDList=GeoDataSync("getPointSetIDList",self.server)
+        self.assertFalse(psIDList==None or psIDList==0,GDSErr(self.server,"Failed call to getPointSetIDList"))
+        psID=self.repo.getPointSetID(POINTSET_0)
+        self.assertTrue(IDInList(IDComparison,psID,psIDList))
     
     def testPutPointSetData(self):
         psID=self.repo.getPointSetID(POINTSET_0)
@@ -70,6 +76,7 @@ class PointSetTestCase(unittest.TestCase):
     def getTestSuite(server,repo,config):
         suite=unittest.TestSuite()
         suite.addTest(PointSetTestCase(server,repo,config,"testCreatePointSet"))
+        suite.addTest(PointSetTestCase(server,repo,config,"testGetPointSetListAndVerify"))
         suite.addTest(PointSetTestCase(server,repo,config,"testPutPointSetData"))
         suite.addTest(PointSetTestCase(server,repo,config,"testGetPointSetData"))
        

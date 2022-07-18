@@ -29,6 +29,7 @@ from test_utils import bilinearTraceInterp
 from constants import SEISMIC_COL_0
 from constants import SEISMIC_COL_1
 from constants import SEISMIC3D_0
+from constants import SEISMIC3D_1
 from constants import SEISMIC2D_0
 
 GeoDataSync=None
@@ -360,6 +361,21 @@ class SeismicTestCase(unittest.TestCase):
         for i in range(0,tracesLength):
                 self.assertTrue(compareFloatLists(seisTransect[b'Traces'][i],reshapedInterps[i]),"get3DSeisTracesTransect at corners data values do not match")
         
+    def testDelete3DSeismic(self):
+        args=[self.repo.getSeismicCollectionID(SEISMIC_COL_0)]
+        geom=makeCreationGeometryFromFullGeometry(self.config.get3DSeismicGeometry(False))
+        args.extend(list(geom.values()))
+        seisID=self.repo.create3DSeismic(SEISMIC3D_1,*args);
+        self.assertFalse(seisID is None or seisID==0,GDSErr(self.server,"Failed create3DSeismic"))
+        seisColID=self.repo.getSeismicCollectionID(SEISMIC_COL_0)
+        colList=GeoDataSync("get3DSeisIDListCol",self.server,seisColID)
+        seisCol=self.repo.get3DSeismicID(SEISMIC3D_1)
+        self.assertFalse(colList==None or colList==0,GDSErr(self.server,"Failed GDS call to get3DSeisIDListCol"))
+        self.assertTrue(IDInList(IDComparison,seisCol,colList),"Test seismic did not appear in collection list")    
+        success=GeoDataSync("delete3DSeis",self.server,seisID)
+        self.assertFalse(success==None or success==0,GDSErr(self.server,("Failed call to delete3DSeismic")))
+        colList=GeoDataSync("get3DSeisIDListCol",self.server,seisColID)
+        self.assertFalse(IDInList(IDComparison,seisCol,colList),"Deleted seismic still appears in collection list")    
     
     def testGetInlineCrosslineFromXY(self):
         geom=self.config.get3DSeismicGeometry(False)
@@ -526,7 +542,10 @@ class SeismicTestCase(unittest.TestCase):
             with self.subTest(i=i):
                 self.assertTrue(compareFloatLists(traceData[i],lineData[i][0:len(lineData[0])+1:2]))
         
+
         
+   
+       
     
     def getTestSuite(server,repo,config):
        suite=unittest.TestSuite()
@@ -550,6 +569,7 @@ class SeismicTestCase(unittest.TestCase):
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesInXICrossline"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransect"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransectCorners"))
+       suite.addTest(SeismicTestCase(server,repo,config,"testDelete3DSeismic"))
        
        suite.addTest(SeismicTestCase(server,repo,config,"testGetInlineCrosslineFromXY"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGetInlineCrosslineFromXYExact"))
@@ -565,6 +585,7 @@ class SeismicTestCase(unittest.TestCase):
        suite.addTest(SeismicTestCase(server,repo,config,"testGet2DSeisDataRange"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet2DSeisTracesAll"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet2DSeisTracesSpec"))
+       
       
        return suite
             

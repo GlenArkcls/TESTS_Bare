@@ -47,7 +47,13 @@ class WaveletTestCase(unittest.TestCase):
             self.skipTest("Required Seismic Collection with asset repository name '{}' not found".format(SEISMIC_COL_0))
         wlID=self.repo.createWavelet(WAVELET_0,seisColID)
         self.assertFalse(wlID==None or wlID==0,GDSErr(self.server,"Failed createWavelet at top level"))
-    
+        
+    def testGetWaveletListAndVerify(self):
+        wvIDList=GeoDataSync("getWaveletIDList",self.server)
+        self.assertFalse(wvIDList==None or wvIDList==0,GDSErr(self.server,"Failed call to getWaveletIDList"))
+        wvID=self.repo.getWaveletID(WAVELET_0)
+        self.assertTrue(IDInList(IDComparison,wvID,wvIDList),"Failed to find wavelet in list")
+        
     def testPutWaveletData(self):
         wlID=self.repo.getWaveletID(WAVELET_0)
         data=self.config.getWaveletData()
@@ -68,6 +74,7 @@ class WaveletTestCase(unittest.TestCase):
     def getTestSuite(server,repo,config):
         suite=unittest.TestSuite()
         suite.addTest(WaveletTestCase(server,repo,config,"testCreateWavelet"))
+        suite.addTest(WaveletTestCase(server,repo,config,"testGetWaveletListAndVerify"))
         suite.addTest(WaveletTestCase(server,repo,config,"testPutWaveletData"))
         suite.addTest(WaveletTestCase(server,repo,config,"testGetWaveletData"))
        

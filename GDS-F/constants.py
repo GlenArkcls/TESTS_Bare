@@ -27,8 +27,11 @@ HORIZON_PROP_0=b'TestHzProp0'
 POINTSET_0=b"TestPointSet0"
 
 WELL_0=b"TestWell0"
+WELL_COLLECTION_0=b"TestWellCollection0"
 WELL_LOG_0=b"TestLog0"
 WELL_LOG_1=b"TestLog1"
+GLOBAL_LOG_0=b"TestGlobalLog0"
+WELL_MARKER_0=b"TestWellMarker0"
 
 FAULT_0=b"TestFault0"
 

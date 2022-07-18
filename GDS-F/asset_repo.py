@@ -32,6 +32,9 @@ class ObjectType(Enum):
     WELL=12
     WELL_LOG=13
     POLYGON=14
+    WELL_COLLECTION=15
+    GLOBAL_LOG=16
+    WELL_MARKER=17
     
     
     
@@ -53,7 +56,10 @@ class AssetRepository:
                       ObjectType.FOLDER:{},
                       ObjectType.HORIZON_PROPERTY:{},
                       ObjectType.WELL:{},
-                      ObjectType.WELL_LOG:{}
+                      ObjectType.WELL_LOG:{},
+                      ObjectType.WELL_COLLECTION:{},
+                      ObjectType.GLOBAL_LOG:{},
+                      ObjectType.WELL_MARKER:{}
                       }
     
     def initServer(self,server):
@@ -140,6 +146,27 @@ class AssetRepository:
             return 0
         self.objects[ObjectType.WELL_LOG][name]=createdID
         return createdID
+    def createGlobalLog(self,name):
+        success,createdID=self.createObject("createGlobalLog",name)
+        if createdID==None or createdID==0:
+            #print(GeoDataSync("getLastError",self.server))
+            return 0
+        self.objects[ObjectType.GLOBAL_LOG][name]=createdID
+        return createdID
+    def createWellMarker(self,wellID,name,*args):
+        createdID=GeoDataSync("createWellMarker",self.server,wellID,name,*args)
+        if createdID==None or createdID==0:
+            #print(GeoDataSync("getLastError",self.server))
+            return 0
+        self.objects[ObjectType.WELL_MARKER][name]=createdID
+        return createdID
+    def createWellCollection(self,name):
+        createdID=GeoDataSync("createWellCollection",self.server,name)
+        if createdID==None or createdID==0:
+            #print(GeoDataSync("getLastError",self.server))
+            return 0
+        self.objects[ObjectType.WELL_COLLECTION][name]=createdID
+        return createdID
     def createFault(self,name,*args):
         success,id=self.createObject("createFault",name,*args)
         if success:
@@ -181,10 +208,17 @@ class AssetRepository:
         return self.objects[ObjectType.WELL].get(name)
     def getWellLogID(self,name):
         return self.objects[ObjectType.WELL_LOG].get(name)
+    def getGlobalLogID(self,name):
+        return self.objects[ObjectType.GLOBAL_LOG].get(name)
+    def getWellMarkerID(self,name):
+        return self.objects[ObjectType.WELL_MARKER].get(name)
+    def getWellCollectionID(self,name):
+        return self.objects[ObjectType.WELL_COLLECTION].get(name)
     def getFaultID(self,name):
         return self.objects[ObjectType.FAULT].get(name)
     def getPolygonID(self,name):
         return self.objects[ObjectType.POLYGON].get(name)
+    
     
     
     '''
@@ -214,6 +248,12 @@ class AssetRepository:
         self.objects[ObjectType.WELL][name]=ident
     def putWellLogID(self,name,ident):
         self.objects[ObjectType.WELL_LOG][name]=ident
+    def putGlobalLogID(self,name,ident):
+        self.objects[ObjectType.GLOBAL_LOG][name]=ident
+    def putwELLmARKERID(self,name,ident):
+        self.objects[ObjectType.WELL_MARKER][name]=ident
+    def putWellCollectionID(self,name,ident):
+        self.objects[ObjectType.WELL_COLLECTION][name]=ident
     def putFaultID(self,name,ident):
         self.objects[ObjectType.FAULT][name]=ident
     def putPolygonID(self,name,ident):

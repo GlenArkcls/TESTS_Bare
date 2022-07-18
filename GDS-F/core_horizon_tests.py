@@ -249,7 +249,7 @@ class HorizonTestCase(unittest.TestCase):
         self.assertFalse(ret==0,GDSErr(self.server,"Failed call to getSeismicValsFromHorizon"))
         ret1=GeoDataSync("get3DHorzValsInXl",self.server,hzID,miline,miline+geom.getInlineInc(),mxline,mxline+geom.getXlineInc())
         #print(ret)
-        #,"d"print(ret1)
+        #print(ret1)
         minz=min(ret1[b'HorzVals'])
         maxz=max(ret1[b'HorzVals'])
         minix=(minz-geom.getMinZ())/geom.getZInc()

@@ -178,6 +178,16 @@ class InteractiveTestCase(unittest.TestCase):
         ret=messagebox.askyesno("Yes|No",msg)
         self.assertTrue(ret,"Wrong well log identified as selected")   
         
+    def testSelectGlobalLog(self):
+        master=Tk()
+        master.withdraw()
+        messagebox.showinfo("Select Global Log Test","Select a Global well log");
+        logID=GeoDataSync("getGlobalLogIDSel",self.server)
+        self.assertFalse(logID==0,GDSErr(self.server,"Failed getLogIDSel"))
+        msg="Confirm selected global well log is {}".format(str(logID[0],"utf-8"))
+        ret=messagebox.askyesno("Yes|No",msg)
+        self.assertTrue(ret,"Wrong global well log identified as selected")   
+        
         
     def testSelectWavelet(self):
         master=Tk()
@@ -221,23 +231,24 @@ class InteractiveTestCase(unittest.TestCase):
 
     def getTestSuite(server,repo,config):
        suite=unittest.TestSuite()
-       #suite.addTest(InteractiveTestCase(server,repo,config,"testSelectFolder"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectFolder"))
        suite.addTest(InteractiveTestCase(server,repo,config,"testSelectInterpretationCollection"))
        suite.addTest(InteractiveTestCase(server,repo,config,"testSelectSeismicCollection"))
-       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DSeismic"))
-       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DSeisIntersection"))
-       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelect2DSeisLine"))
-       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectSurface"))
-       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DHorizon"))
-       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DHorizonProperty"))
-       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelect2DHorizon"))
-       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWell"))
-       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWellCollection"))
-       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectLog"))
-       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWavelet"))
-       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectFault"))
-       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectPointSet"))
-       # suite.addTest(InteractiveTestCase(server,repo,config,"testSelectPolygon"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectGlobalLog"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DSeismic"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DSeisIntersection"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect2DSeisLine"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectSurface"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DHorizon"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DHorizonProperty"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect2DHorizon"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWell"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWellCollection"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectLog"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWavelet"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectFault"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectPointSet"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectPolygon"))
        return suite
    
 def initModule(geodatasyncFn,idCompFn):
