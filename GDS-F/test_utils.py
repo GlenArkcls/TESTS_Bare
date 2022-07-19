@@ -17,7 +17,7 @@ def IDInList(IDComp,theID,theList):
     '''Searches for a given ID in a list using
     the given IDComp function as an equality check
     '''
-    if theList==None:
+    if theList==None or theID==None:
         return False
     matches=[x for x in theList if IDComp(theID,x)]
     return len(matches)>0

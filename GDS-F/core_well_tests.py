@@ -174,15 +174,13 @@ class WellTestCase(unittest.TestCase):
     def testGetGlobalLogListAndVerify(self):
         logID=self.repo.getGlobalLogID(GLOBAL_LOG_0)
         logIDList=GeoDataSync("getLogIDListGlobal",self.server)
-        #print(logID)
-        #print(logIDList)
         self.assertFalse(logIDList==None or logIDList==0,GDSErr(self.server,"Failed call to getLogIDListGlobal"))
         self.assertTrue(IDInList(IDComparison,logID,logIDList[b"LogIDList"]),"Global Log ID not found in ID list")
         
     def testCreateWellMarker(self):
         wellID=self.repo.getWellID(WELL_0)
         args=[500.0,0]
-        mkID=self.repo.createWellMarker(wellID,WELL_MARKER_0,args)
+        mkID=self.repo.createWellMarker(wellID,WELL_MARKER_0,*args)
         self.assertFalse(mkID==None or mkID==0,GDSErr(self.server,"Failed call to createWellMarker"))
         
     def testGetWellMarkersAndVerify(self):
@@ -190,7 +188,7 @@ class WellTestCase(unittest.TestCase):
         mkID=self.repo.getWellMarkerID(WELL_MARKER_0)
         mkIDList=GeoDataSync("getWellMarkers",self.server,wellID)
         self.assertFalse(mkIDList==None or mkIDList==0,GDSErr(self.server,"Failed call to getWellMarkers"))
-        self.assertTrue(IDInList(IDComparison,mkID,mkIDList),"Failed to find marker ID in list")
+        self.assertTrue(IDInList(IDComparison,mkID,mkIDList[b'MarkerIDs']),"Failed to find marker ID in list")
         
     def getTestSuite(server,repo,config):
         suite=unittest.TestSuite()

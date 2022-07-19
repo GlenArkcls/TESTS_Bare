@@ -26,6 +26,7 @@ import unittest
 from executor import TestExecutor
 from test_utils import GDSErr 
 from test_utils import compareFloatLists
+from test_utils import IDInList
 from constants import FAULT_0
 
 
@@ -45,6 +46,12 @@ class FaultTestCase(unittest.TestCase):
     def testCreateFault(self):
         faultID=self.repo.createFault(FAULT_0,0)
         self.assertFalse(faultID is None or faultID==0,GDSErr(self.server,"Failed createFault"))
+        
+    def testGetFaultListAndVerify(self):
+        faultID=self.repo.getFaultID(FAULT_0)
+        faultIDList=GeoDataSync("getFaultIDList",self.server)
+        self.assertFalse(faultIDList==None or faultIDList==0,GDSErr(self.server,"Failed call to getFaultIDList"))
+        self.assertTrue(IDInList(IDComparison,faultID,faultIDList),"Failed to find fault in fault list")
         
     def testPutFaultData(self):
         faultID=self.repo.getFaultID(FAULT_0)
@@ -68,6 +75,7 @@ class FaultTestCase(unittest.TestCase):
     def getTestSuite(server,repo,config):
         suite=unittest.TestSuite()
         suite.addTest(FaultTestCase(server,repo,config,"testCreateFault"))
+        suite.addTest(FaultTestCase(server,repo,config,"testGetFaultListAndVerify"))
         suite.addTest(FaultTestCase(server,repo,config,"testPutFaultData"))
         suite.addTest(FaultTestCase(server,repo,config,"testGetFaultGeom"))
         
