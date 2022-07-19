@@ -74,6 +74,8 @@ switch fnName
         sig=["id","i32","i32","d","d"];
     case "get3DSeisTracesTransect"
         sig=["id","d","d","d","d","d","d","i32"];
+    case "delete3DSeis"
+        sig=["id"];
     case "getXYFromInlineCrossline"
         sig=["id","[d","[d"];
     case "getInlineCrosslineFromXY"
@@ -171,6 +173,8 @@ switch fnName
         sig=["id"];
 	case "createWellRoot"
         sig=[];
+    case "createWellCollection"
+        sig=["[c"];
     case "getWellCollectionIDList"
         sig=[];
     case "getWellIDList"
@@ -189,6 +193,10 @@ switch fnName
         sig=["id"];
 	case "createLog"
         sig=["id","[c"];
+    case "createGlobalLog"
+        sig=["[c"];
+    case "getLogIDListGlobal"
+        sig=[];
 	case "putLogData"
         sig=["id","[s","d","d"];
     case "getLogData"
@@ -198,6 +206,10 @@ switch fnName
 	case "getWellTrajectory"
         sig=["id"];
 	case "getWellData"
+        sig=["id"];
+    case "createWellMarker"
+        sig=["id","[c","d","i32"];
+    case "getWellMarkers"
         sig=["id"];
     case "getFaultIDList"
         sig=[];
@@ -251,6 +263,8 @@ switch fnName
     case "getWellCollectionIDSel"
         sig=[]
     case "getLogIDSel"
+        sig=[]
+    case "getGlobalLogIDSel"
         sig=[]
     case "getWaveletIDSel"
         sig=[]

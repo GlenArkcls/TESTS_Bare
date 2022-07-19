@@ -136,8 +136,15 @@ def translateOutputDict(input):
         elif type(v) is str:
             v=stringToBytes(v)
         #Unpack these arrays-currently packaged as nested lists
-        if k in ["Inlines","Xlines","XCoords","YCoords","ZCoords","SurfVals","HorzVals","Values","Data","Points"]:
-            if not v is None and len(v)>0:
+        if k in ["Inlines","Xlines","XCoords","YCoords","ZCoords","SurfVals","HorzVals","Values","Data","Points","SeismicVals"]:
+            '''These should all be lists. If there is one value only
+            say v, it just comers as 'v' so we have to list it i.e. v -> [v]
+            On the other hand if there is more than one there is extra list wrapping ie [[x,y,z]] rather than [x,y,z]
+            so we have to take a layer of list off: v-> v[0]
+            '''
+            if not v is None and not type(v) is list:
+                v=[v]
+            elif not v is None and len(v)>0:
                 v=v[0]
         #LogVals can appear in two contexts and needs this messy handling
         if k in ["LogVals"]:
