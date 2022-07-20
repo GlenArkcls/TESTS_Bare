@@ -139,6 +139,8 @@ switch fnName
         sig=[];
     case "create3DHorz"
         sig=["[c","i32","id","id"];
+    case "create3DHorzBy3DVolume"
+        sig=["[c","i32","id","id"];
     case "get3DHorzGeom"
         sig=["id"];
     case "put3DHorzValues"
@@ -151,6 +153,8 @@ switch fnName
         sig=["id","[s","[d","[d"];
     case "create3DHorzProp"
         sig=["id","[c"];
+    case "get3DHorzPropIDList"
+        sig=["id"];
     case "put3DHorzPropValues"
         sig=["id","[s"];
     case "get3DHorzPropVals"

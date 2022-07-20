@@ -22,6 +22,7 @@ from executor import TestExecutor
 
 from test_utils import GDSErr 
 from test_utils import compareFloatLists
+from test_utils import IDInList
 
 
 from constants import HORIZON_0
@@ -44,9 +45,7 @@ class HorizonTestCase(unittest.TestCase):
         self.config=config
         self.repo=repo
 
-    def testGet3DHorzIDList(self):
-        hzIDList=GeoDataSync("get3DHorzIDList",self.server)
-        self.assertFalse(hzIDList==None or hzIDList==0,GDSErr(self.server,"Failed call to get3DHorzIDList"))
+    
     
     def testCreate3DHorizon(self):
         seisColID=self.repo.getSeismicCollectionID(SEISMIC_COL_0)
@@ -66,8 +65,16 @@ class HorizonTestCase(unittest.TestCase):
         if seisID==None:
             self.skipTest("Required Seismic Collection with asset repository name '{}' not found".format("SEISMIC3D_0"))  
         args=[0,seisID]
-        hzID=self.repo.createHorizon(HORIZON_1,*args)
+        hzID=self.repo.createHorizonByVolume(HORIZON_1,*args)
         self.assertFalse(hzID==None or hzID==0,GDSErr(self.server,"Failed createHorizonBy3DVolume at top level"))
+        
+    def testGet3DHorzIDListAndVerify(self):
+        hzIDList=GeoDataSync("get3DHorzIDList",self.server)
+        self.assertFalse(hzIDList==None or hzIDList==0,GDSErr(self.server,"Failed call to get3DHorzIDList"))
+        hz0ID=self.repo.getHorizonID(HORIZON_0)
+        hz1ID=self.repo.getHorizonID(HORIZON_1)
+        self.assertTrue(IDInList(IDComparison,hz0ID,hzIDList),"Failed to find horizon in list")
+        self.assertTrue(IDInList(IDComparison,hz1ID,hzIDList),"Failed to find horizon in list")
     
     def testGet3DHorzGeometry(self):
         hzID=self.repo.getHorizonID(HORIZON_0)
@@ -156,6 +163,13 @@ class HorizonTestCase(unittest.TestCase):
         hzID=self.repo.getHorizonID(HORIZON_0)
         ret=self.repo.createHorizonProperty(hzID,HORIZON_PROP_0)
         self.assertFalse(ret is None or ret==0,GDSErr(self.server,"Failed call to create3DHorzProp"))
+        
+    def testGet3DHorizonPropertyListAndVerify(self):
+        hzPropID=self.repo.getHorizonPropertyID(HORIZON_PROP_0)
+        hzID=self.repo.getHorizonID(HORIZON_0)
+        propList=GeoDataSync("get3DHorzPropIDList",self.server,hzID)
+        self.assertFalse(propList==None or propList==0,GDSErr(self.server,"Failed call to get3DHorzPropIDList"))
+        self.assertTrue(IDInList(IDComparison,hzPropID,propList[b"HorzPropIDList"]),GDSErr(self.server,"Failed to find property ID in property list"))
 
         
     def testPut3DHorzPropValues(self):
@@ -280,7 +294,8 @@ class HorizonTestCase(unittest.TestCase):
     def getTestSuite(server,repo,config):
         suite=unittest.TestSuite()
         suite.addTest(HorizonTestCase(server,repo,config,"testCreate3DHorizon"))
-        suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzIDList"))
+        suite.addTest(HorizonTestCase(server,repo,config,"testCreate3DHorizonBy3DVolume"))
+        suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzIDListAndVerify"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzGeometry"))
         suite.addTest(HorizonTestCase(server,repo,config,"testPut3DHorzValues"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzDataRange")) 
@@ -288,6 +303,7 @@ class HorizonTestCase(unittest.TestCase):
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzValsInXl"))
         suite.addTest(HorizonTestCase(server,repo,config,"testPut3DHorzValuesSpec"))
         suite.addTest(HorizonTestCase(server,repo,config,"testCreate3DHorizonProperty"))
+        suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorizonPropertyListAndVerify"))
         suite.addTest(HorizonTestCase(server,repo,config,"testPut3DHorzPropValues"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzPropDataRange"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzPropVals"))
