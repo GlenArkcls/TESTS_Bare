@@ -28,6 +28,7 @@ from constants import WELL_0
 from constants import WELL_COLLECTION_0
 from constants import WELL_LOG_0
 from constants import WELL_LOG_1
+from constants import WELL_LOG_2
 from constants import GLOBAL_LOG_0
 from constants import WELL_MARKER_0
 
@@ -85,6 +86,8 @@ class WellTestCase(unittest.TestCase):
         self.assertFalse(logID is None or logID==0,GDSErr(self.server,"Failed createLog"))
         logID=self.repo.createWellLog(wellID,WELL_LOG_1)
         self.assertFalse(logID is None or logID==0,GDSErr(self.server,"Failed createLog"))
+        logID=self.repo.createWellLog(wellID,WELL_LOG_2)
+        self.assertFalse(logID is None or logID==0,GDSErr(self.server,"Failed createLog"))
         
     def testGetLogListAndVerify(self):
         wellID=self.repo.getWellID(WELL_0)
@@ -92,9 +95,11 @@ class WellTestCase(unittest.TestCase):
         self.assertFalse(logIDList is None or logIDList==0,GDSErr(self.server,"Failed getLogIDList"))
         log0ID=self.repo.getWellLogID(WELL_LOG_0)
         log1ID=self.repo.getWellLogID(WELL_LOG_1)
+        log2ID=self.repo.getWellLogID(WELL_LOG_2)
         self.assertTrue(IDComparison(wellID,logIDList[b"WellID"]),"Incorrect wellID from getLogIDList")
         self.assertTrue(IDInList(IDComparison,log0ID,logIDList[b"LogIDList"]),"Created log not on list")
         self.assertTrue(IDInList(IDComparison,log1ID,logIDList[b"LogIDList"]),"Created log not on list")
+        self.assertTrue(IDInList(IDComparison,log2ID,logIDList[b"LogIDList"]),"Created log not on list")
         
         
     def testPutLogData(self):
@@ -107,6 +112,7 @@ class WellTestCase(unittest.TestCase):
         success=GeoDataSync("putLogData",self.server,logID,log["Values"],log["Start"],log["Interval"])
         self.assertFalse(success==0,GDSErr(self.server,"Failed putLogData"))
         
+      
     def testGetLogDataRange(self):
         logID=self.repo.getWellLogID(WELL_LOG_0)
         log=self.config.getWellLogData(0)
@@ -128,6 +134,20 @@ class WellTestCase(unittest.TestCase):
         logData=GeoDataSync("getLogData",self.server,logID)
         self.assertFalse(logData is None or logData==0,GDSErr(self.server,"Failed getLogData"))
         self.assertTrue(compareFloatLists(log["Values"],logData[b"LogVals"]))
+        
+    def testPutLogDataExplicit(self):
+        logID=self.repo.getWellLogID(WELL_LOG_2)
+        log=self.config.getWellLogData(2)
+        start=log["Start"]
+        intr=log["Interval"]
+        nvals=len(log["Values"])
+        depths=[float(start) + i*intr for i in range(0,nvals)]
+        success=GeoDataSync("putLogDataExplicit",self.server,logID,depths,log["Values"])
+        self.assertFalse(success==0 or success==None,GDSErr(self.server,"Failed putLogDataExplicit"))
+        logData=GeoDataSync("getLogData",self.server,logID)
+        self.assertFalse(logData is None or logData==0,GDSErr(self.server,"Failed getLogData"))
+        self.assertTrue(compareFloatLists(log["Values"],logData[b"LogVals"]))
+       
         
     def testGetWellGeom(self):
         wellID=self.repo.getWellID(WELL_0)
@@ -203,6 +223,7 @@ class WellTestCase(unittest.TestCase):
         suite.addTest(WellTestCase(server,repo,config,"testGetLogListAndVerify"))
         suite.addTest(WellTestCase(server,repo,config,"testPutLogData"))
         suite.addTest(WellTestCase(server,repo,config,"testGetLogData"))
+        suite.addTest(WellTestCase(server,repo,config,"testPutLogDataExplicit"))
         suite.addTest(WellTestCase(server,repo,config,"testGetWellGeom"))
         suite.addTest(WellTestCase(server,repo,config,"testGetWellTrajectory"))
         suite.addTest(WellTestCase(server,repo,config,"testGetWellData"))

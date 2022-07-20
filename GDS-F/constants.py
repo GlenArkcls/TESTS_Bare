@@ -30,6 +30,7 @@ WELL_0=b"TestWell0"
 WELL_COLLECTION_0=b"TestWellCollection0"
 WELL_LOG_0=b"TestLog0"
 WELL_LOG_1=b"TestLog1"
+WELL_LOG_2=b"TestLog2"
 GLOBAL_LOG_0=b"TestGlobalLog0"
 WELL_MARKER_0=b"TestWellMarker0"
 

@@ -199,6 +199,8 @@ switch fnName
         sig=[];
 	case "putLogData"
         sig=["id","[s","d","d"];
+    case "putLogDataExplicit"
+        sig=["id","[d","[s"];
     case "getLogData"
         sig=["id"];
 	case "getWellGeom"

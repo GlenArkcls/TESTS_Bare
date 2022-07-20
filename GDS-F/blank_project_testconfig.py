@@ -171,11 +171,17 @@ class BlankProjectTestConfig(test_config.TestConfig):
         return {"X":xcoords,"Y":ycoords,"Z":z,"reftype":reftype,"reflevel":reflevel}
     
     def getWellLogData(self,param=0):
+        start=10.
+        interval=10.
         if param==0:
             logVals=[math.sin(x)*10 for x in range(0,100)]
-        else:
+        elif param==1:
             logVals=[math.cos(x)*10 for x in range(0,100)]
-        return {"Values":logVals,"Start":10.,"Interval":10.}
+        else:
+            logVals=[float(x) for x in range(0,10)]
+            start=15.0
+            interval=5.
+        return {"Values":logVals,"Start":start,"Interval":interval}
     
     
     def getFaultData(self,name=None):
