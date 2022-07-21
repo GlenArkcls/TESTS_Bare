@@ -36,7 +36,7 @@ GeoDataSync=None
 IDComparison=None
 
 
-
+__unittest=True
 
 class HorizonTestCase(unittest.TestCase):
     def __init__(self,server,repo,config,method):
@@ -314,11 +314,13 @@ class HorizonTestCase(unittest.TestCase):
     
     
   
-def initModule(geodatasyncFn,idCompFn):
+def initModule(geodatasyncFn,idCompFn,trace):
     global GeoDataSync
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
+    global __unittest
+    __unittest=not trace
     
 def getTestSuite(server,repo,config):
     return HorizonTestCase.getTestSuite(server, repo, config)

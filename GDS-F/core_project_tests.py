@@ -29,7 +29,7 @@ from constants import FOLDER_1
 GeoDataSync=None
 IDComparison=None
 
-
+__unittest=True
 
 
 class ProjectTestCase(unittest.TestCase):
@@ -138,11 +138,13 @@ class ProjectTestCase(unittest.TestCase):
         return suite
     
 
-def initModule(geodatasyncFn,idCompFn):
+def initModule(geodatasyncFn,idCompFn,trace):
     global GeoDataSync
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
+    global __unittest
+    __unittest=not trace
     
 def getTestSuite(server,repo,config):
     return ProjectTestCase.getTestSuite(server, repo, config)

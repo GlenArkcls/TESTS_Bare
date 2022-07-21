@@ -32,7 +32,7 @@ GeoDataSync=None
 IDComparison=None
  
  
-
+__unittest=True
 
 
 class PointSetTestCase(unittest.TestCase):
@@ -84,11 +84,13 @@ class PointSetTestCase(unittest.TestCase):
     
     
   
-def initModule(geodatasyncFn,idCompFn):
+def initModule(geodatasyncFn,idCompFn,trace):
     global GeoDataSync
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
+    global __unittest
+    __unittest=not trace
     
 def getTestSuite(server,repo,config):
     return PointSetTestCase.getTestSuite(server, repo, config)

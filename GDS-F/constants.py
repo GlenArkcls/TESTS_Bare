@@ -15,7 +15,8 @@ SEISMIC_COL_1=b"SeismicCollection1"
 SEISMIC3D_0=b"Seismic3D0"
 SEISMIC3D_1=b"Seismic3D1"
 SEISMIC2D_0=b"Seismic2D0"
-
+SEISMIC3D_DEPTH0=b"Seismic3DDepth0"
+SEISMIC2D_DEPTH0=b"Seismic2DDepth0"
 
  
 SURFACE_0=b"TestSurface0"

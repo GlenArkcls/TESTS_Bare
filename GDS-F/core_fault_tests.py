@@ -29,10 +29,10 @@ from test_utils import compareFloatLists
 from test_utils import IDInList
 from constants import FAULT_0
 
-
-
 GeoDataSync=None
 IDComparison=None
+
+__unittest=True
 
 class FaultTestCase(unittest.TestCase):
     def __init__(self,server,repo,config,method):
@@ -84,11 +84,13 @@ class FaultTestCase(unittest.TestCase):
         
 
 
-def initModule(geodatasyncFn,idCompFn):
+def initModule(geodatasyncFn,idCompFn,trace):
     global GeoDataSync
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
+    global __unittest
+    __unittest=not trace
     
 def getTestSuite(server,repo,config):
     return FaultTestCase.getTestSuite(server, repo, config)

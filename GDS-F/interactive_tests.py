@@ -251,11 +251,13 @@ class InteractiveTestCase(unittest.TestCase):
        suite.addTest(InteractiveTestCase(server,repo,config,"testSelectPolygon"))
        return suite
    
-def initModule(geodatasyncFn,idCompFn):
+def initModule(geodatasyncFn,idCompFn,trace):
     global GeoDataSync
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
+    global __unittest
+    __unittest=not trace
     
 def getTestSuite(server,repo,config):
     return InteractiveTestCase.getTestSuite(server, repo, config)

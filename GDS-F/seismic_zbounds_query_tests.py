@@ -60,6 +60,8 @@ SEISMIC3D_ZBOUNDS_3=b"SeismicZBounds3"
 GeoDataSync=None
 IDComparison=None
 
+__unittest=True
+
 SeisGeometry={
         b'MinInline': 200,
         b'MaxInline': 201,
@@ -569,11 +571,13 @@ class SeismicZBoundsQueryTestCase(unittest.TestCase):
        return suite
             
 
-def initModule(geodatasyncFn,idCompFn):
+def initModule(geodatasyncFn,idCompFn,trace):
     global GeoDataSync
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
+    global __unittest
+    __unittest=not trace
     
 def getTestSuite(server,repo,config):
     return SeismicZBoundsQueryTestCase.getTestSuite(server, repo, config)

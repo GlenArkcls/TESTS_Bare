@@ -32,7 +32,7 @@ GeoDataSync=None
 
 
 class BootstrappedTestConfig(test_config.TestConfig):
-     def __init__(self,versionInfo):
+     def __init__(self,systemInfo):
          self.__server=None
          self.__repo=None
          self.__geometry3D=None

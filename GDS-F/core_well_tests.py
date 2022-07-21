@@ -32,10 +32,10 @@ from constants import WELL_LOG_2
 from constants import GLOBAL_LOG_0
 from constants import WELL_MARKER_0
 
-
-
 GeoDataSync=None
 IDComparison=None
+
+__unittest=True
 
 class WellTestCase(unittest.TestCase):
     def __init__(self,server,repo,config,method):
@@ -46,7 +46,7 @@ class WellTestCase(unittest.TestCase):
         
     def testCreateWellRoot(self):
         success=GeoDataSync("createWellRoot",self.server)
-        self.assertFalse(success==0,GDSErr(self.server,"Failed createWellRoot"))
+        self.assertFalse(success==None or success==0,GDSErr(self.server,"Failed createWellRoot"))
       
     def testCreateWell(self):
         wellID=self.repo.createWell(WELL_0)
@@ -237,11 +237,13 @@ class WellTestCase(unittest.TestCase):
         
 
 
-def initModule(geodatasyncFn,idCompFn):
+def initModule(geodatasyncFn,idCompFn,trace):
     global GeoDataSync
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
+    global __unittest
+    __unittest=not trace
     
 def getTestSuite(server,repo,config):
     return WellTestCase.getTestSuite(server, repo, config)

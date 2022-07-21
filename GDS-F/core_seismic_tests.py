@@ -30,10 +30,15 @@ from constants import SEISMIC_COL_0
 from constants import SEISMIC_COL_1
 from constants import SEISMIC3D_0
 from constants import SEISMIC3D_1
+from constants import SEISMIC3D_DEPTH0
 from constants import SEISMIC2D_0
+from constants import SEISMIC2D_DEPTH0
 
 GeoDataSync=None
 IDComparison=None
+
+#This flag is set False to show trace output on Fails or errors
+__unittest=True
 
 
 class SeismicTestCase(unittest.TestCase):
@@ -67,7 +72,13 @@ class SeismicTestCase(unittest.TestCase):
         args.extend(list(geom.values()))
         seisID=self.repo.create3DSeismic(SEISMIC3D_0,*args);
         self.assertFalse(seisID is None or seisID==0,GDSErr(self.server,"Failed create3DSeismic"))
-        
+   
+    def testCreate3DSeismicDepth(self):
+        args=[self.repo.getSeismicCollectionID(SEISMIC_COL_0)]
+        geom=makeCreationGeometryFromFullGeometry(self.config.get3DSeismicGeometry(True))
+        args.extend(list(geom.values()))
+        seisID=self.repo.create3DSeismic(SEISMIC3D_DEPTH0,*args);
+        self.assertFalse(seisID is None or seisID==0,GDSErr(self.server,"Failed create3DSeismic using depth"))    
         
     def testGet3DSeisIDList(self):
         colList=GeoDataSync("get3DSeisIDList",self.server)
@@ -76,14 +87,23 @@ class SeismicTestCase(unittest.TestCase):
     def testVerify3DSeismicInCollection(self):
         seisColID=self.repo.getSeismicCollectionID(SEISMIC_COL_0)
         colList=GeoDataSync("get3DSeisIDListCol",self.server,seisColID)
-        seisCol=self.repo.get3DSeismicID(SEISMIC3D_0)
+        seisID=self.repo.get3DSeismicID(SEISMIC3D_0)
+        seisIDDepth=self.repo.get3DSeismicID(SEISMIC3D_DEPTH0)
         self.assertFalse(colList==None or colList==0,GDSErr(self.server,"Failed GDS call to get3DSeisIDListCol"))
-        self.assertTrue(IDInList(IDComparison,seisCol,colList),"Test seismic did not appear in collection list")
+        self.assertTrue(IDInList(IDComparison,seisID,colList),"Test seismic did not appear in collection list")
+        self.assertTrue(IDInList(IDComparison,seisIDDepth,colList),"Test seismic did not appear in collection list")
     
     def testGetGeometry(self):
         seisGeom=GeoDataSync("get3DSeisGeom",self.server,self.repo.get3DSeismicID(SEISMIC3D_0))
         self.assertFalse(seisGeom is None or seisGeom==0,GDSErr(self.server,"Failed GDS call get3DSeisGeom"))
         testGeom=self.config.get3DSeismicGeometry(False)
+        for k in testGeom.keys():
+            self.assertAlmostEqual(seisGeom[k],testGeom[k],4)
+            
+    def testGetGeometryDepth(self):
+        seisGeom=GeoDataSync("get3DSeisGeom",self.server,self.repo.get3DSeismicID(SEISMIC3D_DEPTH0))
+        self.assertFalse(seisGeom is None or seisGeom==0,GDSErr(self.server,"Failed GDS call get3DSeisGeom"))
+        testGeom=self.config.get3DSeismicGeometry(True)
         for k in testGeom.keys():
             self.assertAlmostEqual(seisGeom[k],testGeom[k],4)
         
@@ -150,7 +170,7 @@ class SeismicTestCase(unittest.TestCase):
         self.assertFalse(gotData==None or gotData==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesAll"))
         returnedTraces=gotData[b'Traces']
         #print(gotData[b'Z0'])
-        self.assertTrue(len(returnedTraces)==5,"No. samples mismatch in returned data from get3DSeisTracesAll")
+        self.assertTrue(len(returnedTraces)==5,"Number of samples mismatch in returned data from get3DSeisTracesAll")
        
         
         
@@ -465,6 +485,12 @@ class SeismicTestCase(unittest.TestCase):
         seisID=self.repo.create2DSeismic(SEISMIC2D_0,*args)
         self.assertFalse(seisID is None or seisID==0,GDSErr(self.server,"Failed create2DSeismic"))
     
+    def testCreate2DSeismicDepth(self):
+        geom=self.config.get2DSeismicGeometry(True)
+        args=list(geom.values())
+        args.append(self.repo.getSeismicCollectionID(SEISMIC_COL_1))
+        seisID=self.repo.create2DSeismic(SEISMIC2D_DEPTH0,*args)
+        self.assertFalse(seisID is None or seisID==0,GDSErr(self.server,"Failed create2DSeismic in Depth"))
     '''
     Note the name in the ID comes back with '[Seismic 2D Line]' 
     '''
@@ -472,6 +498,7 @@ class SeismicTestCase(unittest.TestCase):
         seisIDList=GeoDataSync("get2DSeisIDList",self.server)
         self.assertFalse(seisIDList is None or seisIDList==0,GDSErr(self.server,"Failed GDS call to get2DSeisIDList"))
         self.assertTrue(IDInList(IDComparison,self.repo.get2DSeismicID(SEISMIC2D_0),seisIDList),"2D Seismic not found in 2D Seismic ID list")
+        self.assertTrue(IDInList(IDComparison,self.repo.get2DSeismicID(SEISMIC2D_DEPTH0),seisIDList),"2D Seismic not found in 2D Seismic ID list")
     '''
     Note the name in the ID comes back with '[Seismic 2D Line]' appended to it from PETREL
     for this reason we check equality of the droid only
@@ -480,6 +507,7 @@ class SeismicTestCase(unittest.TestCase):
         seisIDList=GeoDataSync("get2DSeisIDListCol",self.server,self.repo.getSeismicCollectionID(SEISMIC_COL_1))
         self.assertFalse(seisIDList==None or seisIDList==0,GDSErr(self.server,"Failed in GDS call to get2DSeisIDListCol"))
         self.assertTrue(IDInList(IDComparison,self.repo.get2DSeismicID(SEISMIC2D_0),seisIDList),"2D Seismic not found in 2D Seismic ID list")
+        self.assertTrue(IDInList(IDComparison,self.repo.get2DSeismicID(SEISMIC2D_DEPTH0),seisIDList),"2D Seismic not found in 2D Seismic ID list")
         
     def testGet2DSeisGeom(self):
         geom=GeoDataSync("get2DSeisGeom",self.server,self.repo.get2DSeismicID(SEISMIC2D_0))
@@ -535,10 +563,6 @@ class SeismicTestCase(unittest.TestCase):
         for i in range(len(traceData)):
             self.assertTrue(compareFloatLists(traceData[i],lineData[i][0:len(lineData[0])+1:2]))
         
-
-        
-   
-       
     
     def getTestSuite(server,repo,config):
        suite=unittest.TestSuite()
@@ -547,10 +571,11 @@ class SeismicTestCase(unittest.TestCase):
        suite.addTest(SeismicTestCase(server,repo,config,"testGetSeisColIDList"))
        suite.addTest(SeismicTestCase(server,repo,config,"testVerifySeismicCollection"))
        suite.addTest(SeismicTestCase(server,repo,config,"testCreate3DSeismic"))
-      
+       suite.addTest(SeismicTestCase(server,repo,config,"testCreate3DSeismicDepth"))
        suite.addTest(SeismicTestCase(server,repo,config,"testVerify3DSeismicInCollection"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisIDList"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGetGeometry"))
+       suite.addTest(SeismicTestCase(server,repo,config,"testGetGeometryDepth"))
        
        suite.addTest(SeismicTestCase(server,repo,config,"testPut3DSeisTraces"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisDataRange"))
@@ -571,6 +596,7 @@ class SeismicTestCase(unittest.TestCase):
        
        suite.addTest(SeismicTestCase(server,repo,config,"testCreateSeismicCollectionFor2D"))
        suite.addTest(SeismicTestCase(server,repo,config,"testCreate2DSeismic"))
+       suite.addTest(SeismicTestCase(server,repo,config,"testCreate2DSeismicDepth"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet2DSeisIDList"))
        suite.addTest(SeismicTestCase(server,repo,config,"testVerify2DSeismicInCollection"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet2DSeisGeom"))
@@ -583,11 +609,13 @@ class SeismicTestCase(unittest.TestCase):
        return suite
             
 
-def initModule(geodatasyncFn,idCompFn):
+def initModule(geodatasyncFn,idCompFn,trace=True):
     global GeoDataSync
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
+    global __unittest
+    __unittest=not trace
     
 def getTestSuite(server,repo,config):
     return SeismicTestCase.getTestSuite(server, repo, config)

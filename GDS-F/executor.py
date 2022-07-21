@@ -25,6 +25,7 @@ class TestExecutor:
         parser.add_argument('-t','--type', choices=["blank","bootstrapped","simple"],default="blank")
         parser.add_argument('-p','--port',type=int)
         parser.add_argument('-w','--wait',action="store_true",default=False)
+        parser.add_argument('--trace',action="store_true",default=False)
         args=parser.parse_args()
         if args.wait:
             input("Hit enter to continue.")    
@@ -34,7 +35,7 @@ class TestExecutor:
             configBuilder.setup()
             #grab the functions and initialise the module
             geodatasyncFn,idCompFn=configBuilder.getFunctions()
-            self.__initModule(geodatasyncFn,idCompFn)
+            self.__initModule(geodatasyncFn,idCompFn,args.trace)
             success,server,errmsg=configBuilder.getServer()
           
             if success:

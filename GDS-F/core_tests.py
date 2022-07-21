@@ -28,16 +28,16 @@ import core_polygon_tests
 
 
 
-def initModule(geodatasyncFn,idCompFn):
-    core_seismic_tests.initModule(geodatasyncFn, idCompFn)
-    core_surface_tests.initModule(geodatasyncFn, idCompFn)
-    core_project_tests.initModule(geodatasyncFn, idCompFn)
-    core_horizon_tests.initModule(geodatasyncFn, idCompFn)
-    core_pointset_tests.initModule(geodatasyncFn, idCompFn)
-    core_well_tests.initModule(geodatasyncFn, idCompFn)
-    core_fault_tests.initModule(geodatasyncFn, idCompFn)
-    core_wavelet_tests.initModule(geodatasyncFn, idCompFn)
-    core_polygon_tests.initModule(geodatasyncFn, idCompFn)
+def initModule(geodatasyncFn,idCompFn,trace):
+    core_seismic_tests.initModule(geodatasyncFn, idCompFn,trace)
+    core_surface_tests.initModule(geodatasyncFn, idCompFn,trace)
+    core_project_tests.initModule(geodatasyncFn, idCompFn,trace)
+    core_horizon_tests.initModule(geodatasyncFn, idCompFn,trace)
+    core_pointset_tests.initModule(geodatasyncFn, idCompFn,trace)
+    core_well_tests.initModule(geodatasyncFn, idCompFn,trace)
+    core_fault_tests.initModule(geodatasyncFn, idCompFn,trace)
+    core_wavelet_tests.initModule(geodatasyncFn, idCompFn,trace)
+    core_polygon_tests.initModule(geodatasyncFn, idCompFn,trace)
 
 def getTestSuite(server,repo,config):
     suite=unittest.TestSuite()

@@ -32,7 +32,7 @@ from constants import SURFACE_0
 GeoDataSync=None
 IDComparison=None
 
-
+__unittest=True
 
 class SurfaceTestCase(unittest.TestCase):
     def __init__(self,server,repo,config,method):
@@ -158,11 +158,13 @@ class SurfaceTestCase(unittest.TestCase):
         return suite
 
 
-def initModule(geodatasyncFn,idCompFn):
-     global GeoDataSync
-     GeoDataSync=geodatasyncFn
-     global IDComparison
-     IDComparison=idCompFn
+def initModule(geodatasyncFn,idCompFn,trace):
+    global GeoDataSync
+    GeoDataSync=geodatasyncFn     
+    global IDComparison
+    IDComparison=idCompFn
+    global __unittest
+    __unittest=not trace
      
      
 def getTestSuite(server,repo,config):
