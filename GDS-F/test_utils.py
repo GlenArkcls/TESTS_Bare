@@ -22,13 +22,19 @@ def IDInList(IDComp,theID,theList):
     matches=[x for x in theList if IDComp(theID,x)]
     return len(matches)>0
 
-def getNearestIntegerInRange(rng,testVal):
-    if testVal<rng.start:
+def getNearestIntegerInRange(rng,testVal,clip=False):
+    '''Given a range start,stop,incr returns the nearest member of that range to
+    testVal probe. If 'clip' is True, a testVal outside start,stop is clipped
+    to the start stop values, otherwise we act as though the range is extended
+    to infinity on each side. Note that 'stop' is past the end, so the actual last integer 
+    in the range is stop-incr 
+    '''
+    if clip and testVal<rng.start:
         return rng.start
     normTest=(testVal-rng.start)/rng.step
     ret= round(normTest)*rng.step+rng.start
-    while ret>rng.stop:
-        ret-=rng.step
+    if clip and ret>=rng.stop:
+        ret=rng.stop-rng.step
     return ret
 
 def compareNestedFloatLists(l0,l1):

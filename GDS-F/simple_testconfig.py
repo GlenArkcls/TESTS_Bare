@@ -92,13 +92,17 @@ DefaultDepth2DSeisGeometry={
         }
 
 class SimpleTestConfig(test_config.TestConfig):
-    def __init__(self):
-        pass
+    
+    
+    def __init__(self,systemInfo):
+        self.__systemInfo=systemInfo
         
-   
     def initialise(self,server,repo):
         pass
 
+    def getSystemInfo(self):
+        return self.__systemInfo
+    
     def get3DSeismicGeometry(self,isDepth=False):
         if isDepth:
             return SeismicGeometry(DefaultDepthSeisGeometry)

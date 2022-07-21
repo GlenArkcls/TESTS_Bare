@@ -381,8 +381,8 @@ class SeismicTestCase(unittest.TestCase):
         geom=self.config.get3DSeismicGeometry(False)
         ilines=geom.getInlineList()
         xlines=geom.getCrosslineList()
-        ils=[float(x) +0.7 for x in ilines[0:len(ilines):3]]
-        xls=[float(x) +0.3 for x in xlines[0:len(xlines):3]]
+        ils=[ilines[i] +0.7*i for i in range(0,len(ilines))]#ilines[0:len(ilines):3]]
+        xls=[xlines[i] +0.3*i for i in range(0,len(xlines))]
         ilxls=list(zip(ils,xls))
        
         coordsFromGeom=[geom.transformILXL(ilxl) for ilxl in ilxls]

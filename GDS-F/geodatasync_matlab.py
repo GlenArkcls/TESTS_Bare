@@ -26,11 +26,15 @@ For this reason we must do the type detection by locating strings within the
 object repr.
 
 This code is currently quite generic, in particular it doesn't require 
-knowledge of what actual function was called or what its inputs/outputs 
-are except in one case (nested 1-D arrays - method is translateMLArray) where 
+knowledge of what actual function was called or usually its inputs/outputs.
+However, there are some exceptions:  
+In case of nested 1-D arrays  (method is translateMLArray) where 
 we must know a particular action must be applied which is not deducable simply
-from the data structure.Anyone extending the GDS API must be awrae of this 
-possibility and add any new return to the method if appropriate.
+from the data structure.
+In translating dictionary structs - method is translateOutputDict - we need to know
+the name of the field since actions are required on some of them (refer to the function doc)
+Anyone extending the GDS API must be aware of these 
+possibilities and add any new return to the methods if appropriate.
 
 Some of the methods have been slightly generalised beyond what currently
 appears (for instance, general recursion of the lists), providing hopefully a
@@ -113,6 +117,10 @@ def translateInputArgs(*args):
     return ret
 
 def isMatlabArray(obj):
+     '''We do not have access to the actual type returned by MATLAB - even though
+     we can make and use one, it is created in the internal namespace and so looks like a different type
+     hence this codged way of checking if an object is ine of these types
+     '''
      return repr(type(obj)).count("mlarray")>0
 
 def translateOutputDict(input):
@@ -218,11 +226,11 @@ def translateOutput(output):
         output=translateMLArray(output)
     return output
     
-def bytesToString(input):
-    return str(input,"utf-8")
+def bytesToString(inputS):
+    return str(inputS,"utf-8")
 
-def stringToBytes(input):
-    return bytes(input,"ascii")
+def stringToBytes(inputS):
+    return bytes(inputS,"ascii")
 
 
 def GeoDataSync(fn,server,*args):

@@ -83,8 +83,7 @@ class HorizonTestCase(unittest.TestCase):
         testGeom=self.config.get3DSeismicGeometry(False)
         hzGeom.pop(b'HorzID')
         for k in hzGeom.keys():
-            with self.subTest(k=k):
-                self.assertAlmostEqual(hzGeom[k],testGeom[k],4)
+            self.assertAlmostEqual(hzGeom[k],testGeom[k],4)
         
     def testPut3DHorzValues(self):
         hzVals=self.config.getHorizonVals()

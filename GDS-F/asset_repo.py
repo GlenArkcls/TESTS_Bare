@@ -186,6 +186,8 @@ class AssetRepository:
     getXXXID Methods
     Retrieve object by name
     '''
+    def getInterpretationCollectionID(self,name):
+        return self.objects[ObjectType.INTERPRETATION_COLLECTION].get(name)
     def getFolderID(self,name):
         return self.objects[ObjectType.FOLDER].get(name)
     def get3DSeismicID(self,name):
@@ -226,6 +228,8 @@ class AssetRepository:
     These are for initialising a repo with known names
     if we want to do tests against a known project
     '''
+    def putInterpretationCollectionID(self,name,ident):
+        self.objects[ObjectType.INTERPRETATION_COLLECTION][name]=ident
     def putFolderID(self,name,ident):
         self.objects[ObjectType.FOLDER][name]=ident
     def put3DSeismicID(self,name,ident):

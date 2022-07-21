@@ -15,6 +15,9 @@ import asset_repo
 import test_utils
 from functools import partial
 
+CLIENT_VERSION=None
+SERVER_VERSION="2.1.0.15"
+
 
 class TestConfigBuilder:
     def __init__(self,client,server,config,port):
@@ -47,6 +50,8 @@ class TestConfigBuilder:
         geodatasync_petrel.startPetrel(self.__port)
             
     def setup(self):
+        systemInfo={"clientVersion":CLIENT_VERSION,
+                    "serverVersion":SERVER_VERSION}
         self.__assetRepo=asset_repo.AssetRepository()    
         if self.__clientType=="matlab":
                 self.__setupMatlab()
@@ -55,18 +60,19 @@ class TestConfigBuilder:
                 
         if self.__serverType=="petrel":
                 self.__setupPetrel()
+                systemInfo["systemType"]="PET"
         asset_repo.initModule(self.__geodatasyncFn)
         test_utils.initModule(self.__geodatasyncFn)
         if self.__configType=="blank":
             import blank_project_testconfig
-            self.__testConfig=blank_project_testconfig.BlankProjectTestConfig()
+            self.__testConfig=blank_project_testconfig.BlankProjectTestConfig(systemInfo)
         elif self.__configType=="bootstrapped":
             import bootstrapped_testconfig
-            self.__testConfig=bootstrapped_testconfig.BootstrappedTestConfig()
+            self.__testConfig=bootstrapped_testconfig.BootstrappedTestConfig(systemInfo)
             bootstrapped_testconfig.initModule(self.__geodatasyncFn)
         elif self.__configType=="simple":
             import simple_testconfig
-            self.__testConfig=simple_testconfig.SimpleTestConfig()
+            self.__testConfig=simple_testconfig.SimpleTestConfig(systemInfo)
             
            
     def getFunctions(self):
