@@ -34,6 +34,8 @@ SEISMIC_COL_1=b"SeismicCollection1"
 SEISMIC3D_0=b"Seismic3D0"
 SEISMIC2D_0=b"Seismic2D0"
 
+__unittest=True
+
 class SeismicErrorTestCase(unittest.TestCase):
     def __init__(self,server,repo,config,methodName):
         super().__init__(methodName)

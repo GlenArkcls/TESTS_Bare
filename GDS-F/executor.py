@@ -26,6 +26,7 @@ class TestExecutor:
         parser.add_argument('-p','--port',type=int)
         parser.add_argument('-w','--wait',action="store_true",default=False)
         parser.add_argument('--trace',action="store_true",default=False)
+        parser.add_argument('-v','--verbosity',type=int,default=2)
         args=parser.parse_args()
         if args.wait:
             input("Hit enter to continue.")    
@@ -44,7 +45,7 @@ class TestExecutor:
                 #Build the tests for this module
                 suite=self.__getTestSuite(server,assetRepo,config)
                 #Create a test runner and execute
-                runner=unittest.TextTestRunner(verbosity=2,stream=sys.stdout)
+                runner=unittest.TextTestRunner(verbosity=args.verbosity,stream=sys.stdout)
                 result=runner.run(suite)
         
         except Exception as e:

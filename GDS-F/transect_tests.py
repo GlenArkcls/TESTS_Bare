@@ -36,6 +36,8 @@ from constants import SEISMIC2D_0
 GeoDataSync=None
 IDComparison=None
 
+__unittest=True
+
 
 class TransectTestCase(unittest.TestCase):
 
@@ -261,12 +263,16 @@ class TransectTestCase(unittest.TestCase):
        return suite
             
 
-def initModule(geodatasyncFn,idCompFn):
+def initModule(geodatasyncFn,idCompFn,trace):
     global GeoDataSync
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
-    
+    if trace:
+        global __unittest
+        del(__unittest)
+        
+        
 def getTestSuite(server,repo,config):
     return TransectTestCase.getTestSuite(server, repo, config)
     

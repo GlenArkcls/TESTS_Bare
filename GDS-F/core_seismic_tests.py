@@ -614,8 +614,10 @@ def initModule(geodatasyncFn,idCompFn,trace=True):
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
-    global __unittest
-    __unittest=not trace
+    if trace:
+        global __unittest
+        del(__unittest)
+    
     
 def getTestSuite(server,repo,config):
     return SeismicTestCase.getTestSuite(server, repo, config)

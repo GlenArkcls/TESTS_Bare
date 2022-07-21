@@ -319,8 +319,9 @@ def initModule(geodatasyncFn,idCompFn,trace):
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
-    global __unittest
-    __unittest=not trace
+    if trace:
+        global __unittest
+        del(__unittest)
     
 def getTestSuite(server,repo,config):
     return HorizonTestCase.getTestSuite(server, repo, config)
