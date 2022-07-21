@@ -21,8 +21,8 @@ TestSurfGeometry={
         b'SizeJ': 10,
         b'SpacingI': 25.0,
         b'SpacingJ': 25.0,
-        b'OriginX': 608000.0,
-        b'OriginY': 6076000.0,
+        b'OriginX': 0.0,
+        b'OriginY': 0.0,
         b'Theta': 0.0,
         b'isDepth': 0
         }
@@ -52,23 +52,23 @@ DefaultSeisGeometry={
 
 
 DefaultDepthSeisGeometry={
-        b'MinInline': 200,
-        b'MaxInline': 218,
-        b'InlineInc': 2,
-        b'MinXline': 400,
-        b'MaxXline': 433,
-        b'XlineInc': 3,
-        b'X0': 608271.29,
-        b'Y0': 6076131.66,
-        b'X1': 608406.363659533,
-        b'Y1': 6076218.128075472,
-        b'X2': 608264.37,
-        b'Y2': 6076377.14,
-        b'MinZ': 1003.,
-        b'MaxZ': 2003.,
-        b'ZInc': 5.,
-        b'InlineSep': 23.687,
-         b'XlineSep': 22.325228807,
+       b'MinInline': 0,#200,
+        b'MaxInline': 20,#220,
+        b'InlineInc': 1,
+        b'MinXline': 0,#400,
+        b'MaxXline': 20,#420,
+        b'XlineInc': 1,
+        b'X0': 0.0,#608000.0,
+        b'Y0': 0.0,#6076000.0,
+        b'X1': 200.0,#608500.0,
+        b'Y1': 200.0,#6076500.0,
+        b'X2': 0.0,#608000.0,
+        b'Y2': 200.0,#6076500.0,
+        b'MinZ': 100.000,
+        b'MaxZ': 200.1,#1.000,#0.800,
+        b'ZInc': 1,#0.005,
+        b'InlineSep': 10.0,#25.0,
+        b'XlineSep': 10.0,#25.0,
         b'isDepth': 1
         }
 

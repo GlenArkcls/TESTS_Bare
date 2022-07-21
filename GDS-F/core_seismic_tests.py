@@ -85,8 +85,7 @@ class SeismicTestCase(unittest.TestCase):
         self.assertFalse(seisGeom is None or seisGeom==0,GDSErr(self.server,"Failed GDS call get3DSeisGeom"))
         testGeom=self.config.get3DSeismicGeometry(False)
         for k in testGeom.keys():
-            with self.subTest(k=k):
-                self.assertAlmostEqual(seisGeom[k],testGeom[k],4)
+            self.assertAlmostEqual(seisGeom[k],testGeom[k],4)
         
     '''
     Put the fidicual data into the cube
@@ -133,8 +132,7 @@ class SeismicTestCase(unittest.TestCase):
         self.assertTrue(len(returnedTraces)==len(volumeData)-2,"No. samples mismatch in returned data from get3DSeisTracesAll")
         self.assertTrue(len(returnedTraces[0])==len(volumeData[0]),"No. of traces mismatch in returned data from get3DSeisTracesAll")
         for i in range(len(returnedTraces)):
-             with self.subTest(i=i):
-                 self.assertTrue(compareFloatLists(volumeData[i+1],returnedTraces[i]),"Mismatched data in trace in get3DSeisTracesAll")
+             self.assertTrue(compareFloatLists(volumeData[i+1],returnedTraces[i]),"Mismatched data in trace in get3DSeisTracesAll")
                  
     def testGet3DSeisTracesAllSampleCountTest(self):
         geom=self.config.get3DSeismicGeometry(False)
@@ -178,8 +176,7 @@ class SeismicTestCase(unittest.TestCase):
          self.assertTrue(len(returnedTraces)==len(volumeData)-2,"No. samples mismatch in returned data from get3DSeisTracesSpec")
          self.assertTrue(len(returnedTraces[0])==len(volumeData[0]),"No. of traces mismatch in returned data from get3DSeisTracesSpec")
          for i in range(len(returnedTraces)):
-             with self.subTest(i=i):
-                 self.assertTrue(compareFloatLists(volumeData[i+1],returnedTraces[i]),"Mismatched data in trace in get3DSeisTracesSpec")
+             self.assertTrue(compareFloatLists(volumeData[i+1],returnedTraces[i]),"Mismatched data in trace in get3DSeisTracesSpec")
                  
     ''' 
     Get the values from the volume expressed by the ranges. 
@@ -202,8 +199,7 @@ class SeismicTestCase(unittest.TestCase):
         self.assertTrue(len(returnedTraces)==len(volumeData)-2,"No. samples mismatch in returned data from get3DSeisTracesRange")
         self.assertTrue(len(returnedTraces[0])==len(volumeData[0]),"No. of traces mismatch in returned data from get3DSeisTracesRange")
         for i in range(len(returnedTraces)):
-             with self.subTest(i=i):
-                 self.assertTrue(compareFloatLists(volumeData[i+1],returnedTraces[i]),"Mismatched data in trace")
+             self.assertTrue(compareFloatLists(volumeData[i+1],returnedTraces[i]),"Mismatched data in trace")
     '''
     Test getting all the data from an inline of the volume
     We choose the inline in the middle of the volume to test - perhaps a couple chosen at random would
@@ -236,8 +232,7 @@ class SeismicTestCase(unittest.TestCase):
         ix0=ilix*xlCount#first trace index in volume
         ix1=ix0+xlCount#last plus one index
         for i in range(len(returnedTraces)):
-             with self.subTest(i=i):
-                 self.assertTrue(compareFloatLists(volumeData[i+1][ix0:ix1],returnedTraces[i]),"Mismatched data in trace")
+             self.assertTrue(compareFloatLists(volumeData[i+1][ix0:ix1],returnedTraces[i]),"Mismatched data in trace")
     '''
     Test getting all the data from a crossline of the volume
     We choose the crossline in the middle of the volume to test - perhaps a couple chosen at random would
@@ -270,8 +265,7 @@ class SeismicTestCase(unittest.TestCase):
         il0=xlix#first trace index in volume
         il1=il0+xlCount*(ilCount-1)+1#last plus one index
         for i in range(len(returnedTraces)):
-             with self.subTest(i=i):
-                 self.assertTrue(compareFloatLists(volumeData[i+1][il0:il1:xlCount],returnedTraces[i]),"Mismatched data in trace")
+             self.assertTrue(compareFloatLists(volumeData[i+1][il0:il1:xlCount],returnedTraces[i]),"Mismatched data in trace")
     
     #@unittest.skip("Test not run due to known errors")
     def testGet3DSeisTracesTransect(self):
@@ -539,8 +533,7 @@ class SeismicTestCase(unittest.TestCase):
         self.assertTrue(len(traceData)==len(lineData),"Mismatched no of samples from get2DSeisTracesSpec")
         self.assertTrue(len(traceData[0])==len(ix),"Mismatched no of traces from get2DSeisTracesSpec")
         for i in range(len(traceData)):
-            with self.subTest(i=i):
-                self.assertTrue(compareFloatLists(traceData[i],lineData[i][0:len(lineData[0])+1:2]))
+            self.assertTrue(compareFloatLists(traceData[i],lineData[i][0:len(lineData[0])+1:2]))
         
 
         
