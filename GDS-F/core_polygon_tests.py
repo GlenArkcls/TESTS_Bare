@@ -31,7 +31,6 @@ GeoDataSync=None
 IDComparison=None
  
  
-__unittest=True
 
 
 class PolygonTestCase(unittest.TestCase):
@@ -88,9 +87,9 @@ def initModule(geodatasyncFn,idCompFn,trace):
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
-    if trace:
+    if not trace:
         global __unittest
-        del(__unittest)
+        __unittest=True
     
 def getTestSuite(server,repo,config):
     return PolygonTestCase.getTestSuite(server, repo, config)

@@ -37,8 +37,6 @@ from constants import SEISMIC2D_DEPTH0
 GeoDataSync=None
 IDComparison=None
 
-#This flag is set False to show trace output on Fails or errors
-__unittest=True
 
 
 class SeismicTestCase(unittest.TestCase):
@@ -614,9 +612,9 @@ def initModule(geodatasyncFn,idCompFn,trace=True):
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
-    if trace:
+    if not trace:
         global __unittest
-        del(__unittest)
+        __unittest=True
     
     
 def getTestSuite(server,repo,config):

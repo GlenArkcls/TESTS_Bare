@@ -35,7 +35,6 @@ from constants import WELL_MARKER_0
 GeoDataSync=None
 IDComparison=None
 
-__unittest=True
 
 class WellTestCase(unittest.TestCase):
     def __init__(self,server,repo,config,method):
@@ -242,9 +241,9 @@ def initModule(geodatasyncFn,idCompFn,trace):
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
-    if trace:
+    if not trace:
         global __unittest
-        del(__unittest)
+        __unittest=True
     
 def getTestSuite(server,repo,config):
     return WellTestCase.getTestSuite(server, repo, config)

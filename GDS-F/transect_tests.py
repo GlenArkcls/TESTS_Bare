@@ -268,9 +268,9 @@ def initModule(geodatasyncFn,idCompFn,trace):
     GeoDataSync=geodatasyncFn     
     global IDComparison
     IDComparison=idCompFn
-    if trace:
+    if not trace:
         global __unittest
-        del(__unittest)
+        __unittest=True
         
         
 def getTestSuite(server,repo,config):
