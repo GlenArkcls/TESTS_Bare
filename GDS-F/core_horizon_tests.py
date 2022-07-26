@@ -137,7 +137,7 @@ class HorizonTestCase(unittest.TestCase):
        
         ret=GeoDataSync("get3DHorzValsInXl",self.server,hzID,loIL,hiIL,loXL,hiXL)
         self.assertFalse(ret is None or ret==0,GDSErr(self.server,"Failed call to get3DHorzValsInXl"))
-        self.assertTrue(compareFloatLists(ret[b'HorzVals'],testVals))
+        self.assertTrue(compareFloatLists(ret[b'HorzVals'],testVals),"Mismatched horizon values")
         
         
     def testPut3DHorzValuesSpec(self):
@@ -181,7 +181,7 @@ class HorizonTestCase(unittest.TestCase):
         knownPropVals=self.config.getHorizonPropertyVals()
         propVals=GeoDataSync("get3DHorzPropVals",self.server,hzPropID)
         self.assertFalse(propVals is None or propVals==0,GDSErr(self.server,"Failed call to get3DHorzPropVals"))
-        self.assertTrue(compareFloatLists(knownPropVals,propVals[b'PropVals']),GDSErr(self.server,"Hz property values do not match"))
+        self.assertTrue(compareFloatLists(knownPropVals,propVals[b'PropVals']),"Hz property values do not match")
         
     def testGet3DHorzPropValsInXl(self):
         hzPropID=self.repo.getHorizonPropertyID(HORIZON_PROP_0)
@@ -218,7 +218,7 @@ class HorizonTestCase(unittest.TestCase):
         self.assertFalse(ret is None or ret==0,GDSErr(self.server,"Failed call to get3DHorzPropValsInXl"))
         #print(testVals)
         #print(ret[b'PropVals'])
-        self.assertTrue(compareFloatLists(ret[b'PropVals'],testVals))
+        self.assertTrue(compareFloatLists(ret[b'PropVals'],testVals),"Mismathced property values")
         
         
     def testPut3DHorzPropValuesSpec(self):

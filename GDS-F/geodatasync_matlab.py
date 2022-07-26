@@ -224,6 +224,8 @@ def translateOutput(output):
         output=translateOutputList(output)
     elif isMatlabArray(output):
         output=translateMLArray(output)
+    elif isinstance(output,str):
+        output=stringToBytes(output)
     return output
     
 def bytesToString(inputS):
