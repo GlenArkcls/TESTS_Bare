@@ -9,6 +9,8 @@ import argparse
 import unittest
 from testconfigbuilder import TestConfigBuilder
 
+
+
 class TestExecutor:
     def __init__(self,
                  initModuleFn,
@@ -31,6 +33,7 @@ class TestExecutor:
         if args.wait:
             input("Hit enter to continue.")    
         try:    
+            
             #Create the configuration
             configBuilder=TestConfigBuilder(args.client,args.server,args.type,args.port)
             configBuilder.setup()
