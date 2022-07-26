@@ -17,6 +17,7 @@ sys.path.append(file_dir)
 import unittest
 from tkinter import Tk
 from tkinter import messagebox
+from tkinter import simpledialog
 from executor import TestExecutor
 
 
@@ -228,27 +229,58 @@ class InteractiveTestCase(unittest.TestCase):
         msg="Confirm selected Polygon is {}".format(str(polyID[0],"utf-8"))
         ret=messagebox.askyesno("Yes|No",msg)
         self.assertTrue(ret,"Wrong polygon identified as selected")
+        
+    def testDispSeis3DIlXlIntersection(self):
+        master=Tk()
+        master.withdraw()
+        messagebox.showinfo("Display Move 3D Seismic Intersection","Select 3D Seismic Intersection (Inline,Crossline)");
+        interID=GeoDataSync("getSeis3DIntersectionIDSel",self.server)
+        self.assertFalse(interID==0,GDSErr(self.server,"Failed getSeis3DIntersectionIDSel"))
+        newline=simpledialog.askinteger('New Position', 'Enter the new position for the line')
+        print(newline)
+        success=GeoDataSync("dispSeis3DIlXlIntersection",self.server,interID[b"IntersectionID"],newline)
+        self.assertFalse(success==0 or success==None,GDSErr(self.server,"Failed dispSeis3DIlXlIntersection"))
+        msg="Confirm line is in correct position"
+        ret=messagebox.askyesno("Yes|No",msg)
+        self.assertTrue(ret,"Wrong intersection identified as selected")
+        
+    def testDispSeis3DZSlice(self):
+        master=Tk()
+        master.withdraw()
+        messagebox.showinfo("Display Move 3D Seismic Intersection","Select 3D Seismic Z Slice Intersection ");
+        interID=GeoDataSync("getSeis3DIntersectionIDSel",self.server)
+        print(interID)
+        self.assertFalse(interID==0,GDSErr(self.server,"Failed getSeis3DIntersectionIDSel"))
+        newdepth=simpledialog.askfloat('New Position', 'Enter the new position for the slice')
+        print(newdepth)
+        success=GeoDataSync("dispSeis3DZSlice",self.server,interID[b"IntersectionID"],newdepth)
+        self.assertFalse(success==0 or success==None,GDSErr(self.server,"Failed dispSeis3DZSlice"))
+        msg="Confirm slice is in correct position."
+        ret=messagebox.askyesno("Yes|No",msg)
+        self.assertTrue(ret,"Wrong intersection identified as selected")
 
     def getTestSuite(server,repo,config):
        suite=unittest.TestSuite()
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectFolder"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectInterpretationCollection"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectSeismicCollection"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectGlobalLog"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DSeismic"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DSeisIntersection"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect2DSeisLine"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectSurface"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DHorizon"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DHorizonProperty"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect2DHorizon"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWell"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWellCollection"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectLog"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWavelet"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectFault"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectPointSet"))
-       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectPolygon"))
+       #suite.addTest(InteractiveTestCase(server,repo,config,"testDispSeis3DIlXlIntersection"))
+       suite.addTest(InteractiveTestCase(server,repo,config,"testDispSeis3DZSlice"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectFolder"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectInterpretationCollection"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectSeismicCollection"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectGlobalLog"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DSeismic"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DSeisIntersection"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect2DSeisLine"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectSurface"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DHorizon"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect3DHorizonProperty"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelect2DHorizon"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWell"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWellCollection"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectLog"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectWavelet"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectFault"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectPointSet"))
+#       suite.addTest(InteractiveTestCase(server,repo,config,"testSelectPolygon"))
        return suite
    
 def initModule(geodatasyncFn,idCompFn,trace):
