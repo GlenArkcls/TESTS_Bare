@@ -372,6 +372,71 @@ class SeismicTestCase(unittest.TestCase):
         self.assertFalse(tracesLength==None or tracesLength==0,GDSErr(self.server,"Incorrect Traces length from get3DSeisTracesTransect at corners"))
         for i in range(0,tracesLength):
                 self.assertTrue(compareFloatLists(seisTransect[b'Traces'][i],reshapedInterps[i]),"get3DSeisTracesTransect at corners data values do not match")
+                
+    def testGet3DSeisTracesTransectCloseToLine(self):
+        geom=self.config.get3DSeismicGeometry()
+        seisID = self.repo.get3DSeismicID(SEISMIC3D_0)
+        x0 = geom[b'X0']
+        y0 = geom[b'Y0']
+        x1=geom[b'X1']
+        y1=(geom[b'Y1'])
+        minZ = geom[b'MinZ']
+        maxZ = geom[b'MinZ']+geom[b'ZInc'] #geom[b'MaxZ']
+       
+       
+        minIL=geom.getMinInline()
+        minXL=geom.getMinXline()
+        maxXL=geom.getMaxXline()
+        numTraces=(maxXL-minXL)/geom.getXlineInc()+3
+        #print(numTraces)
+        ilxls=[]
+        
+        for i in range(0,int(numTraces)):
+            ilxls.append([minIL+geom.getInlineInc()*1.1,minXL-geom.getXlineInc()*0.9+(geom.getXlineInc())*(i+3)])
+        [x0,y0]=geom.transformILXL(ilxls[0])
+        [x1,y1]=geom.transformILXL(ilxls[len(ilxls)-1])
+        interpTraces=[]
+        ilrange=geom.getInlineRange();
+        xlrange=geom.getCrosslineRange();
+        for ilxl in ilxls:
+            nil=getNearestIntegerInRange(ilrange,ilxl[0])
+            nxl=getNearestIntegerInRange(xlrange,ilxl[1])
+            if nil>ilxl[0]:
+                sil=nil-geom.getInlineInc()
+                lil=nil
+            else:
+                sil=nil
+                lil=nil+geom.getInlineInc()
+            if nxl>ilxl[1]:
+                sxl=nxl-geom.getXlineInc()
+                lxl=nxl
+            else:
+                sxl=nxl
+                lxl=nxl+geom.getXlineInc()
+            #print(ilxl[0],ilxl[1],nil,nxl)
+            traces=GeoDataSync("get3DSeisTracesRange",self.server,seisID,sil,lil,sxl,lxl,minZ,maxZ)
+            if not traces==0:
+                 distIL=(ilxl[0]-sil)/geom.getInlineInc();
+                 distXL=(ilxl[1]-sxl)/geom.getXlineInc();
+                 
+                 #print("il",ilxl[0],"xl",ilxl[1],"distIL:",distIL,"distXL",distXL)
+                 #print(traces[b'Traces'])
+                # print(traces)
+                 interpTrace=bilinearTraceInterp(distIL,distXL,traces[b'Traces'])
+                 interpTraces.append(interpTrace)
+               
+        #print(interpTraces)
+        reshapedInterps=[[interpTraces[i][j] for i in range(0,len(interpTraces))] for j in range(0,len(interpTraces[0]))]
+        #print(reshapedInterps)
+        seisTransect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, x0, y0, x1, y1, minZ, maxZ, numTraces)
+        #print(seisTransect)
+        self.assertFalse(seisTransect==None or seisTransect==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesTransect"))
+        nTraces = seisTransect[b'NumTraces']
+        tracesLength = seisTransect[b'TraceLength']
+        self.assertFalse(nTraces==None or nTraces==0,GDSErr(self.server,"Incorrect no. of Traces from get3DSeisTracesTransect"))
+        self.assertFalse(tracesLength==None or tracesLength==0,GDSErr(self.server,"Incorrect Traces length from get3DSeisTracesTransect"))
+        for i in range(0,tracesLength):
+                self.assertTrue(compareFloatLists(seisTransect[b'Traces'][i],reshapedInterps[i]),"get3DSeisTracesTransect data values do not match")
         
     def testDelete3DSeismic(self):
         args=[self.repo.getSeismicCollectionID(SEISMIC_COL_0)]
@@ -492,7 +557,7 @@ class SeismicTestCase(unittest.TestCase):
     '''
     Note the name in the ID comes back with '[Seismic 2D Line]' 
     '''
-    def testGet2DSeisIDList(self):
+    def testGet2DSeisIDListAndVerify(self):
         seisIDList=GeoDataSync("get2DSeisIDList",self.server)
         self.assertFalse(seisIDList is None or seisIDList==0,GDSErr(self.server,"Failed GDS call to get2DSeisIDList"))
         self.assertTrue(IDInList(IDComparison,self.repo.get2DSeismicID(SEISMIC2D_0),seisIDList),"2D Seismic not found in 2D Seismic ID list")
@@ -516,6 +581,14 @@ class SeismicTestCase(unittest.TestCase):
         self.assertEqual(geom[b'isDepth'],knowngeom[b'isDepth'],"Mismatched isDepth from GDS  get2DSeisGeom")
         self.assertAlmostEqual(geom[b'MinZ'],knowngeom[b'MinZ'],4,"Mismatched MinZ from GDS  get2DSeisGeom")
         self.assertAlmostEqual(geom[b'MaxZ'],knowngeom[b'ZInc']*(knowngeom[b'TraceLength']-1)+knowngeom[b'MinZ'],4,"Mismatched MaxZ from GDS  get2DSeisGeom")
+        geom=GeoDataSync("get2DSeisGeom",self.server,self.repo.get2DSeismicID(SEISMIC2D_DEPTH0))
+        self.assertFalse(geom is None or geom==0,GDSErr(self.server,"Failed GDS call to get2DSeisGeom (depth)"))
+        knowngeom=self.config.get2DSeismicGeometry(True)
+        self.assertTrue(compareFloatLists(geom[b'XCoords'],knowngeom[b'XCoords']),"Mismatched XCoords from GDS get2DSeisGeom (depth)")
+        self.assertTrue(compareFloatLists(geom[b'YCoords'],knowngeom[b'YCoords']),"Mismatched YCoords from GDS get2DSeisGeom (depth)")
+        self.assertEqual(geom[b'isDepth'],knowngeom[b'isDepth'],"Mismatched isDepth from GDS  get2DSeisGeom (depth)")
+        self.assertAlmostEqual(geom[b'MinZ'],knowngeom[b'MinZ'],4,"Mismatched MinZ from GDS  get2DSeisGeom (depth)")
+        self.assertAlmostEqual(geom[b'MaxZ'],knowngeom[b'ZInc']*(knowngeom[b'TraceLength']-1)+knowngeom[b'MinZ'],4,"Mismatched MaxZ from GDS  get2DSeisGeom (depth)")
         
         
     def testPut2DSeisTraces(self):
@@ -585,6 +658,7 @@ class SeismicTestCase(unittest.TestCase):
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesInXICrossline"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransect"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransectCorners"))
+       suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransectCloseToLine"))
        suite.addTest(SeismicTestCase(server,repo,config,"testDelete3DSeismic"))
        
        suite.addTest(SeismicTestCase(server,repo,config,"testGetInlineCrosslineFromXY"))
@@ -595,7 +669,7 @@ class SeismicTestCase(unittest.TestCase):
        suite.addTest(SeismicTestCase(server,repo,config,"testCreateSeismicCollectionFor2D"))
        suite.addTest(SeismicTestCase(server,repo,config,"testCreate2DSeismic"))
        suite.addTest(SeismicTestCase(server,repo,config,"testCreate2DSeismicDepth"))
-       suite.addTest(SeismicTestCase(server,repo,config,"testGet2DSeisIDList"))
+       suite.addTest(SeismicTestCase(server,repo,config,"testGet2DSeisIDListAndVerify"))
        suite.addTest(SeismicTestCase(server,repo,config,"testVerify2DSeismicInCollection"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet2DSeisGeom"))
        suite.addTest(SeismicTestCase(server,repo,config,"testPut2DSeisTraces"))

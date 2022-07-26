@@ -136,7 +136,9 @@ class BlankProjectTestConfig(test_config.TestConfig):
            ret[b'isDepth']=1
            return ret
        else:
-           return TestSurfGeometry
+           ret=TestSurfGeometry
+           ret[b'isDepth']=0
+           return ret
     
     def getSurfVals(self,name=None):
         geom=self.get3DSeismicGeometry(False)

@@ -20,6 +20,7 @@ SEISMIC2D_DEPTH0=b"Seismic2DDepth0"
 
  
 SURFACE_0=b"TestSurface0"
+SURFACE_DEPTH0=b"TestSurfaceDepth0"
 
 HORIZON_0=b"TestHorizon0"
 HORIZON_1=b"TestHorizon1"

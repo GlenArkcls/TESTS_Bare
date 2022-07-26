@@ -28,6 +28,7 @@ from seismicgeometry import SeismicGeometry
 
 from constants import SEISMIC3D_0
 from constants import SURFACE_0
+from constants import SURFACE_DEPTH0
  
 GeoDataSync=None
 IDComparison=None
@@ -47,10 +48,19 @@ class SurfaceTestCase(unittest.TestCase):
         surfID=self.repo.createSurface(SURFACE_0,*args)
         self.assertFalse(surfID==None or surfID==0,GDSErr(self.server,"Failed createSurface at top level"))
         
-    def testGetSurfIDList(self):
+    def testCreateTopLevelSurfaceDepth(self):
+        args=[0]
+        geom=self.config.getSurfGeometry(True)
+        args.extend(list(geom.values()))
+        surfID=self.repo.createSurface(SURFACE_DEPTH0,*args)
+        self.assertFalse(surfID==None or surfID==0,GDSErr(self.server,"Failed createSurface (depth) at top level"))
+        
+    def testGetSurfIDListAndVerify(self):
         surfIDList=GeoDataSync("getSurfIDList",self.server)
         self.assertFalse(surfIDList==0 or surfIDList==None,GDSErr(self.server,"Failed call to getSurfIDList"))
         surfID=self.repo.getSurfaceID(SURFACE_0)
+        self.assertTrue(IDInList(IDComparison,surfID,surfIDList),"Created surface ID not found in list from getSurfIDList")
+        surfID=self.repo.getSurfaceID(SURFACE_DEPTH0)
         self.assertTrue(IDInList(IDComparison,surfID,surfIDList),"Created surface ID not found in list from getSurfIDList")
     
     def testGetSurfGeom(self):
@@ -58,8 +68,12 @@ class SurfaceTestCase(unittest.TestCase):
         self.assertFalse(surfGeom==None or surfGeom==0,GDSErr(self.server,"Failed GDS call to getSurfGeom"))
         fidgeom=self.config.getSurfGeometry()
         for k in list(fidgeom.keys()):
-            with self.subTest(k=k):
-                self.assertAlmostEqual(surfGeom[k],fidgeom[k],4,"Failed geometry comparison")
+            self.assertAlmostEqual(surfGeom[k],fidgeom[k],4,"Failed geometry comparison")
+        surfGeom=GeoDataSync("getSurfGeom",self.server,self.repo.getSurfaceID(SURFACE_DEPTH0))
+        self.assertFalse(surfGeom==None or surfGeom==0,GDSErr(self.server,"Failed GDS call to getSurfGeom (depth)"))
+        fidgeom=self.config.getSurfGeometry(True)
+        for k in list(fidgeom.keys()):
+            self.assertAlmostEqual(surfGeom[k],fidgeom[k],4,"Failed geometry comparison")
     
     def testPutSurfVals(self):
         surfVals=self.config.getSurfVals()
@@ -147,8 +161,9 @@ class SurfaceTestCase(unittest.TestCase):
     def getTestSuite(server,repo,config):
         suite=unittest.TestSuite()
         suite.addTest(SurfaceTestCase(server,repo,config,"testCreateTopLevelSurface"))
+        suite.addTest(SurfaceTestCase(server,repo,config,"testCreateTopLevelSurfaceDepth"))
         suite.addTest(SurfaceTestCase(server,repo,config,"testGetSurfGeom"))
-        suite.addTest(SurfaceTestCase(server,repo,config,"testGetSurfIDList"))
+        suite.addTest(SurfaceTestCase(server,repo,config,"testGetSurfIDListAndVerify"))
         
         suite.addTest(SurfaceTestCase(server,repo,config,"testPutSurfVals"))
         suite.addTest(SurfaceTestCase(server,repo,config,"testGetSurfDataRange"))
