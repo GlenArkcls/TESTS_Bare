@@ -27,14 +27,17 @@ def getNearestIntegerInRange(rng,testVal,clip=False):
     testVal probe. If 'clip' is True, a testVal outside start,stop is clipped
     to the start stop values, otherwise we act as though the range is extended
     to infinity on each side. Note that 'stop' is past the end, so the actual last integer 
-    in the range is stop-incr 
+    in the range is first in range less than stop 
     '''
     if clip and testVal<rng.start:
         return rng.start
     normTest=(testVal-rng.start)/rng.step
     ret= round(normTest)*rng.step+rng.start
     if clip and ret>=rng.stop:
-        ret=rng.stop-rng.step
+        '''rng.stop is outside the range and may not be aligned with the step
+        '''
+        normTest=(rng.stop-rng.start)/rng.step
+        ret= math.floor(normTest)*rng.step+rng.start
     return ret
 
 def compareNestedFloatLists(l0,l1):
