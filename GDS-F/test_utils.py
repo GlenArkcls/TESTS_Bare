@@ -29,10 +29,31 @@ def getNearestIntegerInRange(rng,testVal,clip=False):
     to infinity on each side. Note that 'stop' is past the end, so the actual last integer 
     in the range is first in range less than stop 
     '''
-    if clip and testVal<rng.start:
+    if clip and testVal<=rng.start:
         return rng.start
     normTest=(testVal-rng.start)/rng.step
     ret= round(normTest)*rng.step+rng.start
+    if clip and ret>=rng.stop:
+        '''rng.stop is outside the range and may not be aligned with the step
+        '''
+        normTest=(rng.stop-rng.start)/rng.step
+        ret= math.floor(normTest)*rng.step+rng.start
+    return ret
+
+def getNearestIntegerLessThanInRange(rng,testVal,clip=False):
+    '''Given a range start,stop,incr returns the nearest member of that range to
+    testVal probe which is <= the testVal. If 'clip' is True, a testVal outside start,stop is clipped
+    to the start stop values, otherwise we act as though the range is extended
+    to infinity on each side. Note that 'stop' is past the end, so the actual last integer 
+    in the range is first in range less than stop. 
+    IMPORTANT NOTE : Using clip=True on a value less than 'start' will return 
+    'start' which may be greater than the testVal. This behaviour is probably 
+    not ideal - it should certainly be understood by any caller of the method
+    '''
+    if clip and testVal<=rng.start:
+        return rng.start
+    normTest=(testVal-rng.start)/rng.step
+    ret= math.floor(normTest)*rng.step+rng.start
     if clip and ret>=rng.stop:
         '''rng.stop is outside the range and may not be aligned with the step
         '''

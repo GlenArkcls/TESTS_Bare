@@ -23,6 +23,7 @@ from test_utils import makeCreationGeometryFromFullGeometry
 from test_utils import IDInList
 from test_utils import GDSErr 
 from test_utils import getNearestIntegerInRange
+from test_utils import getNearestIntegerLessThanInRange
 from test_utils import bilinearTraceInterp
 
 
@@ -190,7 +191,6 @@ class SeismicTestCase(unittest.TestCase):
          gotData=GeoDataSync("get3DSeisTracesSpec",self.server,self.repo.get3DSeismicID(SEISMIC3D_0),ilines,xlines,minZ,maxZ)
          self.assertFalse(gotData==None or gotData==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesSpec"))
          returnedTraces=gotData[b'Traces']
-         
          self.assertTrue(len(returnedTraces)==len(volumeData)-2,"No. samples mismatch in returned data from get3DSeisTracesSpec")
          self.assertTrue(len(returnedTraces[0])==len(volumeData[0]),"No. of traces mismatch in returned data from get3DSeisTracesSpec")
          for i in range(len(returnedTraces)):
@@ -315,24 +315,13 @@ class SeismicTestCase(unittest.TestCase):
         xlrange=geom.getCrosslineRange();
         interpTraces=[]
         for ilxl in ilxls:
-            nil=getNearestIntegerInRange(ilrange,ilxl[0])
-            nxl=getNearestIntegerInRange(xlrange,ilxl[1])
-            if nil>ilxl[0]:
-                sil=nil-geom.getInlineInc()
-                lil=nil
-            else:
-                sil=nil
-                lil=nil+geom.getInlineInc()
-            if nxl>ilxl[1]:
-                sxl=nxl-geom.getXlineInc()
-                lxl=nxl
-            else:
-                sxl=nxl
-                lxl=nxl+geom.getXlineInc()
+            sil=getNearestIntegerLessThanInRange(ilrange,ilxl[0])
+            sxl=getNearestIntegerLessThanInRange(xlrange,ilxl[1])
+            lil=sil+geom.getInlineInc()
+            lxl=sxl+geom.getXlineInc()
             traces=GeoDataSync("get3DSeisTracesRange",self.server,seisID,sil,lil,sxl,lxl,minZ,maxZ)
             distIL=(ilxl[0]-sil)/geom.getInlineInc();
             distXL=(ilxl[1]-sxl)/geom.getXlineInc();
-            #print(traces)
             interpTrace=bilinearTraceInterp(distIL,distXL,traces[b'Traces'])
             interpTraces.append(interpTrace)
         reshapedInterps=[[interpTraces[i][j] for i in range(0,len(interpTraces))] for j in range(0,len(interpTraces[0]))]
@@ -349,12 +338,14 @@ class SeismicTestCase(unittest.TestCase):
     def testGet3DSeisTracesTransectCorners(self):
         geom=self.config.get3DSeismicGeometry()
         seisID = self.repo.get3DSeismicID(SEISMIC3D_0)
-        x0 = geom[b'X0']
-        y0 = geom[b'Y0']
-        x1=geom[b'X1']
-        y1=(geom[b'Y1'])
-        minZ = geom[b'MinZ']
-        maxZ = geom[b'MinZ']+geom[b'ZInc'] #geom[b'MaxZ']
+        x0 = geom.getX0()
+        y0 = geom.getY0()
+        x1=geom.getX1()
+        y1=geom.getY1()
+        minZ = geom.getMinZ()+geom.getZInc()
+        maxZ = geom.getMaxZ()-geom.getZInc() 
+        #minZ = geom[b'MinZ']
+        #maxZ = geom[b'MinZ']+geom[b'ZInc'] #geom[b'MaxZ']
         numTraces = 2
         ilxls=[geom.transformUTM([x0,y0]),geom.transformUTM([x1,y1])]
         interpTraces=[]
@@ -373,22 +364,21 @@ class SeismicTestCase(unittest.TestCase):
         for i in range(0,tracesLength):
                 self.assertTrue(compareFloatLists(seisTransect[b'Traces'][i],reshapedInterps[i]),"get3DSeisTracesTransect at corners data values do not match")
                 
-    def testGet3DSeisTracesTransectCloseToLine(self):
+    def testGet3DSeisTracesTransectStartStopOutside(self):
         geom=self.config.get3DSeismicGeometry()
         seisID = self.repo.get3DSeismicID(SEISMIC3D_0)
-        x0 = geom[b'X0']
-        y0 = geom[b'Y0']
-        x1=geom[b'X1']
-        y1=(geom[b'Y1'])
-        minZ = geom[b'MinZ']
-        maxZ = geom[b'MinZ']+geom[b'ZInc'] #geom[b'MaxZ']
+        x0 = geom.getX0()
+        y0 = geom.getY0()
+        x1=geom.getX1()
+        y1=geom.getY1()
+        minZ = geom.getMinZ()+geom.getZInc()
+        maxZ = geom.getMaxZ()-geom.getZInc() 
        
        
         minIL=geom.getMinInline()
         minXL=geom.getMinXline()
         maxXL=geom.getMaxXline()
         numTraces=(maxXL-minXL)/geom.getXlineInc()+3
-        #print(numTraces)
         ilxls=[]
         
         for i in range(0,int(numTraces)):
@@ -399,37 +389,20 @@ class SeismicTestCase(unittest.TestCase):
         ilrange=geom.getInlineRange();
         xlrange=geom.getCrosslineRange();
         for ilxl in ilxls:
-            nil=getNearestIntegerInRange(ilrange,ilxl[0])
-            nxl=getNearestIntegerInRange(xlrange,ilxl[1])
-            if nil>ilxl[0]:
-                sil=nil-geom.getInlineInc()
-                lil=nil
-            else:
-                sil=nil
-                lil=nil+geom.getInlineInc()
-            if nxl>ilxl[1]:
-                sxl=nxl-geom.getXlineInc()
-                lxl=nxl
-            else:
-                sxl=nxl
-                lxl=nxl+geom.getXlineInc()
-            #print(ilxl[0],ilxl[1],nil,nxl)
+            #get the smaller and larger bounding line numbers
+            sil=getNearestIntegerLessThanInRange(ilrange,ilxl[0])
+            sxl=getNearestIntegerLessThanInRange(xlrange,ilxl[1])
+            lil=sil+geom.getInlineInc()
+            lxl=sxl+geom.getXlineInc()
             traces=GeoDataSync("get3DSeisTracesRange",self.server,seisID,sil,lil,sxl,lxl,minZ,maxZ)
             if not traces==0:
                  distIL=(ilxl[0]-sil)/geom.getInlineInc();
                  distXL=(ilxl[1]-sxl)/geom.getXlineInc();
-                 
-                 #print("il",ilxl[0],"xl",ilxl[1],"distIL:",distIL,"distXL",distXL)
-                 #print(traces[b'Traces'])
-                # print(traces)
                  interpTrace=bilinearTraceInterp(distIL,distXL,traces[b'Traces'])
                  interpTraces.append(interpTrace)
                
-        #print(interpTraces)
         reshapedInterps=[[interpTraces[i][j] for i in range(0,len(interpTraces))] for j in range(0,len(interpTraces[0]))]
-        #print(reshapedInterps)
         seisTransect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, x0, y0, x1, y1, minZ, maxZ, numTraces)
-        #print(seisTransect)
         self.assertFalse(seisTransect==None or seisTransect==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesTransect"))
         nTraces = seisTransect[b'NumTraces']
         tracesLength = seisTransect[b'TraceLength']
@@ -658,7 +631,7 @@ class SeismicTestCase(unittest.TestCase):
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesInXICrossline"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransect"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransectCorners"))
-       suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransectCloseToLine"))
+       suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransectStartStopOutside"))
        suite.addTest(SeismicTestCase(server,repo,config,"testDelete3DSeismic"))
        
        suite.addTest(SeismicTestCase(server,repo,config,"testGetInlineCrosslineFromXY"))
