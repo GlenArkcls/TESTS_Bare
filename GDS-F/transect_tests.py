@@ -25,6 +25,7 @@ from test_utils import makeCreationGeometryFromFullGeometry
 from test_utils import IDInList
 from test_utils import GDSErr 
 from test_utils import getNearestIntegerInRange
+from test_utils import getNearestIntegerInRangeLessThan
 from test_utils import bilinearTraceInterp
 
 
@@ -113,20 +114,10 @@ class TransectTestCase(unittest.TestCase):
         xlrange=geom.getCrosslineRange();
         interpTraces=[]
         for ilxl in ilxls:
-            nil=getNearestIntegerInRange(ilrange,ilxl[0])
-            nxl=getNearestIntegerInRange(xlrange,ilxl[1])
-            if nil>ilxl[0]:
-                sil=nil-geom.getInlineInc()
-                lil=nil
-            else:
-                sil=nil
-                lil=nil+geom.getInlineInc()
-            if nxl>ilxl[1]:
-                sxl=nxl-geom.getXlineInc()
-                lxl=nxl
-            else:
-                sxl=nxl
-                lxl=nxl+geom.getXlineInc()
+            sil=getNearestIntegerInRangeLessThan(ilrange,ilxl[0])
+            sxl=getNearestIntegerInRangeLessThan(xlrange,ilxl[1])
+            lil=sil+geom.getInlineInc()
+            lxl=sxl+geom.getXlineInc()
             traces=GeoDataSync("get3DSeisTracesRange",self.server,seisID,sil,lil,sxl,lxl,minZ,maxZ)
             distIL=(ilxl[0]-sil)/geom.getInlineInc();
             distXL=(ilxl[1]-sxl)/geom.getXlineInc();
@@ -205,21 +196,11 @@ class TransectTestCase(unittest.TestCase):
         ilrange=geom.getInlineRange();
         xlrange=geom.getCrosslineRange();
         for ilxl in ilxls:
-            nil=getNearestIntegerInRange(ilrange,ilxl[0])
-            nxl=getNearestIntegerInRange(xlrange,ilxl[1])
-            if nil>ilxl[0]:
-                sil=nil-geom.getInlineInc()
-                lil=nil
-            else:
-                sil=nil
-                lil=nil+geom.getInlineInc()
-            if nxl>ilxl[1]:
-                sxl=nxl-geom.getXlineInc()
-                lxl=nxl
-            else:
-                sxl=nxl
-                lxl=nxl+geom.getXlineInc()
-            print(ilxl[0],ilxl[1],nil,nxl)
+            sil=getNearestIntegerInRangeLessThan(ilrange,ilxl[0])
+            sxl=getNearestIntegerInRangeLessThan(xlrange,ilxl[1])
+            lil=sil+geom.getInlineInc()
+            lxl=sxl+geom.getXlineInc()
+            print(ilxl[0],ilxl[1],sil,sxl)
             traces=GeoDataSync("get3DSeisTracesRange",self.server,seisID,sil,lil,sxl,lxl,minZ,maxZ)
             if not traces==0:
                  distIL=(ilxl[0]-sil)/geom.getInlineInc();

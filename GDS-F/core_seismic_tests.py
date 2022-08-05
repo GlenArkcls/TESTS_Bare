@@ -373,16 +373,15 @@ class SeismicTestCase(unittest.TestCase):
         y1=geom.getY1()
         minZ = geom.getMinZ()+geom.getZInc()
         maxZ = geom.getMaxZ()-geom.getZInc() 
-       
-       
+        #maxZ = geom.getMinZ()+2*geom.getZInc()
+        
         minIL=geom.getMinInline()
         minXL=geom.getMinXline()
         maxXL=geom.getMaxXline()
         numTraces=(maxXL-minXL)/geom.getXlineInc()+3
         ilxls=[]
-        
         for i in range(0,int(numTraces)):
-            ilxls.append([minIL+geom.getInlineInc()*1.1,minXL-geom.getXlineInc()*0.9+(geom.getXlineInc())*(i+3)])
+            ilxls.append([minIL+geom.getInlineInc()*1.1,minXL-geom.getXlineInc()*3.9+(geom.getXlineInc())*(i+3)])
         [x0,y0]=geom.transformILXL(ilxls[0])
         [x1,y1]=geom.transformILXL(ilxls[len(ilxls)-1])
         interpTraces=[]
@@ -402,7 +401,7 @@ class SeismicTestCase(unittest.TestCase):
                  interpTraces.append(interpTrace)
                
         reshapedInterps=[[interpTraces[i][j] for i in range(0,len(interpTraces))] for j in range(0,len(interpTraces[0]))]
-        seisTransect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, x0, y0, x1, y1, minZ, maxZ, numTraces)
+        seisTransect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, x0, y0, x1, y1, minZ, maxZ, int(numTraces))
         self.assertFalse(seisTransect==None or seisTransect==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesTransect"))
         nTraces = seisTransect[b'NumTraces']
         tracesLength = seisTransect[b'TraceLength']
