@@ -89,6 +89,41 @@ class HorizonTestCase(unittest.TestCase):
         success=GeoDataSync("put3DHorzValues",self.server,self.repo.getHorizonID(HORIZON_0),hzVals)
         self.assertTrue(success==1,GDSErr(self.server,"Failed GDS call to put3DHorzValues"))
         
+    def testGetSeismicValsFromHorizon(self):
+        seisID=self.repo.get3DSeismicID(SEISMIC3D_0)
+        hzID=self.repo.getHorizonID(HORIZON_0)
+        if seisID==None:
+            self.skipTest("Seismic SEISMIC3D_0 not found in repository")
+        geom=self.config.get3DSeismicGeometry()
+        miline=geom.getMinInline()
+        mxline=geom.getMinXline()
+        ret=GeoDataSync("getSeismicValsFromHorizon",self.server,hzID,seisID,200,202,400,403)
+        
+        self.assertFalse(ret==0,GDSErr(self.server,"Failed call to getSeismicValsFromHorizon"))
+        ret1=GeoDataSync("get3DHorzValsInXl",self.server,hzID,miline,miline+geom.getInlineInc(),mxline,mxline+geom.getXlineInc())
+        minz=min(ret1[b'HorzVals'])
+        maxz=max(ret1[b'HorzVals'])
+        minix=(minz-geom.getMinZ())/geom.getZInc()
+        minixf=math.floor(minix)
+        maxix=(maxz-geom.getMinZ())/geom.getZInc()
+        maxixf=math.floor(maxix)
+        minz=geom.getMinZ()+minixf*geom.getZInc()
+        maxz=geom.getMinZ()+(maxixf+1)*geom.getZInc()
+        gotVals=GeoDataSync("get3DSeisTracesRange",self.server,self.repo.get3DSeismicID(SEISMIC3D_0),miline,miline+geom.getInlineInc(),mxline,mxline+geom.getXlineInc(),minz-geom.getZInc()/4.0,maxz+geom.getZInc()/4.0)
+        knownIx=[(hzz-minz)/geom.getZInc() for hzz in ret1[b'HorzVals']]
+        knownIxf=[math.floor(hzz) for hzz in knownIx]
+        knownIxW=[hzz[1]-hzz[0] for hzz in zip(knownIxf,knownIx)]
+        vals=[0,0,0,0]
+        for i in range(0,4):
+            b=0
+            a=gotVals[b'Traces'][knownIxf[i]][i]*(1-knownIxW[i])
+            if knownIxW[i]>0:
+                b=gotVals[b'Traces'][knownIxf[i]+1][i]*(knownIxW[i])
+            vals[i]=a+b
+        #print(vals)
+        for i in range(0,4):
+            self.assertAlmostEqual(vals[i],ret[b'SeismicVals'][i],4,"Different seismic values returned on horizon")
+        
     def testGet3DHorzDataRange(self):
         hzID=self.repo.getHorizonID(HORIZON_0)
         ret=GeoDataSync("get3DHorzDataRange",self.server,hzID)
@@ -249,44 +284,6 @@ class HorizonTestCase(unittest.TestCase):
         self.assertAlmostEquals(knownMin,ret[b'MinValue'],4,"Mismatch in minimum horizon property value")
         self.assertAlmostEquals(knownMax,ret[b'MaxValue'],4,"Mismatch in maximum horizon property value")
         
-    def testGetSeismicValsFromHorizon(self):
-        seisID=self.repo.get3DSeismicID(SEISMIC3D_0)
-        hzID=self.repo.getHorizonID(HORIZON_0)
-        if seisID==None:
-            self.skipTest("Seismic SEISMIC3D_0 not found in repository")
-        geom=self.config.get3DSeismicGeometry()
-        miline=geom.getMinInline()
-        mxline=geom.getMinXline()
-        ret=GeoDataSync("getSeismicValsFromHorizon",self.server,hzID,seisID,miline,miline+geom.getInlineInc(),mxline,mxline+geom.getXlineInc())
-        self.assertFalse(ret==0,GDSErr(self.server,"Failed call to getSeismicValsFromHorizon"))
-        ret1=GeoDataSync("get3DHorzValsInXl",self.server,hzID,miline,miline+geom.getInlineInc(),mxline,mxline+geom.getXlineInc())
-        #print(ret)
-        #print(ret1)
-        minz=min(ret1[b'HorzVals'])
-        maxz=max(ret1[b'HorzVals'])
-        minix=(minz-geom.getMinZ())/geom.getZInc()
-        minixf=math.floor(minix)
-        maxix=(maxz-geom.getMinZ())/geom.getZInc()
-        maxixf=math.floor(maxix)
-        minz=geom.getMinZ()+minixf*geom.getZInc()
-        maxz=geom.getMinZ()+(maxixf+1)*geom.getZInc()
-        #print(minz,maxz)
-        gotVals=GeoDataSync("get3DSeisTracesRange",self.server,self.repo.get3DSeismicID(SEISMIC3D_0),miline,miline+geom.getInlineInc(),mxline,mxline+geom.getXlineInc(),minz-geom.getZInc()/4.0,maxz+geom.getZInc()/4.0)
-        #print(gotVals)
-        knownIx=[(hzz-minz)/geom.getZInc() for hzz in ret1[b'HorzVals']]
-        knownIxf=[math.floor(hzz) for hzz in knownIx]
-        knownIxW=[hzz[1]-hzz[0] for hzz in zip(knownIxf,knownIx)]
-        vals=[0,0,0,0]
-        for i in range(0,4):
-            b=0
-            a=gotVals[b'Traces'][knownIxf[i]][i]*(1-knownIxW[i])
-            if knownIxW[i]>0:
-                b=gotVals[b'Traces'][knownIxf[i]+1][i]*(knownIxW[i])
-            vals[i]=a+b
-        #print(vals)
-        for i in range(0,4):
-            self.assertAlmostEqual(vals[i],ret[b'SeismicVals'][i],4,"Different seismic values returned on horizon")
-       
         
             
     def getTestSuite(server,repo,config):
@@ -296,6 +293,7 @@ class HorizonTestCase(unittest.TestCase):
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzIDListAndVerify"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzGeometry"))
         suite.addTest(HorizonTestCase(server,repo,config,"testPut3DHorzValues"))
+        suite.addTest(HorizonTestCase(server,repo,config,"testGetSeismicValsFromHorizon"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzDataRange")) 
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzVals"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzValsInXl"))
@@ -307,7 +305,6 @@ class HorizonTestCase(unittest.TestCase):
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzPropVals"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzPropValsInXl"))
         suite.addTest(HorizonTestCase(server,repo,config,"testPut3DHorzPropValuesSpec"))
-        suite.addTest(HorizonTestCase(server,repo,config,"testGetSeismicValsFromHorizon"))
         
         return suite
     

@@ -154,6 +154,9 @@ class BlankProjectTestConfig(test_config.TestConfig):
        minz=geom.getMinZ()
        maxz=geom.getMaxZ()
        z0=(minz+maxz)/2
+       #ret= [minz+2*geom.getZInc()]*int(inlines*xlines)
+       #print(ret)
+       #return ret
        return [z0 +0.001*float(il-geom.getMinInline()) -0.001*float(xl-geom.getMinXline()) for il in range(0,int(inlines)) for xl in range(0,int(xlines))]
     
     def getHorizonPropertyVals(self,name=None):
