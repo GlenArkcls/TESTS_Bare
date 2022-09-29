@@ -8,6 +8,7 @@ This module is for test functions concerned with normal operation of 3D and 2D s
 """
 import os
 import sys
+import math
 
 
 file_dir=os.path.dirname(__file__)
@@ -285,7 +286,6 @@ class SeismicTestCase(unittest.TestCase):
         for i in range(len(returnedTraces)):
              self.assertTrue(compareFloatLists(volumeData[i+1][il0:il1:xlCount],returnedTraces[i]),"Mismatched data in trace")
     
-    #@unittest.skip("Test not run due to known errors")
     def testGet3DSeisTracesTransect(self):
         geom=self.config.get3DSeismicGeometry()
         seisID = self.repo.get3DSeismicID(SEISMIC3D_0)
@@ -334,6 +334,8 @@ class SeismicTestCase(unittest.TestCase):
         self.assertFalse(tracesLength==None or tracesLength==0,GDSErr(self.server,"Incorrect Traces length from get3DSeisTracesTransect"))
         for i in range(0,reshapedLen):
                 self.assertTrue(compareFloatLists(seisTransect[b'Traces'][i],reshapedInterps[i]),"get3DSeisTracesTransect data values do not match")
+                
+
                 
     def testGet3DSeisTracesTransectCorners(self):
         geom=self.config.get3DSeismicGeometry()
@@ -405,10 +407,36 @@ class SeismicTestCase(unittest.TestCase):
         self.assertFalse(seisTransect==None or seisTransect==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesTransect"))
         nTraces = seisTransect[b'NumTraces']
         tracesLength = seisTransect[b'TraceLength']
+        print(nTraces,tracesLength)
+        print(len(reshapedInterps),len(reshapedInterps[0]))
+        
         self.assertFalse(nTraces==None or nTraces==0,GDSErr(self.server,"Incorrect no. of Traces from get3DSeisTracesTransect"))
         self.assertFalse(tracesLength==None or tracesLength==0,GDSErr(self.server,"Incorrect Traces length from get3DSeisTracesTransect"))
         for i in range(0,tracesLength):
                 self.assertTrue(compareFloatLists(seisTransect[b'Traces'][i],reshapedInterps[i]),"get3DSeisTracesTransect data values do not match")
+                
+                
+# =============================================================================
+#     def testGet3DSeisTimeSlice(self):
+#        geom=self.config.get3DSeismicGeometry(False)
+#        minZ=geom[b"MinZ"]
+#        maxZ=geom[b"MaxZ"]
+#        
+#        z=(maxZ+minZ)/2+geom.getZInc()/2
+#        ix=(z-geom.getMinZ())/geom.getZInc()
+#        a= ix-math.floor(ix)
+#        b=math.ceil(ix)-ix
+#        
+#        volumeData=self.config.get3DSeismicData()
+#        
+#        
+#        gotData=GeoDataSync("get3DSeisTimeSlice",self.server,self.repo.get3DSeismicID(SEISMIC3D_0),geom.getMinInline(),geom.getMaxInline(),geom.getMinXline(),geom.getMaxXline(),z)
+#        self.assertFalse(gotData==None or gotData==0,GDSErr(self.server,"Failed GDS call to get3DSeisTimeSlice"))
+#        returnedTraces=gotData[b'Traces']
+#        print(returnedTraces[b'TraceLength'])
+#        self.assertTrue(len(returnedTraces)==len(volumeData),"No. samples mismatch in returned data from get3DSeisTracesSpec")
+# =============================================================================
+       
         
     def testDelete3DSeismic(self):
         args=[self.repo.getSeismicCollectionID(SEISMIC_COL_0)]
@@ -425,6 +453,12 @@ class SeismicTestCase(unittest.TestCase):
         self.assertFalse(success==None or success==0,GDSErr(self.server,("Failed call to delete3DSeismic")))
         colList=GeoDataSync("get3DSeisIDListCol",self.server,seisColID)
         self.assertFalse(IDInList(IDComparison,seisCol,colList),"Deleted seismic still appears in collection list")    
+        
+    def testGetSeis3DIntersectionIDList(self):
+        args=[self.repo.get3DSeismicID(SEISMIC3D_0)]
+        colList=GeoDataSync("getSeis3DIntersecitonIDList",self.server,args)
+        self.assertFalse(colList==None or colList==0,GDSErr(self.server,"Failed GDS call to getSeis3DIntersectionIDList"))
+        
     
     def testGetInlineCrosslineFromXY(self):
         geom=self.config.get3DSeismicGeometry(False)
@@ -632,6 +666,8 @@ class SeismicTestCase(unittest.TestCase):
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransectCorners"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransectStartStopOutside"))
        suite.addTest(SeismicTestCase(server,repo,config,"testDelete3DSeismic"))
+       #suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTimeSlice"))
+       #suite.addTest(SeismicTestCase(server,repo,config,"testGetSeis3DIntersectionIDList"))
        
        suite.addTest(SeismicTestCase(server,repo,config,"testGetInlineCrosslineFromXY"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGetInlineCrosslineFromXYExact"))

@@ -1,35 +1,35 @@
-function [translated] = translateData(input,typecode)
+function [translated] = translateData(input,dtype)
 input=input{1};
 
-switch typecode
-    case 'd'
+switch dtype
+    case GSOType.tnDouble
         translated=double(input);
-    case 's'
+    case GSOType.tnFloat
         translated=single(input);
-    case 'i32'
+    case GSOType.tnInt32
         translated=int32(input);
-    case 'i64'
+    case GSOType.tnInt64
         translated=int64(input);
-    case '[d'
-        translated=double(cell2mat(input));
-        
-    case '[s'
-         translated=single(cell2mat(input));
-             
-    case '[i32'
-        translated=int32(cell2mat(input)); 
-    case '[i64'
-        translated=int64(cell2mat(input));
-        
-    case '[[d'
-        translated=double(cellArrayToMat(input));
-    case '[[s'
-        translated=single(cellArrayToMat(input));
-    case '[[i32'
-        translated=int32(cellArrayToMat(input));
-    case '[[i64'
-        translated=int32(cellArrayToMat(input));
+    case GSOType.tnVDouble
+        if iscell(input{1})
+           translated= double(cellArrayToMat(input));
+        else
+           translated=double(cell2mat(input));
+        end 
+    case GSOType.tnVFloat
+        if iscell(input{1})
+           translated= single(cellArrayToMat(input));
+        else
+           translated=single(cell2mat(input));
+        end
+    case GSOType.tnVInt32
+        if iscell(input{1})
+           translated=int32(cellArrayToMat(input));
+        else
+           translated=int32(cell2mat(input));
+        end  
     otherwise
+	%Strings and string arrays go straight through
         translated=input;
 end
 end
