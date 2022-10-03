@@ -3,18 +3,20 @@ function [response] = GDSWrapper(fn,server,varargin)
 % input and output arguments
 % First we have to swap the varagin from a 1*N to an N*1
 % Additionally we have to ensure everything is of the correct data type,
-% which is done by getting a signature from 'signatureOf' then using the
-% typecodes to translate the arguments into the appropriate data type
-% using 'translateData'
+% which is done by getting a signature as a list of types from 'signatureOf' then using the
+% types to translate the arguments into the appropriate data type using 'translateData'
 
 args={};
 
-if ~isempty(varargin)
+if ~isInternal(fn) && ~isempty(varargin)
     % args to GDS need to be an N*1 not 1*N cell array, so we have
     % to transpose, and each cell must also
     % potentially be translated to the right data type
     sig=signatureOf(fn);
     args=arrayfun(@(v,s)translateData(v,s),varargin,sig(1:length(varargin)),'UniformOutput',false)';
+else
+	%this line currently only for hideErrorMessages argument
+    args=varargin;
 end
 
 % Call the GDS system
@@ -43,6 +45,12 @@ end
 end
 
 
+function [out] =isInternal(fnName)
+	%These two functions are not in the function defintions because they are
+	%purely internal
+    out=strcmpi('hideErrorMessages',fnName) || strcmpi('getLastError',fnName);
+end
+ 
 function [remapped]=remapStruct(inp)
     remapped=struct;
     fn=fieldnames(inp);
