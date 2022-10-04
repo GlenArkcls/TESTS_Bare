@@ -8,12 +8,13 @@ function [response] = GDSWrapper(fn,server,varargin)
 
 args={};
 
+
 if ~isInternal(fn) && ~isempty(varargin)
     % args to GDS need to be an N*1 not 1*N cell array, so we have
     % to transpose, and each cell must also
     % potentially be translated to the right data type
-    sig=signatureOf(fn);
-    args=arrayfun(@(v,s)translateData(v,s),varargin,sig(1:length(varargin)),'UniformOutput',false)';
+	sig=signatureOf(fn);
+	args=arrayfun(@(v,s)translateData(v,s),varargin,sig(1:length(varargin)),'UniformOutput',false)';
 else
 	%this line currently only for hideErrorMessages argument
     args=varargin;

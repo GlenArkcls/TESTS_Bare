@@ -1,4 +1,5 @@
 function [translated] = translateData(input,dtype)
+
 input=input{1};
 
 switch dtype
@@ -7,7 +8,7 @@ switch dtype
     case GSOType.tnFloat
         translated=single(input);
     case GSOType.tnInt32
-        translated=int32(input);
+		translated=int32(input);
     case GSOType.tnInt64
         translated=int64(input);
     case GSOType.tnVDouble

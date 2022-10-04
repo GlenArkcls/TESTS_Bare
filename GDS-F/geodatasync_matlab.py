@@ -121,7 +121,7 @@ def isMatlabArray(obj):
      we can make and use one, it is created in the internal namespace and so looks like a different type
      hence this codged way of checking if an object is ine of these types
      '''
-     return repr(type(obj)).count("mlarray")>0
+     return repr(type(obj)).count("mlarray")>0 or repr(type(obj)).count("matlab") >0
 
 def translateOutputDict(input):
     '''Translates a dictonary fomr the MATLAB ouptu to plain Python types
@@ -144,7 +144,7 @@ def translateOutputDict(input):
         elif type(v) is str:
             v=stringToBytes(v)
         #Unpack these arrays-currently packaged as nested lists
-        if k in ["Inlines","Xlines","XCoords","YCoords","ZCoords","SurfVals","HorzVals","Values","Data","Points","SeismicVals"]:
+        if k in ["Inlines","Xlines","XCoords","YCoords","ZCoords","SurfVals","HorzVals","Values","Data","Points","SeismicVals","Points"]:
             '''These should all be lists. If there is one value only
             say v, it just comers as 'v' so we have to list it i.e. v -> [v]
             On the other hand if there is more than one there is extra list wrapping ie [[x,y,z]] rather than [x,y,z]
