@@ -253,7 +253,7 @@ class HorizonTestCase(unittest.TestCase):
         self.assertFalse(ret is None or ret==0,GDSErr(self.server,"Failed call to get3DHorzPropValsInXl"))
         #print(testVals)
         #print(ret[b'PropVals'])
-        self.assertTrue(compareFloatLists(ret[b'PropVals'],testVals),"Mismathced property values")
+        self.assertTrue(compareFloatLists(ret[b'PropVals'],testVals),"Mismatched property values")
         
         
     def testPut3DHorzPropValuesSpec(self):

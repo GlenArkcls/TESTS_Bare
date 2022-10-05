@@ -118,7 +118,7 @@ class ProjectTestCase(unittest.TestCase):
     def testGetParentID(self):
         parentID=GeoDataSync("getParentID",self.server,self.repo.getFolderID(FOLDER_1))
         self.assertFalse(parentID==None or parentID==0,GDSErr(self.server,"Failed GDS call to getParentID"))
-        self.assertEqual(parentID,self.repo.getFolderID(FOLDER_0),"Mismatched IDs for parent folder")
+        self.assertTrue(IDComparison(parentID,self.repo.getFolderID(FOLDER_0)),"Mismatched IDs for parent folder")
             
     def getTestSuite(server,repo,config):
         suite=unittest.TestSuite()

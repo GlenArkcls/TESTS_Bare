@@ -177,8 +177,8 @@ class WellTestCase(unittest.TestCase):
         self.assertTrue(IDInList(IDComparison,self.repo.getWellLogID(WELL_LOG_1),idList),"Well log 1 not in ID list in getWellData")
         for i in range(0,len(idList)):
             if IDComparison(idList[i],self.repo.getWellLogID(WELL_LOG_0)):
-                print(data0["Values"])
-                print(data[b"LogVals"][i])
+                #print(data0["Values"])
+                #print(data[b"LogVals"][i])
                 self.assertTrue(compareFloatLists(data0["Values"],data[b"LogVals"][i]),"Well log 0 data does not match")    
             elif IDComparison(idList[i],self.repo.getWellLogID(WELL_LOG_1)):
                 self.assertTrue(compareFloatLists(data1["Values"],data[b"LogVals"][i]),"Well log 1 data does not match") 

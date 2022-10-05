@@ -42,14 +42,15 @@ class SurfaceTestCase(unittest.TestCase):
         self.repo=repo
 
     def testCreateTopLevelSurface(self):
-        args=[0]
+        args=[]
         geom=self.config.getSurfGeometry()
         args.extend(list(geom.values()))
         surfID=self.repo.createSurface(SURFACE_0,*args)
+        print(surfID)
         self.assertFalse(surfID==None or surfID==0,GDSErr(self.server,"Failed createSurface at top level"))
         
     def testCreateTopLevelSurfaceDepth(self):
-        args=[0]
+        args=[]
         geom=self.config.getSurfGeometry(True)
         args.extend(list(geom.values()))
         surfID=self.repo.createSurface(SURFACE_DEPTH0,*args)

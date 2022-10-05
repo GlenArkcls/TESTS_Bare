@@ -144,7 +144,7 @@ def translateOutputDict(input):
         elif type(v) is str:
             v=stringToBytes(v)
         #Unpack these arrays-currently packaged as nested lists
-        if k in ["Inlines","Xlines","XCoords","YCoords","ZCoords","SurfVals","HorzVals","Values","Data","Points","SeismicVals","Points"]:
+        if k in ["Inlines","Xlines","XCoords","YCoords","ZCoords","SurfVals","HorzVals","Values","Data","Points","SeismicVals","Points","PropVals"]:
             '''These should all be lists. If there is one value only
             say v, it just comers as 'v' so we have to list it i.e. v -> [v]
             On the other hand if there is more than one there is extra list wrapping ie [[x,y,z]] rather than [x,y,z]
@@ -218,6 +218,7 @@ def translateOutputList(ls):
     return out
     
 def translateOutput(output):
+    
     if isinstance(output,Mapping):
         output=translateOutputDict(output)
     elif isinstance(output,list):
