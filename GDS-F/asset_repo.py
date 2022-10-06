@@ -35,6 +35,7 @@ class ObjectType(Enum):
     WELL_COLLECTION=15
     GLOBAL_LOG=16
     WELL_MARKER=17
+    COLORMAP=18
     
     
     
@@ -59,7 +60,8 @@ class AssetRepository:
                       ObjectType.WELL_LOG:{},
                       ObjectType.WELL_COLLECTION:{},
                       ObjectType.GLOBAL_LOG:{},
-                      ObjectType.WELL_MARKER:{}
+                      ObjectType.WELL_MARKER:{},
+                      ObjectType.COLORMAP:{}
                       }
     
     def initServer(self,server):
@@ -134,7 +136,6 @@ class AssetRepository:
         return id
     def createWell(self,name,*args):
         success,id=self.createObject("createWell",name,*args)
-        print("creaetWell",args)
         if success:
             self.objects[ObjectType.WELL][name]=id
         return id
@@ -221,6 +222,8 @@ class AssetRepository:
         return self.objects[ObjectType.FAULT].get(name)
     def getPolygonID(self,name):
         return self.objects[ObjectType.POLYGON].get(name)
+    def getColormapID(self,name):
+        return self.objects[ObjectType.COLORMAP].get(name)
     
     
     
@@ -263,6 +266,8 @@ class AssetRepository:
         self.objects[ObjectType.FAULT][name]=ident
     def putPolygonID(self,name,ident):
         self.objects[ObjectType.POLYGON][name]=ident
+    def putColormapID(self,name,ident):
+        self.objects[ObjectType.COLORMAP][name]=ident
         
 def initModule(geodatasyncFn):
     global GeoDataSync

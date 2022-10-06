@@ -79,7 +79,7 @@ function [out] = isIDFunction(fnName)
 %  
 out=strcmpi(fnName(1:6),"create") || strcmpi(fnName,"getParentID");
 if ~out
-    out=strcmpi(fnName(end-4:end),"IDSel") && ~strcmpi(fnName(10:15),"Inters");
+    out=strcmpi(fnName(end-4:end),"IDSel"); %&& ~strcmpi(fnName(10:15),"Inters");
 end
 end
 

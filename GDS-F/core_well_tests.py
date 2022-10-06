@@ -32,6 +32,7 @@ from constants import WELL_LOG_1
 from constants import WELL_LOG_2
 from constants import GLOBAL_LOG_0
 from constants import WELL_MARKER_0
+from constants import COLORMAP_0
 
 GeoDataSync=None
 IDComparison=None
@@ -58,8 +59,6 @@ class WellTestCase(unittest.TestCase):
         
     def testCreateWellInCollection(self):
         wellColID=self.repo.getWellCollectionID(WELL_COLLECTION_0)
-        print(wellColID)
-        
         wellID1=self.repo.createWell(WELL_1,wellColID)
         self.assertFalse(wellID1 is None or wellID1==0,GDSErr(self.server,"Failed createWell in collection"))
         
@@ -166,7 +165,14 @@ class WellTestCase(unittest.TestCase):
         logData=GeoDataSync("getLogData",self.server,logID)
         self.assertFalse(logData is None or logData==0,GDSErr(self.server,"Failed getLogData"))
         self.assertTrue(compareFloatLists(log["Values"],logData[b"LogVals"]))
-       
+    
+    def testChangeLogColormap(self):
+        cmID=self.repo.getColormapID(COLORMAP_0)
+        if cmID==None:
+            self.skipTest("No Colormap ID avaialbale")
+        wellID=self.repo.getWellLogID(WELL_LOG_0)
+        ret=GeoDataSync("changeLogColormap",self.server,logID,cmID)
+        self.assertFalse(ret==0,GDSErr(self.server,"Failed call to changeLogColormap"))
         
     def testGetWellGeom(self):
         wellID=self.repo.getWellID(WELL_0)
@@ -248,6 +254,7 @@ class WellTestCase(unittest.TestCase):
         suite.addTest(WellTestCase(server,repo,config,"testPutLogData"))
         suite.addTest(WellTestCase(server,repo,config,"testGetLogData"))
         suite.addTest(WellTestCase(server,repo,config,"testPutLogDataExplicit"))
+        suite.addTest(WellTestCase(server,repo,config,"testChangeLogColormap"))
         suite.addTest(WellTestCase(server,repo,config,"testGetWellGeom"))
         suite.addTest(WellTestCase(server,repo,config,"testGetWellTrajectory"))
         suite.addTest(WellTestCase(server,repo,config,"testGetWellData"))

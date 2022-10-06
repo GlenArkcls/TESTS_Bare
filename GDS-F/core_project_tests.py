@@ -24,6 +24,7 @@ from constants import INTERP_COL_0
 from constants import INTERP_COL_1
 from constants import FOLDER_0
 from constants import FOLDER_1
+from constants import COLORMAP_0
 
 
 GeoDataSync=None
@@ -119,6 +120,19 @@ class ProjectTestCase(unittest.TestCase):
         parentID=GeoDataSync("getParentID",self.server,self.repo.getFolderID(FOLDER_1))
         self.assertFalse(parentID==None or parentID==0,GDSErr(self.server,"Failed GDS call to getParentID"))
         self.assertTrue(IDComparison(parentID,self.repo.getFolderID(FOLDER_0)),"Mismatched IDs for parent folder")
+        
+    def testGetColormapIDList(self):
+        cmIDs=GeoDataSync("getColormapIDList",self.server)
+        self.assertFalse(cmIDs==None or cmIDs==0,GDSErr(self.server,"Failed GDS call to getColormapIDList"))
+        self.repo.putColormapID(COLORMAP_0,cmIDs[0])
+        
+        
+    def testGetColormapColors(self):
+        cmID=self.repo.getColormapID(COLORMAP_0)
+        if cmID==None:
+            self.skipTest("No colourmapo ID found")
+        cmColors=GeoDataSync("getColormapColors",self.server,cmID)
+        self.assertFalse(cmColors==None or cmColors==0,GDSErr(self.server,"Failed GDS call to getColormapColors"))
             
     def getTestSuite(server,repo,config):
         suite=unittest.TestSuite()
@@ -134,7 +148,8 @@ class ProjectTestCase(unittest.TestCase):
         suite.addTest(ProjectTestCase(server,repo,config,"testCreateFolderNested"))
         suite.addTest(ProjectTestCase(server,repo,config,"testGetFolderIDListAndVerify"))
         suite.addTest(ProjectTestCase(server,repo,config,"testGetParentID"))
-        
+        suite.addTest(ProjectTestCase(server,repo,config,"testGetColormapIDList"))
+        suite.addTest(ProjectTestCase(server,repo,config,"testGetColormapColors"))
         return suite
     
 

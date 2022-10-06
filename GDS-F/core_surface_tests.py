@@ -31,6 +31,7 @@ from constants import SEISMIC_COL_0
 from constants import SURFACE_0
 from constants import SURFACE_1
 from constants import SURFACE_DEPTH0
+from constants import COLORMAP_0
  
 GeoDataSync=None
 IDComparison=None
@@ -48,7 +49,6 @@ class SurfaceTestCase(unittest.TestCase):
         geom=self.config.getSurfGeometry()
         args.extend(list(geom.values()))
         surfID=self.repo.createSurface(SURFACE_0,*args)
-        print(surfID)
         self.assertFalse(surfID==None or surfID==0,GDSErr(self.server,"Failed createSurface at top level"))
         
     def testCreateTopLevelSurfaceDepth(self):
@@ -157,7 +157,13 @@ class SurfaceTestCase(unittest.TestCase):
                  self.assertTrue(surfVals[b'Xlines'][i]>=minXline and surfVals[b'Xlines'][i]<=maxXline,"Returned Crossline out of given range from getSurfValsRangeIlXl index {}".format(surfVals[b'Xlines'][i]))
         self.assertTrue(compareFloatLists(surfVals[b'SurfVals'],vals),"Mismatched values from getSurfValsRangeIlXl" )
         
-    
+    def testChangeSurfColormap(self):
+        cmID=self.repo.getColormapID(COLORMAP_0)
+        if cmID==None:
+            self.skipTest("No Colormap ID avaialbale")
+        surfID=self.repo.getSurfaceID(SURFACE_0)
+        ret=GeoDataSync("changeSurfColormap",self.server,surfID,cmID)
+        self.assertFalse(ret==0,GDSErr(self.server,"Failed call to changeSurfColormap"))
         
         
  
@@ -174,6 +180,7 @@ class SurfaceTestCase(unittest.TestCase):
         suite.addTest(SurfaceTestCase(server,repo,config,"testGetSurfDataRange"))
         suite.addTest(SurfaceTestCase(server,repo,config,"testGetSurfVals"))
         suite.addTest(SurfaceTestCase(server,repo,config,"testGetSurfValsRangeIlXl"))
+        suite.addTest(SurfaceTestCase(server,repo,config,"testChangeSurfColormap"))
         return suite
 
 

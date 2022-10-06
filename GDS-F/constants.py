@@ -54,4 +54,6 @@ INTERP_COL_1=b"InterpretationCollection1"
 FOLDER_0=b"Folder0"
 FOLDER_1=b"Folder1"
 
+COLORMAP_0=b"TestColormap"
+
 

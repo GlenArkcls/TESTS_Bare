@@ -33,6 +33,7 @@ from constants import SEISMIC3D_0
 from constants import SEISMIC_COL_0
 from constants import HORIZON_PROP_0
 from constants import INTERP_COL_0
+from constants import COLORMAP_0
 
 
 GeoDataSync=None
@@ -228,6 +229,14 @@ class HorizonTestCase(unittest.TestCase):
         #reset back to original values because we might be doing a comparison of output ??
         self.testPut3DHorzValues()
         
+    def testChange3DHorzColormap(self):
+        cmID=self.repo.getColormapID(COLORMAP_0)
+        if cmID==None:
+            self.skipTest("No Colormap ID avaialbale")
+        hzID=self.repo.getHorizonID(HORIZON_0)
+        ret=GeoDataSync("change3DHorzColormap",self.server,hzID,cmID)
+        self.assertFalse(ret==0,GDSErr(self.server,"Failed call to change3DHorzColormap"))
+        
     def testCreate3DHorizonProperty(self):
         hzID=self.repo.getHorizonID(HORIZON_0)
         ret=self.repo.createHorizonProperty(hzID,HORIZON_PROP_0)
@@ -320,6 +329,15 @@ class HorizonTestCase(unittest.TestCase):
         self.assertAlmostEquals(knownMin,ret[b'MinValue'],4,"Mismatch in minimum horizon property value")
         self.assertAlmostEquals(knownMax,ret[b'MaxValue'],4,"Mismatch in maximum horizon property value")
         
+    def testChange3DHorzPropColormap(self):
+        cmID=self.repo.getColormapID(COLORMAP_0)
+        if cmID==None:
+            self.skipTest("No Colormap ID avaialbale")
+        hzPropID=self.repo.getHorizonPropertyID(HORIZON_PROP_0)
+        ret=GeoDataSync("change3DHorzPropColormap",self.server,hzPropID,cmID)
+        self.assertFalse(ret==0,GDSErr(self.server,"Failed call to change3DHorzPropColormap"))
+        
+        
         
             
     def getTestSuite(server,repo,config):
@@ -331,6 +349,7 @@ class HorizonTestCase(unittest.TestCase):
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzIDListAndVerify"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzGeometry"))
         suite.addTest(HorizonTestCase(server,repo,config,"testPut3DHorzValues"))
+        suite.addTest(HorizonTestCase(server,repo,config,"testChange3DHorzColormap"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGetSeismicValsFromHorizon"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzDataRange")) 
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzVals"))
@@ -343,6 +362,7 @@ class HorizonTestCase(unittest.TestCase):
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzPropVals"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzPropValsInXl"))
         suite.addTest(HorizonTestCase(server,repo,config,"testPut3DHorzPropValuesSpec"))
+        suite.addTest(HorizonTestCase(server,repo,config,"testChange3DHorzPropColormap"))
         
         return suite
     

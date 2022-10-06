@@ -36,6 +36,8 @@ from constants import SEISMIC3D_1
 from constants import SEISMIC3D_DEPTH0
 from constants import SEISMIC2D_0
 from constants import SEISMIC2D_DEPTH0
+from constants import COLORMAP_0
+
 
 GeoDataSync=None
 IDComparison=None
@@ -414,8 +416,6 @@ class SeismicTestCase(unittest.TestCase):
         self.assertFalse(seisTransect==None or seisTransect==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesTransect"))
         nTraces = seisTransect[b'NumTraces']
         tracesLength = seisTransect[b'TraceLength']
-        print(nTraces,tracesLength)
-        print(len(reshapedInterps),len(reshapedInterps[0]))
         
         self.assertFalse(nTraces==None or nTraces==0,GDSErr(self.server,"Incorrect no. of Traces from get3DSeisTracesTransect"))
         self.assertFalse(tracesLength==None or tracesLength==0,GDSErr(self.server,"Incorrect Traces length from get3DSeisTracesTransect"))
@@ -466,6 +466,13 @@ class SeismicTestCase(unittest.TestCase):
         colList=GeoDataSync("getSeis3DIntersecitonIDList",self.server,args)
         self.assertFalse(colList==None or colList==0,GDSErr(self.server,"Failed GDS call to getSeis3DIntersectionIDList"))
         
+    def testChange3DSeisColormap(self):
+        cmID=self.repo.getColormapID(COLORMAP_0)
+        if cmID==None:
+            self.skipTest("No Colormap ID avaialbale")
+        seisID=self.repo.get3DSeismicID(SEISMIC3D_0)
+        ret=GeoDataSync("change3DSeisColormap",self.server,seisID,cmID)
+        self.assertFalse(ret==0,GDSErr(self.server,"Failed call to change3DSeisColormap"))
     
     def testGetInlineCrosslineFromXY(self):
         geom=self.config.get3DSeismicGeometry(False)
@@ -647,6 +654,15 @@ class SeismicTestCase(unittest.TestCase):
         self.assertTrue(len(traceData[0])==len(ix),"Mismatched no of traces from get2DSeisTracesSpec")
         for i in range(len(traceData)):
             self.assertTrue(compareFloatLists(traceData[i],lineData[i][0:len(lineData[0])+1:2]))
+            
+            
+    def testChange2DSeisColormap(self):
+        cmID=self.repo.getColormapID(COLORMAP_0)
+        if cmID==None:
+            self.skipTest("No Colormap ID avaialbale")
+        seisID=self.repo.get2DSeismicID(SEISMIC2D_0)
+        ret=GeoDataSync("change2DSeisColormap",self.server,seisID,cmID)
+        self.assertFalse(ret==0,GDSErr(self.server,"Failed call to change2DSeisColormap"))
         
     
     def getTestSuite(server,repo,config):
@@ -675,6 +691,7 @@ class SeismicTestCase(unittest.TestCase):
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransectCorners"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesTransectStartStopOutside"))
        suite.addTest(SeismicTestCase(server,repo,config,"testDelete3DSeismic"))
+       suite.addTest(SeismicTestCase(server,repo,config,"testChange3DSeisColormap"))
        #suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTimeSlice"))
        #suite.addTest(SeismicTestCase(server,repo,config,"testGetSeis3DIntersectionIDList"))
        
@@ -693,6 +710,7 @@ class SeismicTestCase(unittest.TestCase):
        suite.addTest(SeismicTestCase(server,repo,config,"testGet2DSeisDataRange"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet2DSeisTracesAll"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet2DSeisTracesSpec"))
+       suite.addTest(SeismicTestCase(server,repo,config,"testChange2DSeisColormap"))
        
       
        return suite
