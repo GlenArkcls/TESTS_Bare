@@ -25,6 +25,8 @@ from test_utils import GDSErr
 
 
 from constants import POLYGON_0
+from constants import POLYGON_1
+from constants import FOLDER_0
 
 
 GeoDataSync=None
@@ -44,11 +46,21 @@ class PolygonTestCase(unittest.TestCase):
         plID=self.repo.createPolygon(POLYGON_0)
         self.assertFalse(plID==None or plID==0,GDSErr(self.server,"Failed createPolygon at top level"))
         
+    def testCreatePolygonInFolder(self):
+        fID=self.repo.getFolderID(FOLDER_0)
+        if fID==None:
+            self.skipTest("Required Folder with asset repository name '{}' not found".format("FOLDER_0")) 
+        plID=self.repo.createPolygon(POLYGON_1,fID)
+        self.assertFalse(plID==None or plID==0,GDSErr(self.server,"Failed createPolygon in folder"))
+        
     def testGetPolygonListAndVerify(self):
         polyIDList=GeoDataSync("getPolygonIDList",self.server)
         self.assertFalse(polyIDList==None or polyIDList==0,GDSErr(self.server,"Failed call to getPolygonIDList"))
         polyID=self.repo.getPolygonID(POLYGON_0)
+        polyID1=self.repo.getPolygonID(POLYGON_1)
         self.assertTrue(IDInList(IDComparison,polyID,polyIDList))
+        if polyID1!=None:
+            self.assertTrue(IDInList(IDComparison,polyID1,polyIDList))
     
     def testPutPolygonData(self):
         wlID=self.repo.getPolygonID(POLYGON_0)
@@ -74,6 +86,7 @@ class PolygonTestCase(unittest.TestCase):
     def getTestSuite(server,repo,config):
         suite=unittest.TestSuite()
         suite.addTest(PolygonTestCase(server,repo,config,"testCreatePolygon"))
+        suite.addTest(PolygonTestCase(server,repo,config,"testCreatePolygonInFolder"))
         suite.addTest(PolygonTestCase(server,repo,config,"testGetPolygonListAndVerify"))
         suite.addTest(PolygonTestCase(server,repo,config,"testPutPolygonData"))
         suite.addTest(PolygonTestCase(server,repo,config,"testGetPolygonData"))

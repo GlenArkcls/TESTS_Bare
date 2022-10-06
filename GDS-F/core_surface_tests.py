@@ -27,7 +27,9 @@ from seismicgeometry import SeismicGeometry
 
 
 from constants import SEISMIC3D_0
+from constants import SEISMIC_COL_0
 from constants import SURFACE_0
+from constants import SURFACE_1
 from constants import SURFACE_DEPTH0
  
 GeoDataSync=None
@@ -55,6 +57,18 @@ class SurfaceTestCase(unittest.TestCase):
         args.extend(list(geom.values()))
         surfID=self.repo.createSurface(SURFACE_DEPTH0,*args)
         self.assertFalse(surfID==None or surfID==0,GDSErr(self.server,"Failed createSurface (depth) at top level"))
+        
+    def testCreateSurfaceInCollection(self):
+        seisColID=self.repo.getSeismicCollectionID(SEISMIC_COL_0)
+        if seisColID==None:
+            self.skipTest("Required Seismic Collection with asset repository name '{}' not found".format(SEISMIC_COL_0))
+        args=[]
+        geom=self.config.getSurfGeometry()
+        args.extend(list(geom.values()))
+        args.append(seisColID)
+        surfID=self.repo.createSurface(SURFACE_1,*args)
+        self.assertFalse(surfID==None or surfID==0,GDSErr(self.server,"Failed createSurface in collection"))
+        
         
     def testGetSurfIDListAndVerify(self):
         surfIDList=GeoDataSync("getSurfIDList",self.server)
@@ -152,6 +166,7 @@ class SurfaceTestCase(unittest.TestCase):
         suite=unittest.TestSuite()
         suite.addTest(SurfaceTestCase(server,repo,config,"testCreateTopLevelSurface"))
         suite.addTest(SurfaceTestCase(server,repo,config,"testCreateTopLevelSurfaceDepth"))
+        suite.addTest(SurfaceTestCase(server,repo,config,"testCreateSurfaceInCollection"))
         suite.addTest(SurfaceTestCase(server,repo,config,"testGetSurfGeom"))
         suite.addTest(SurfaceTestCase(server,repo,config,"testGetSurfIDListAndVerify"))
         

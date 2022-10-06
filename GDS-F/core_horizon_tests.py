@@ -27,9 +27,12 @@ from test_utils import IDInList
 
 from constants import HORIZON_0
 from constants import HORIZON_1
+from constants import HORIZON_2
+from constants import HORIZON_3
 from constants import SEISMIC3D_0
 from constants import SEISMIC_COL_0
 from constants import HORIZON_PROP_0
+from constants import INTERP_COL_0
 
 
 GeoDataSync=None
@@ -67,13 +70,46 @@ class HorizonTestCase(unittest.TestCase):
         hzID=self.repo.createHorizonByVolume(HORIZON_1,*args)
         self.assertFalse(hzID==None or hzID==0,GDSErr(self.server,"Failed createHorizonBy3DVolume at top level"))
         
+    def testCreate3DHorizonInInterpCollection(self):
+        seisColID=self.repo.getSeismicCollectionID(SEISMIC_COL_0)
+        if seisColID==None:
+            self.skipTest("Required Seismic Collection with asset repository name '{}' not found".format("SEISMIC_COL_0"))
+        #Need to check there is a seismic in the collection otherwise no geometry and cannot add the horizon
+        seisIDList=GeoDataSync("get3DSeisIDListCol",self.server,seisColID)
+        self.assertFalse(seisIDList==None or seisIDList==0,GDSErr(self.server,"Failed to list seismics from collection"))
+        if len(seisIDList)==0:
+            self.skipTest("Seismic Collection '{}' has no seismics so no horizon can be added".format("SEISMIC_COL_0"))
+        interpID=self.repo.getInterpretationCollectionID(INTERP_COL_0)
+        if interpID==None:
+            self.skipTest("Required Interpretation Collection with asset repository name '{}' not found".format("INTERP_COL_0")) 
+        args=[0,seisColID,interpID]
+        hzID=self.repo.createHorizon(HORIZON_2,*args)
+        self.assertFalse(hzID==None or hzID==0,GDSErr(self.server,"Failed createHorizon in interp collection"))
+    
+    def testCreate3DHorizonBy3DVolumeInInterpCollection(self):
+        seisID=self.repo.get3DSeismicID(SEISMIC3D_0)
+        if seisID==None:
+            self.skipTest("Required Seismic Collection with asset repository name '{}' not found".format("SEISMIC3D_0")) 
+        interpID=self.repo.getInterpretationCollectionID(INTERP_COL_0)
+        if interpID==None:
+            self.skipTest("Required Interpretation Collection with asset repository name '{}' not found".format("INTERP_COL_0")) 
+        args=[0,seisID,interpID]
+        hzID=self.repo.createHorizonByVolume(HORIZON_3,*args)
+        self.assertFalse(hzID==None or hzID==0,GDSErr(self.server,"Failed createHorizonBy3DVolume in interp collection"))
+        
     def testGet3DHorzIDListAndVerify(self):
         hzIDList=GeoDataSync("get3DHorzIDList",self.server)
         self.assertFalse(hzIDList==None or hzIDList==0,GDSErr(self.server,"Failed call to get3DHorzIDList"))
         hz0ID=self.repo.getHorizonID(HORIZON_0)
         hz1ID=self.repo.getHorizonID(HORIZON_1)
+        hz2ID=self.repo.getHorizonID(HORIZON_2)
+        hz3ID=self.repo.getHorizonID(HORIZON_3)
         self.assertTrue(IDInList(IDComparison,hz0ID,hzIDList),"Failed to find horizon in list")
         self.assertTrue(IDInList(IDComparison,hz1ID,hzIDList),"Failed to find horizon in list")
+        if hz2ID != None:
+            self.assertTrue(IDInList(IDComparison,hz2ID,hzIDList),"Failed to find horizon in list")
+        if hz3ID != None:
+            self.assertTrue(IDInList(IDComparison,hz3ID,hzIDList),"Failed to find horizon in list")
     
     def testGet3DHorzGeometry(self):
         hzID=self.repo.getHorizonID(HORIZON_0)
@@ -290,6 +326,8 @@ class HorizonTestCase(unittest.TestCase):
         suite=unittest.TestSuite()
         suite.addTest(HorizonTestCase(server,repo,config,"testCreate3DHorizon"))
         suite.addTest(HorizonTestCase(server,repo,config,"testCreate3DHorizonBy3DVolume"))
+        suite.addTest(HorizonTestCase(server,repo,config,"testCreate3DHorizonInInterpCollection"))
+        suite.addTest(HorizonTestCase(server,repo,config,"testCreate3DHorizonBy3DVolumeInInterpCollection"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzIDListAndVerify"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzGeometry"))
         suite.addTest(HorizonTestCase(server,repo,config,"testPut3DHorzValues"))

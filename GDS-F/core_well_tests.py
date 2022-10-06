@@ -25,6 +25,7 @@ from test_utils import IDInList
 
 
 from constants import WELL_0
+from constants import WELL_1
 from constants import WELL_COLLECTION_0
 from constants import WELL_LOG_0
 from constants import WELL_LOG_1
@@ -46,10 +47,21 @@ class WellTestCase(unittest.TestCase):
     def testCreateWellRoot(self):
         success=GeoDataSync("createWellRoot",self.server)
         self.assertFalse(success==None or success==0,GDSErr(self.server,"Failed createWellRoot"))
+        
+    def testCreateWellCollection(self):
+        wellID=self.repo.createWellCollection(WELL_COLLECTION_0)
+        self.assertFalse(wellID is None or wellID==0,GDSErr(self.server,"Failed createWellCollection"))
       
     def testCreateWell(self):
         wellID=self.repo.createWell(WELL_0)
         self.assertFalse(wellID is None or wellID==0,GDSErr(self.server,"Failed createWell"))
+        
+    def testCreateWellInCollection(self):
+        wellColID=self.repo.getWellCollectionID(WELL_COLLECTION_0)
+        print(wellColID)
+        
+        wellID1=self.repo.createWell(WELL_1,wellColID)
+        self.assertFalse(wellID1 is None or wellID1==0,GDSErr(self.server,"Failed createWell in collection"))
         
     def testGetWellListAndVerify(self):
         wellIDList=GeoDataSync("getWellIDList",self.server)
@@ -57,9 +69,7 @@ class WellTestCase(unittest.TestCase):
         wellID=self.repo.getWellID(WELL_0)
         self.assertTrue(IDInList(IDComparison,wellID,wellIDList))
     
-    def testCreateWellCollection(self):
-        wellID=self.repo.createWellCollection(WELL_COLLECTION_0)
-        self.assertFalse(wellID is None or wellID==0,GDSErr(self.server,"Failed createWellCollection"))
+    
         
     def testGetWellCollectionListAndVerify(self):
         wellColIDList=GeoDataSync("getWellCollectionIDList",self.server)
@@ -72,12 +82,22 @@ class WellTestCase(unittest.TestCase):
         headCoords=self.config.getWellHeadCoordinates()
         success=GeoDataSync("putWellHead",self.server,wellID,headCoords[0],headCoords[1])
         self.assertFalse(success==0,GDSErr(self.server,"Failed putWellHead"))
+        wellID1=self.repo.getWellID(WELL_1)
+        headCoords=self.config.getWellHeadCoordinates()
+        success=GeoDataSync("putWellHead",self.server,wellID1,headCoords[0],headCoords[1])
+        self.assertFalse(success==0,GDSErr(self.server,"Failed putWellHead"))
         
     def testPutWellTrack(self):
         wellID=self.repo.getWellID(WELL_0)
         track=self.config.getWellTrack()
         success=GeoDataSync("putWellTrack",self.server,wellID,track["X"],track["Y"],track["Z"],track["reftype"],track["reflevel"])
         self.assertFalse(success==0,GDSErr(self.server,"Failed putWellTrack"))
+    
+    def testPutWellTrackWithoutOptions(self):
+        wellID=self.repo.getWellID(WELL_1)
+        track=self.config.getWellTrack()
+        success=GeoDataSync("putWellTrack",self.server,wellID,track["X"],track["Y"],track["Z"])
+        self.assertFalse(success==0,GDSErr(self.server,"Failed putWellTrack missing opt args"))
         
     def testCreateWellLog(self):
         wellID=self.repo.getWellID(WELL_0)
@@ -214,12 +234,15 @@ class WellTestCase(unittest.TestCase):
     def getTestSuite(server,repo,config):
         suite=unittest.TestSuite()
         suite.addTest(WellTestCase(server,repo,config,"testCreateWellRoot"))
-        suite.addTest(WellTestCase(server,repo,config,"testCreateWell"))
-        suite.addTest(WellTestCase(server,repo,config,"testGetWellListAndVerify"))
         suite.addTest(WellTestCase(server,repo,config,"testCreateWellCollection"))
+        suite.addTest(WellTestCase(server,repo,config,"testCreateWell"))
+        suite.addTest(WellTestCase(server,repo,config,"testCreateWellInCollection"))
+        suite.addTest(WellTestCase(server,repo,config,"testGetWellListAndVerify"))
+        
         suite.addTest(WellTestCase(server,repo,config,"testGetWellCollectionListAndVerify"))
         suite.addTest(WellTestCase(server,repo,config,"testPutWellHead"))
         suite.addTest(WellTestCase(server,repo,config,"testPutWellTrack"))
+        suite.addTest(WellTestCase(server,repo,config,"testPutWellTrackWithoutOptions"))
         suite.addTest(WellTestCase(server,repo,config,"testCreateWellLog"))
         suite.addTest(WellTestCase(server,repo,config,"testGetLogListAndVerify"))
         suite.addTest(WellTestCase(server,repo,config,"testPutLogData"))

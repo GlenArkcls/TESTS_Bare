@@ -12,6 +12,7 @@ Some constants for the basic test object we make and operate on
 '''
 SEISMIC_COL_0=b"SeismicCollection0"
 SEISMIC_COL_1=b"SeismicCollection1"
+SEISMIC_COL_2=b"SeismicCollection2"
 SEISMIC3D_0=b"Seismic3D0"
 SEISMIC3D_1=b"Seismic3D1"
 SEISMIC2D_0=b"Seismic2D0"
@@ -20,15 +21,19 @@ SEISMIC2D_DEPTH0=b"Seismic2DDepth0"
 
  
 SURFACE_0=b"TestSurface0"
+SURFACE_1=b"TestSurface1"
 SURFACE_DEPTH0=b"TestSurfaceDepth0"
 
 HORIZON_0=b"TestHorizon0"
 HORIZON_1=b"TestHorizon1"
+HORIZON_2=b"TestHorizon2"
+HORIZON_3=b"TestHorizon3"
 HORIZON_PROP_0=b'TestHzProp0'
 
 POINTSET_0=b"TestPointSet0"
 
 WELL_0=b"TestWell0"
+WELL_1=b"TestWell1"
 WELL_COLLECTION_0=b"TestWellCollection0"
 WELL_LOG_0=b"TestLog0"
 WELL_LOG_1=b"TestLog1"
@@ -41,6 +46,7 @@ FAULT_0=b"TestFault0"
 WAVELET_0=b"TestWavelet0"
 
 POLYGON_0=b"TestPolygon0"
+POLYGON_1=b"TestPolygon1"
 
 
 INTERP_COL_0=b"InterpretationCollection0"

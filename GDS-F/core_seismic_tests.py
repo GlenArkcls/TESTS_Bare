@@ -30,6 +30,7 @@ from test_utils import bilinearTraceInterp
 
 from constants import SEISMIC_COL_0
 from constants import SEISMIC_COL_1
+from constants import SEISMIC_COL_2
 from constants import SEISMIC3D_0
 from constants import SEISMIC3D_1
 from constants import SEISMIC3D_DEPTH0
@@ -54,6 +55,12 @@ class SeismicTestCase(unittest.TestCase):
     def testCreateSeismicCollection(self):
         seisColID=self.repo.createSeismicCollection(SEISMIC_COL_0)
         self.assertFalse(seisColID is None or seisColID==0,GDSErr(self.server,"Failed to create Seismic Collection:"))
+        
+    def testCreateNestedSeismicCollection(self):
+        seisCol0=self.repo.getSeismicCollectionID(SEISMIC_COL_0)
+        args=[seisCol0]
+        seisColID=self.repo.createSeismicCollection(SEISMIC_COL_2,*args)
+        self.assertFalse(seisColID is None or seisColID==0,GDSErr(self.server,"Failed to create nested Seismic Collection:"))
     
     def testGetSeisColIDList(self):
         seisColIDList=GeoDataSync("getSeisColIDList",self.server)
@@ -646,6 +653,7 @@ class SeismicTestCase(unittest.TestCase):
        suite=unittest.TestSuite()
        
        suite.addTest(SeismicTestCase(server,repo,config,"testCreateSeismicCollection"))
+       suite.addTest(SeismicTestCase(server,repo,config,"testCreateNestedSeismicCollection"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGetSeisColIDList"))
        suite.addTest(SeismicTestCase(server,repo,config,"testVerifySeismicCollection"))
        suite.addTest(SeismicTestCase(server,repo,config,"testCreate3DSeismic"))

@@ -88,8 +88,8 @@ class AssetRepository:
         if success:
             self.objects[ObjectType.FOLDER][name]=id
         return id
-    def createSeismicCollection(self,name):
-        success,id=self.createObject("createSeismicCollection",name)
+    def createSeismicCollection(self,name,*args):
+        success,id=self.createObject("createSeismicCollection",name,*args)
         if success:
             self.objects[ObjectType.SEISMIC_COLLECTION][name]=id
         return id
@@ -134,6 +134,7 @@ class AssetRepository:
         return id
     def createWell(self,name,*args):
         success,id=self.createObject("createWell",name,*args)
+        print("creaetWell",args)
         if success:
             self.objects[ObjectType.WELL][name]=id
         return id
