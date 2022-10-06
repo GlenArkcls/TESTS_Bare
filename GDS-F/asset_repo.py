@@ -36,6 +36,7 @@ class ObjectType(Enum):
     GLOBAL_LOG=16
     WELL_MARKER=17
     COLORMAP=18
+ 
     
     
     
@@ -148,6 +149,16 @@ class AssetRepository:
             return 0
         self.objects[ObjectType.WELL_LOG][name]=createdID
         return createdID
+    def createLogTemplate(self,wellID,name,*args):
+        '''Unfortunatelky need special handling - arguments do not follow pattern
+        '''
+        createdID=GeoDataSync("createLogTemplate",self.server,wellID,name,*args)
+        if createdID==None or createdID==0:
+            #print(GeoDataSync("getLastError",self.server))
+            return 0
+        self.objects[ObjectType.WELL_LOG][name]=createdID
+        return createdID
+    
     def createGlobalLog(self,name):
         success,createdID=self.createObject("createGlobalLog",name)
         if createdID==None or createdID==0:
