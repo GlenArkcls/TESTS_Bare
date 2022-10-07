@@ -147,6 +147,11 @@ class BlankProjectTestConfig(test_config.TestConfig):
         z0=(minz+maxz)/2
         return [-z0 -0.001*x for x in range(0,self.getSurfGeometry()[b'SizeI']*self.getSurfGeometry()[b'SizeJ'])]
     
+    def get2DHorizonVals(self,name=None):
+       geom=self.get2DSeismicGeometry(False)
+       ret={"XCoords":geom[b"XCoords"],"YCoords":geom[b"YCoords"],"Vals":[geom[b"MinZ"]+0.5*i for i in range(1,5)]}
+       return ret
+    
     def getHorizonVals(self,name=None):
        geom=self.get3DSeismicGeometry(False)
        inlines=(geom.getMaxInline()-geom.getMinInline())/geom.getInlineInc()+1

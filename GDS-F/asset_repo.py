@@ -36,6 +36,8 @@ class ObjectType(Enum):
     GLOBAL_LOG=16
     WELL_MARKER=17
     COLORMAP=18
+    LOGTEMPLATE=19
+    HORIZON2D=20
  
     
     
@@ -62,7 +64,9 @@ class AssetRepository:
                       ObjectType.WELL_COLLECTION:{},
                       ObjectType.GLOBAL_LOG:{},
                       ObjectType.WELL_MARKER:{},
-                      ObjectType.COLORMAP:{}
+                      ObjectType.COLORMAP:{},
+                      ObjectType.LOGTEMPLATE:{},
+                      ObjectType.HORIZON2D:{}
                       }
     
     def initServer(self,server):
@@ -122,13 +126,22 @@ class AssetRepository:
             self.objects[ObjectType.HORIZON][name]=id
         return id
     def createHorizonProperty(self,hzID,name):
-        '''Unfortunatelky need special handling - arguments do not follow pattern
+        '''Unfortunately need special handling - arguments do not follow pattern
         '''
         createdID=GeoDataSync("create3DHorzProp",self.server,hzID,name)
         if createdID==None or createdID==0:
             #print(GeoDataSync("getLastError",self.server))
             return 0
         self.objects[ObjectType.HORIZON_PROPERTY][name]=createdID
+        return createdID
+    def createHorizon2D(self,name,*args):
+        '''Unfortunately need special handling - arguments do not follow pattern
+        '''
+        createdID=GeoDataSync("create2DHorz",self.server,name,*args)
+        if createdID==None or createdID==0:
+            #print(GeoDataSync("getLastError",self.server))
+            return 0
+        self.objects[ObjectType.HORIZON2D][name]=createdID
         return createdID
     def createPointSet(self,name,*args):
         success,id=self.createObject("createPointSet",name,*args)
@@ -141,7 +154,7 @@ class AssetRepository:
             self.objects[ObjectType.WELL][name]=id
         return id
     def createWellLog(self,wellID,name):
-        '''Unfortunatelky need special handling - arguments do not follow pattern
+        '''Unfortunately need special handling - arguments do not follow pattern
         '''
         createdID=GeoDataSync("createLog",self.server,wellID,name)
         if createdID==None or createdID==0:
@@ -150,7 +163,7 @@ class AssetRepository:
         self.objects[ObjectType.WELL_LOG][name]=createdID
         return createdID
     def createLogTemplate(self,wellID,name,*args):
-        '''Unfortunatelky need special handling - arguments do not follow pattern
+        '''Unfortunately need special handling - arguments do not follow pattern
         '''
         createdID=GeoDataSync("createLogTemplate",self.server,wellID,name,*args)
         if createdID==None or createdID==0:
@@ -215,6 +228,8 @@ class AssetRepository:
         return self.objects[ObjectType.WAVELET].get(name)
     def getHorizonID(self,name):
         return self.objects[ObjectType.HORIZON].get(name)
+    def getHorizon2DID(self,name):
+        return self.objects[ObjectType.HORIZON2D].get(name)
     def getHorizonPropertyID(self,name):
         return self.objects[ObjectType.HORIZON_PROPERTY].get(name)
     def getPointSetID(self,name):
@@ -225,6 +240,8 @@ class AssetRepository:
         return self.objects[ObjectType.WELL_LOG].get(name)
     def getGlobalLogID(self,name):
         return self.objects[ObjectType.GLOBAL_LOG].get(name)
+    def getLogTemplateID(self,name):
+        return self.objects[ObjectType.LOGTEMPLATE].get(name)
     def getWellMarkerID(self,name):
         return self.objects[ObjectType.WELL_MARKER].get(name)
     def getWellCollectionID(self,name):
@@ -259,6 +276,8 @@ class AssetRepository:
         self.objects[ObjectType.WAVELET][name]=ident
     def putHorizonID(self,name,ident):
         self.objects[ObjectType.HORIZON][name]=ident
+    def putHorizon2DID(self,name,ident):
+        self.objects[ObjectType.HORIZON2D][name]=ident
     def putHorizonPropertyID(self,name,ident):
         self.objects[ObjectType.HORIZON_PROPERTY][name]=ident
     def putPointSetID(self,name,ident):
@@ -269,7 +288,9 @@ class AssetRepository:
         self.objects[ObjectType.WELL_LOG][name]=ident
     def putGlobalLogID(self,name,ident):
         self.objects[ObjectType.GLOBAL_LOG][name]=ident
-    def putwELLmARKERID(self,name,ident):
+    def putLogTemplateID(self,name,ident):
+        self.objects[ObjectType.LOGTEMPLATE][name]=ident
+    def putWellMarkerID(self,name,ident):
         self.objects[ObjectType.WELL_MARKER][name]=ident
     def putWellCollectionID(self,name,ident):
         self.objects[ObjectType.WELL_COLLECTION][name]=ident

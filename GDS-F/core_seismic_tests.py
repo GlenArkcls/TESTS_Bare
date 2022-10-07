@@ -71,7 +71,6 @@ class SeismicTestCase(unittest.TestCase):
     def testVerifySeismicCollection(self):
         seisColID=self.repo.getSeismicCollectionID(SEISMIC_COL_0)
         seisColIDList=GeoDataSync("getSeisColIDList",self.server)
-        
         self.assertFalse(seisColID is None or seisColID==0,GDSErr(self.server,"Failed GDS call to getSeisColIDList"))
         self.assertTrue(IDInList(IDComparison,seisColID,seisColIDList),"created seismic collection not found in collection list")
           
@@ -107,14 +106,14 @@ class SeismicTestCase(unittest.TestCase):
         self.assertFalse(seisGeom is None or seisGeom==0,GDSErr(self.server,"Failed GDS call get3DSeisGeom"))
         testGeom=self.config.get3DSeismicGeometry(False)
         for k in testGeom.keys():
-            self.assertAlmostEqual(seisGeom[k],testGeom[k],4)
+            self.assertAlmostEqual(seisGeom[k],testGeom[k],1)
             
     def testGetGeometryDepth(self):
         seisGeom=GeoDataSync("get3DSeisGeom",self.server,self.repo.get3DSeismicID(SEISMIC3D_DEPTH0))
         self.assertFalse(seisGeom is None or seisGeom==0,GDSErr(self.server,"Failed GDS call get3DSeisGeom"))
         testGeom=self.config.get3DSeismicGeometry(True)
         for k in testGeom.keys():
-            self.assertAlmostEqual(seisGeom[k],testGeom[k],4)
+            self.assertAlmostEqual(seisGeom[k],testGeom[k],1)
         
     '''
     Put the fidicual data into the cube

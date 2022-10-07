@@ -1,3 +1,4 @@
 syntax: glob
 FunctionDefGen/*
 GDS-F/code/*
+GDS-F/__pycache__/*

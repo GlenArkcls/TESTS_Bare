@@ -29,8 +29,12 @@ from constants import HORIZON_0
 from constants import HORIZON_1
 from constants import HORIZON_2
 from constants import HORIZON_3
+from constants import HORIZON2D_0
+from constants import HORIZON2D_1
 from constants import SEISMIC3D_0
+from constants import SEISMIC2D_0
 from constants import SEISMIC_COL_0
+from constants import SEISMIC_COL_1
 from constants import HORIZON_PROP_0
 from constants import INTERP_COL_0
 from constants import COLORMAP_0
@@ -332,13 +336,64 @@ class HorizonTestCase(unittest.TestCase):
     def testChange3DHorzPropColormap(self):
         cmID=self.repo.getColormapID(COLORMAP_0)
         if cmID==None:
-            self.skipTest("No Colormap ID avaialbale")
+            self.skipTest("No Colormap ID available")
         hzPropID=self.repo.getHorizonPropertyID(HORIZON_PROP_0)
         ret=GeoDataSync("change3DHorzPropColormap",self.server,hzPropID,cmID)
         self.assertFalse(ret==0,GDSErr(self.server,"Failed call to change3DHorzPropColormap"))
         
         
+    def testCreate2DHorz(self):
+        colID=self.repo.getSeismicCollectionID(SEISMIC_COL_1)
+        if colID==None:
+            self.skipTest("No 2D Seismic Collection available")
+        lineID=self.repo.get2DSeismicID(SEISMIC2D_0)
+        if colID==None:
+            self.skipTest("No 2D Seismic Line available")
+        args=[0,colID,lineID]
+        horzID=self.repo.createHorizon2D(HORIZON2D_0,*args)
+        self.assertFalse(horzID==None or horzID==0,GDSErr(self.server,"Failed create 2D Horizon"))
+	
+    def testGet2DHorzListAndVerify(self):
+        idList=GeoDataSync("get2DHorzIDList",self.server)
+        self.assertFalse(idList==None or idList==0,GDSErr(self.server,"Failed to get2DHorzIDList"))
+        hID=self.repo.getHorizon2DID(HORIZON2D_0)
+        self.assertTrue(IDInList(hID,idList),"Failed to find 2D horizon in list")
         
+    def testPut2DHorzValues(self):
+        horzID=self.repo.getHorizon2DID(HORIZON2D_0)
+        horzVals=self.config.get2DHorizonVals()
+        ret=GeoDataSync("put2DHorzValues",self.server,horzID,horzVals["XCoords"],horzVals["YCoords"],horzVals["Vals"])
+        self.assertFalse(horzID==None or ret==0,GDSErr(self.server,"Failed call to put2DHorzValues"))	
+
+    def testGet2DHorzValsAll(self):
+        horzID=self.repo.getHorizon2DID(HORIZON2D_0)
+        retVals=GeoDataSync("get2DHorzValsAll",horzID)
+        horzVals=self.config.get2DHorizonVals()
+        self.assertTrue(compareFloatLists(retVals[b'XCoords'],horzVals["XCoords"]),"XCoords did not match in get2DHorzValsAll")
+        self.assertTrue(compareFloatLists(retVals[b'YCoords'],horzVals["YCoords"]),"YCoords did not match in get2DHorzValsAll")
+        self.assertTrue(compareFloatLists(retVals[b'HorzVals'],horzVals["Vals"]),"Horizon Values did not match in get2DHorzValsAll")
+        
+		
+
+		
+# <!-- FUNCTION get2DHorzValsSpec -->
+		# <function name="get2DHorzValsSpec">
+			# <signature>
+				# <input>
+					# <argument internalID="HorzID" type="tnVStr8" />	
+					# <argument internalID="LineID" type="tnVStr8" />	
+				# </input>
+				# <output>
+					# <structure>
+						# <field internalID="HorzID" type="tnVStr8"/>
+						# <field internalID="isDepth" type="tnInt32"/>
+						# <field internalID="HorzVals" type="tnVFloat"/>
+						# <field internalID="XCoords" type="tnVDouble"/>
+						# <field internalID="YCoords" type="tnVDouble"/>	
+					# </structure>
+				# </output>
+			# </signature>
+		# </function>	
             
     def getTestSuite(server,repo,config):
         suite=unittest.TestSuite()
@@ -363,6 +418,10 @@ class HorizonTestCase(unittest.TestCase):
         suite.addTest(HorizonTestCase(server,repo,config,"testGet3DHorzPropValsInXl"))
         suite.addTest(HorizonTestCase(server,repo,config,"testPut3DHorzPropValuesSpec"))
         suite.addTest(HorizonTestCase(server,repo,config,"testChange3DHorzPropColormap"))
+        suite.addTest(HorizonTestCase(server,repo,config,"testCreate2DHorz"))
+        suite.addTest(HorizonTestCase(server,repo,config,"testGet2DHorzListAndVerify"))
+        suite.addTest(HorizonTestCase(server,repo,config,"testPut2DHorzValues"))
+        #suite.addTest(HorizonTestCase(server,repo,config,"testGet2DHorzValsAll"))
         
         return suite
     

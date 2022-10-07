@@ -66,6 +66,9 @@ class TestConfigBuilder:
         if self.__configType=="blank":
             import blank_project_testconfig
             self.__testConfig=blank_project_testconfig.BlankProjectTestConfig(systemInfo)
+        elif self.__configType=="big":
+            import big_project_testconfig
+            self.__testConfig=big_project_testconfig.BigProjectTestConfig(systemInfo)
         elif self.__configType=="bootstrapped":
             import bootstrapped_testconfig
             self.__testConfig=bootstrapped_testconfig.BootstrappedTestConfig(systemInfo)

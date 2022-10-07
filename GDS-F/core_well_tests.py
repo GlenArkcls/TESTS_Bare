@@ -30,6 +30,8 @@ from constants import WELL_COLLECTION_0
 from constants import WELL_LOG_0
 from constants import WELL_LOG_1
 from constants import WELL_LOG_2
+from constants import WELL_LOG_3
+from constants import WELL_LOG_4
 from constants import GLOBAL_LOG_0
 from constants import WELL_MARKER_0
 from constants import COLORMAP_0
@@ -216,15 +218,10 @@ class WellTestCase(unittest.TestCase):
     
     def testCreateLogTemplate(self):
         wellID=self.repo.getWellID(WELL_0)
-        logID=self.repo.createLogTemplate(wellID,LOG_TEMPLATE_0)
+        logID=self.repo.createLogTemplate(wellID,WELL_LOG_3)
         self.assertFalse(logID==None or logID==0,GDSErr(self.server,"Failed call to createLogTemplate"))
         
-    def testCreateLogFromTemplate(self):
-        wellID=self.repo.getWellID(WELL_0)
-        pid=self.repo.getWellLogID(LOG_TEMPLATE_0)
-        logID=self.repo.createLogTemplate(wellID,LOG_TEMPLATE_1,pid)
-        self.assertFalse(logID==None or logID==0,GDSErr(self.server,"Failed call to  createLogTemplate from tewmplate"))
-    
+   
     def testGetTemplateCategoryIDList(self):
         catIDs=GeoDataSync("getTemplateCategoryIDList",self.server)
         self.assertFalse(catIDs==None or catIDs==0,GDSErr(self.server,"Failed call to  getTemplateCategoryIDList"))
@@ -240,6 +237,15 @@ class WellTestCase(unittest.TestCase):
             self.skipTest("No Template categories available")
         tempIDs=GeoDataSync("getTemplateIDList",self.server,catIDs[0])
         self.assertFalse(tempIDs==None or tempIDs==0,GDSErr(self.server,"Failed call to  getTemplatesIDList in category"))
+        self.repo.putLogTemplateID(LOG_TEMPLATE_0,tempIDs[0])
+        
+    def testCreateLogFromTemplate(self):
+        wellID=self.repo.getWellID(WELL_0)
+        pid=self.repo.getLogTemplateID(LOG_TEMPLATE_0)
+        if pid==None:
+            self.skipTest("No Log Template ID available")
+        logID=self.repo.createLogTemplate(wellID,WELL_LOG_4,pid)
+        self.assertFalse(logID==None or logID==0,GDSErr(self.server,"Failed call to  createLogTemplate from tewmplate"))
         
         
     def testCreateGlobalLog(self):
@@ -248,9 +254,7 @@ class WellTestCase(unittest.TestCase):
         
     def testGetGlobalLogListAndVerify(self):
         logID=self.repo.getGlobalLogID(GLOBAL_LOG_0)
-        #print(logID)
         logIDList=GeoDataSync("getLogIDListGlobal",self.server)
-        #print(logIDList)
         self.assertFalse(logIDList==None or logIDList==0,GDSErr(self.server,"Failed call to getLogIDListGlobal"))
         self.assertTrue(IDInList(IDComparison,logID,logIDList[b"LogIDList"]),"Global Log ID not found in ID list")
         
@@ -289,13 +293,13 @@ class WellTestCase(unittest.TestCase):
         suite.addTest(WellTestCase(server,repo,config,"testGetWellData"))
         suite.addTest(WellTestCase(server,repo,config,"testGetWellInfo"))
         suite.addTest(WellTestCase(server,repo,config,"testCreateLogTemplate"))
-        suite.addTest(WellTestCase(server,repo,config,"testCreateLogFromTemplate"))
         suite.addTest(WellTestCase(server,repo,config,"testCreateGlobalLog"))
         suite.addTest(WellTestCase(server,repo,config,"testGetGlobalLogListAndVerify"))
         suite.addTest(WellTestCase(server,repo,config,"testCreateWellMarker"))
         suite.addTest(WellTestCase(server,repo,config,"testGetWellMarkersAndVerify"))
         suite.addTest(WellTestCase(server,repo,config,"testGetTemplateCategoryIDList"))
         suite.addTest(WellTestCase(server,repo,config,"testGetTemplateInCategoryIDList"))
+        suite.addTest(WellTestCase(server,repo,config,"testCreateLogFromTemplate"))
         
         return suite
         
