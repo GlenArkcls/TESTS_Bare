@@ -38,6 +38,31 @@ DefaultSeisGeometry={
         b'XlineSep': 27.2863908,
         b'isDepth': 0
         }
+        
+'''
+Hopefully a sufficiently irregular geomerty - actually its theta is 88 degress, probably make it more
+rotated - used for testing this class only
+'''
+BasicSeisGeometry={
+        b'MinInline': 0,
+        b'MaxInline': 1,
+        b'InlineInc': 1,
+        b'MinXline': 0,
+        b'MaxXline': 1,
+        b'XlineInc': 1,
+        b'X0': 0,
+        b'Y0': 0,
+        b'X1': 1,
+        b'Y1': 1,
+        b'X2': 0,
+        b'Y2': 1,
+        b'MinZ': 0.004,
+        b'MaxZ': 1.848,
+        b'ZInc': 0.004,
+        b'InlineSep': 1,
+        b'XlineSep': 1,
+        b'isDepth': 0
+        }
 
     
 class SeismicGeometry:
@@ -155,22 +180,22 @@ class SeismicGeometry:
     
    
 if __name__=="__main__":
-    sg=SeismicGeometry(DefaultSeisGeometry)
+    sg=SeismicGeometry(BasicSeisGeometry)
    
-    ilxl=[218.0,427.]
+    ilxl=[1.,1.]
     c0=sg.transformILXL(ilxl)
     print(str(ilxl)+"->"+str(c0))
-    c1=[608286.298184,6076141.267563]
-    ilxl=[202.0,403.0]
+    c1=[2,2]
+    ilxl=[2,2]
     c0=sg.transformILXL(ilxl)
     print(str(ilxl)+"->"+str(c0))
     ilxl1=sg.transformUTM(c0)
    
     print(str(c0)+"->"+str(ilxl1))
     
-    cvec=sg.transformILXLVector([18.,0.])
+    cvec=sg.transformILXLVector([5.,0.])
     print(cvec)
-    cvec=sg.transformILXLVector([0.,27.])
+    cvec=sg.transformILXLVector([0.,5.])
     print(cvec)
     
 	

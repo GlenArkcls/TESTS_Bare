@@ -57,7 +57,7 @@ class SeismicTestCase(unittest.TestCase):
     def testCreateSeismicCollection(self):
         seisColID=self.repo.createSeismicCollection(SEISMIC_COL_0)
         self.assertFalse(seisColID is None or seisColID==0,GDSErr(self.server,"Failed to create Seismic Collection:"))
-        
+            
     def testCreateNestedSeismicCollection(self):
         seisCol0=self.repo.getSeismicCollectionID(SEISMIC_COL_0)
         args=[seisCol0]

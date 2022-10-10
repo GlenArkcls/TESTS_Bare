@@ -56,6 +56,7 @@ import matlab.engine
 from collections.abc import Mapping
 import os.path
 import pathlib
+import math
 
 eng=None
 
@@ -93,6 +94,8 @@ def translateInputList(ls):
     strings
     '''
     out=[]
+    if type(ls[0])==float or type(ls[0])==int:
+        return ls
     for el in ls:
         if type(el) is bytes:
             out.append(bytesToString(el))
