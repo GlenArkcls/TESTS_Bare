@@ -149,6 +149,7 @@ class BlankProjectTestConfig(test_config.TestConfig):
     
     def get2DHorizonVals(self,name=None):
        geom=self.get2DSeismicGeometry(False)
+       hz2DVals=[geom[b"MinZ"]+0.005*i for i in range(1,5)]
        ret={"XCoords":geom[b"XCoords"],"YCoords":geom[b"YCoords"],"Vals":[geom[b"MinZ"]+0.5*i for i in range(1,5)]}
        return ret
     
@@ -159,10 +160,8 @@ class BlankProjectTestConfig(test_config.TestConfig):
        minz=geom.getMinZ()
        maxz=geom.getMaxZ()
        z0=(minz+maxz)/2
-       #ret= [minz+2*geom.getZInc()]*int(inlines*xlines)
-       #print(ret)
-       #return ret
        return [z0 +0.001*float(il-geom.getMinInline()) -0.001*float(xl-geom.getMinXline()) for il in range(0,int(inlines)) for xl in range(0,int(xlines))]
+       
     
     def getHorizonPropertyVals(self,name=None):
         geom=self.get3DSeismicGeometry(False)
