@@ -15,8 +15,8 @@ import asset_repo
 import test_utils
 from functools import partial
 
-CLIENT_VERSION="0.0.0.0"
-SERVER_VERSION="2.1.0.15"
+CLIENT_VERSION="2.2.0.0"
+SERVER_VERSION="2.2.0.0"
 
 
 class TestConfigBuilder:
