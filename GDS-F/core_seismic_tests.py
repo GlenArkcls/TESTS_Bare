@@ -338,7 +338,12 @@ class SeismicTestCase(unittest.TestCase):
         nTraces = seisTransect[b'NumTraces']
         tracesLength = seisTransect[b'TraceLength']
         reshapedLen=len(reshapedInterps)
+        print(seisTransect[b'XCoords'])
+        print(seisTransect[b'Distance'])
         self.assertFalse(nTraces==None or nTraces==0,GDSErr(self.server,"Incorrect no. of Traces from get3DSeisTracesTransect"))
+        self.assertTrue(len(seisTransect[b'XCoords'])==nTraces,"Incorrect no. of XCoords from get3DSeisTracesTransect")
+        self.assertTrue(len(seisTransect[b'YCoords'])==nTraces,"Incorrect no. of YCoords from get3DSeisTracesTransect")
+        self.assertTrue((nTraces<=1 and len(seisTransect[b'Distance'])==1) or (len(seisTransect[b'Distance'])==nTraces-1),"Incorrect no. of Distances from get3DSeisTracesTransect")
         self.assertFalse(tracesLength==None or tracesLength==0,GDSErr(self.server,"Incorrect Traces length from get3DSeisTracesTransect"))
         for i in range(0,reshapedLen):
                 self.assertTrue(compareFloatLists(seisTransect[b'Traces'][i],reshapedInterps[i]),"get3DSeisTracesTransect data values do not match")
@@ -658,7 +663,7 @@ class SeismicTestCase(unittest.TestCase):
     def testChange2DSeisColormap(self):
         cmID=self.repo.getColormapID(COLORMAP_0)
         if cmID==None:
-            self.skipTest("No Colormap ID avaialbale")
+            self.skipTest("No Colormap ID available")
         seisID=self.repo.get2DSeismicID(SEISMIC2D_0)
         ret=GeoDataSync("change2DSeisColormap",self.server,seisID,cmID)
         self.assertFalse(ret==0,GDSErr(self.server,"Failed call to change2DSeisColormap"))
