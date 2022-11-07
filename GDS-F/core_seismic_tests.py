@@ -182,7 +182,7 @@ class SeismicTestCase(unittest.TestCase):
         #print(len(returnedTraces))
         self.assertTrue(len(returnedTraces)==5,"Number of samples mismatch in returned data from get3DSeisTracesAll")
         
-   def testGet3DSeisTracesAllSampleCountTestMisaligned(self):
+    def testGet3DSeisTracesAllSampleCountTestMisaligned(self):
         geom=self.config.get3DSeismicGeometry(False)
         '''
         Trim the z's by a sample at top and base to ensure
