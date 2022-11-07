@@ -171,13 +171,15 @@ class SeismicTestCase(unittest.TestCase):
         minZ=geom[b"MinZ"]
         maxZ=geom[b"MaxZ"]
         incZ=geom[b"ZInc"]
-        minZ=3.000
-        maxZ=3.000+4*incZ
+        minZ=2.998
+        maxZ=2.998+4*incZ
         #print(minZ,maxZ)
         gotData=GeoDataSync("get3DSeisTracesAll",self.server,self.repo.get3DSeismicID(SEISMIC3D_0),minZ,maxZ)
         self.assertFalse(gotData==None or gotData==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesAll"))
         returnedTraces=gotData[b'Traces']
         #print(gotData[b'Z0'])
+        #print(returnedTraces)
+        #print(len(returnedTraces))
         self.assertTrue(len(returnedTraces)==5,"Number of samples mismatch in returned data from get3DSeisTracesAll")
        
         
@@ -338,8 +340,6 @@ class SeismicTestCase(unittest.TestCase):
         nTraces = seisTransect[b'NumTraces']
         tracesLength = seisTransect[b'TraceLength']
         reshapedLen=len(reshapedInterps)
-        print(seisTransect[b'XCoords'])
-        print(seisTransect[b'Distance'])
         self.assertFalse(nTraces==None or nTraces==0,GDSErr(self.server,"Incorrect no. of Traces from get3DSeisTracesTransect"))
         self.assertTrue(len(seisTransect[b'XCoords'])==nTraces,"Incorrect no. of XCoords from get3DSeisTracesTransect")
         self.assertTrue(len(seisTransect[b'YCoords'])==nTraces,"Incorrect no. of YCoords from get3DSeisTracesTransect")
@@ -473,7 +473,7 @@ class SeismicTestCase(unittest.TestCase):
     def testChange3DSeisColormap(self):
         cmID=self.repo.getColormapID(COLORMAP_0)
         if cmID==None:
-            self.skipTest("No Colormap ID avaialbale")
+            self.skipTest("No Colormap ID available")
         seisID=self.repo.get3DSeismicID(SEISMIC3D_0)
         ret=GeoDataSync("change3DSeisColormap",self.server,seisID,cmID)
         self.assertFalse(ret==0,GDSErr(self.server,"Failed call to change3DSeisColormap"))
