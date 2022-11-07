@@ -25,7 +25,7 @@ from test_utils import makeCreationGeometryFromFullGeometry
 from test_utils import IDInList
 from test_utils import GDSErr 
 from test_utils import getNearestIntegerInRange
-from test_utils import getNearestIntegerInRangeLessThan
+from test_utils import getNearestIntegerLessThanInRange
 from test_utils import bilinearTraceInterp
 
 
@@ -114,8 +114,8 @@ class TransectTestCase(unittest.TestCase):
         xlrange=geom.getCrosslineRange();
         interpTraces=[]
         for ilxl in ilxls:
-            sil=getNearestIntegerInRangeLessThan(ilrange,ilxl[0])
-            sxl=getNearestIntegerInRangeLessThan(xlrange,ilxl[1])
+            sil=getNearestIntegerLessThanInRange(ilrange,ilxl[0])
+            sxl=getNearestIntegerLessThanInRange(xlrange,ilxl[1])
             lil=sil+geom.getInlineInc()
             lxl=sxl+geom.getXlineInc()
             traces=GeoDataSync("get3DSeisTracesRange",self.server,seisID,sil,lil,sxl,lxl,minZ,maxZ)
@@ -196,8 +196,8 @@ class TransectTestCase(unittest.TestCase):
         ilrange=geom.getInlineRange();
         xlrange=geom.getCrosslineRange();
         for ilxl in ilxls:
-            sil=getNearestIntegerInRangeLessThan(ilrange,ilxl[0])
-            sxl=getNearestIntegerInRangeLessThan(xlrange,ilxl[1])
+            sil=getNearestIntegerLessThanInRange(ilrange,ilxl[0])
+            sxl=getNearestIntegerLessThanInRange(xlrange,ilxl[1])
             lil=sil+geom.getInlineInc()
             lxl=sxl+geom.getXlineInc()
             print(ilxl[0],ilxl[1],sil,sxl)
