@@ -181,6 +181,26 @@ class SeismicTestCase(unittest.TestCase):
         #print(returnedTraces)
         #print(len(returnedTraces))
         self.assertTrue(len(returnedTraces)==5,"Number of samples mismatch in returned data from get3DSeisTracesAll")
+        
+   def testGet3DSeisTracesAllSampleCountTestMisaligned(self):
+        geom=self.config.get3DSeismicGeometry(False)
+        '''
+        Trim the z's by a sample at top and base to ensure
+        correct handling of that aspect
+        '''
+        minZ=geom[b"MinZ"]
+        maxZ=geom[b"MaxZ"]
+        incZ=geom[b"ZInc"]
+        minZ=3.000
+        maxZ=3.000+4*incZ
+        #print(minZ,maxZ)
+        gotData=GeoDataSync("get3DSeisTracesAll",self.server,self.repo.get3DSeismicID(SEISMIC3D_0),minZ,maxZ)
+        self.assertFalse(gotData==None or gotData==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesAll"))
+        returnedTraces=gotData[b'Traces']
+        #print(gotData[b'Z0'])
+        #print(returnedTraces)
+        #print(len(returnedTraces))
+        self.assertTrue(len(returnedTraces)==4,"Number of samples mismatch in returned data from get3DSeisTracesAll")
        
         
         
@@ -687,6 +707,7 @@ class SeismicTestCase(unittest.TestCase):
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisDataRange"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesAll"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesAllSampleCountTest"))
+       suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesAllSampleCountTestMisaligned"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisValuesSpec"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesRange"))
        suite.addTest(SeismicTestCase(server,repo,config,"testGet3DSeisTracesInXIInline"))
