@@ -169,8 +169,10 @@ class HorizonTestCase(unittest.TestCase):
         ret=GeoDataSync("get3DHorzDataRange",self.server,hzID)
         self.assertFalse(ret==0,GDSErr(self.server,"Failed call to get3DHorzDataRange"))
         knownVals=self.config.getHorizonVals()
-        knownMin=min(knownVals)
-        knownMax=max(knownVals)
+        #Note swapping min/max to cope with units change
+        #currently min>max
+        knownMin=max(knownVals)
+        knownMax=min(knownVals)
         self.assertAlmostEquals(knownMin,ret[b'MinValue'],4,"Mismatch in minimum horizon value")
         self.assertAlmostEquals(knownMax,ret[b'MaxValue'],4,"Mismatch in maximum horizon value")
     
