@@ -94,7 +94,7 @@ class TransectTestCase(unittest.TestCase):
         
         minZ = geom[b'MinZ']
         maxZ = geom[b'MinZ']+geom[b'ZInc'] #geom[b'MaxZ']
-        print("MinZ:",minZ,"MaxZ",maxZ)
+        #print("MinZ:",minZ,"MaxZ",maxZ)
         numTraces = 5
         dy=(y1-y0)/(numTraces-1)
         dx=(x1-x0)/(numTraces-1)
@@ -109,7 +109,7 @@ class TransectTestCase(unittest.TestCase):
                 ilxls.append(ilxl)
         for ilxl in ilxls:
             xy=geom.transformILXL([ilxl[0],ilxl[1]])
-            print("ILXL:",ilxl,"XY",xy)
+            #print("ILXL:",ilxl,"XY",xy)
         ilrange=geom.getInlineRange();
         xlrange=geom.getCrosslineRange();
         interpTraces=[]
@@ -121,21 +121,21 @@ class TransectTestCase(unittest.TestCase):
             traces=GeoDataSync("get3DSeisTracesRange",self.server,seisID,sil,lil,sxl,lxl,minZ,maxZ)
             distIL=(ilxl[0]-sil)/geom.getInlineInc();
             distXL=(ilxl[1]-sxl)/geom.getXlineInc();
-            print("distIL:",distIL,"distXL",distXL)
-            print(traces[b'Traces'])
-            print(traces)
+            #print("distIL:",distIL,"distXL",distXL)
+            #print(traces[b'Traces'])
+            #print(traces)
             interpTrace=bilinearTraceInterp(distIL,distXL,traces[b'Traces'])
             interpTraces.append(interpTrace)
         #print(interpTraces)
         reshapedInterps=[[interpTraces[i][j] for i in range(0,len(interpTraces))] for j in range(0,len(interpTraces[0]))]
-        print(reshapedInterps)
+        #print(reshapedInterps)
         seisTransect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, x0, y0, x1, y1, minZ, maxZ, numTraces)
         self.assertFalse(seisTransect==None or seisTransect==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesTransect"))
         nTraces = seisTransect[b'NumTraces']
         tracesLength = seisTransect[b'TraceLength']
         reshapedLen=len(reshapedInterps)
-        print(reshapedLen)
-        print(seisTransect)
+        #print(reshapedLen)
+        #print(seisTransect)
         self.assertFalse(nTraces==None or nTraces==0,GDSErr(self.server,"Incorrect no. of Traces from get3DSeisTracesTransect"))
         self.assertFalse(tracesLength==None or tracesLength==0,GDSErr(self.server,"Incorrect Traces length from get3DSeisTracesTransect"))
         for i in range(0,reshapedLen):
@@ -151,24 +151,24 @@ class TransectTestCase(unittest.TestCase):
         minZ = geom[b'MinZ']
         maxZ = geom[b'MinZ']+geom[b'ZInc'] #geom[b'MaxZ']
         numTraces = 2
-        print(x0,x1,y0,y1,minZ,maxZ)
+        #print(x0,x1,y0,y1,minZ,maxZ)
         ilxls=[geom.transformUTM([x0,y0]),geom.transformUTM([x1,y1])]
-        interpTraces=[]
+        interpTraces=[[],[]]
         for ilxl in ilxls:
             nil=round(ilxl[0])
             nxl=round(ilxl[1])
-            #print(ilxl[0],ilxl[1],nil,nxl)
             traces=GeoDataSync("get3DSeisTracesRange",self.server,seisID,nil,nil,nxl,nxl,minZ,maxZ)
-            interpTraces.append(traces[b'Traces'])
-        reshapedInterps=[[interpTraces[i][j] for i in range(0,len(interpTraces))] for j in range(0,len(interpTraces[0]))]
+            for i in range(2):
+                interpTraces[i].append(traces[b'Traces'][i][0])
         seisTransect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, x0, y0, x1, y1, minZ, maxZ, numTraces)
+        #print(seisTransect)
         self.assertFalse(seisTransect==None or seisTransect==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesTransect"))
         nTraces = seisTransect[b'NumTraces']
         tracesLength = seisTransect[b'TraceLength']
-        self.assertFalse(nTraces==None or nTraces==0,GDSErr(self.server,"Incorrect no. of Traces from get3DSeisTracesTransect"))
-        self.assertFalse(tracesLength==None or tracesLength==0,GDSErr(self.server,"Incorrect Traces length from get3DSeisTracesTransect"))
+        self.assertTrue(nTraces==numTraces,"Incorrect no. of Traces from get3DSeisTracesTransect")
+        self.assertTrue(tracesLength==2 ,"Incorrect Traces length from get3DSeisTracesTransect")
         for i in range(0,tracesLength):
-                self.assertTrue(compareFloatLists(seisTransect[b'Traces'][i],reshapedInterps[i]),"get3DSeisTracesTransect data values do not match")
+                self.assertTrue(compareFloatLists(seisTransect[b'Traces'][i],interpTraces[i]),"get3DSeisTracesTransect data values do not match")
                 
     def testGet3DSeisTracesTransectCloseToLine(self):
         geom=self.config.get3DSeismicGeometry()
@@ -185,7 +185,7 @@ class TransectTestCase(unittest.TestCase):
         minXL=geom.getMinXline()
         maxXL=geom.getMaxXline()
         numTraces=(maxXL-minXL)/geom.getXlineInc()+3
-        print(numTraces)
+        #print(numTraces)
         ilxls=[]
         
         for i in range(0,int(numTraces)):
@@ -200,23 +200,22 @@ class TransectTestCase(unittest.TestCase):
             sxl=getNearestIntegerLessThanInRange(xlrange,ilxl[1])
             lil=sil+geom.getInlineInc()
             lxl=sxl+geom.getXlineInc()
-            print(ilxl[0],ilxl[1],sil,sxl)
+            #print(ilxl[0],ilxl[1],sil,sxl)
             traces=GeoDataSync("get3DSeisTracesRange",self.server,seisID,sil,lil,sxl,lxl,minZ,maxZ)
             if not traces==0:
                  distIL=(ilxl[0]-sil)/geom.getInlineInc();
                  distXL=(ilxl[1]-sxl)/geom.getXlineInc();
-                 
-                 print("il",ilxl[0],"xl",ilxl[1],"distIL:",distIL,"distXL",distXL)
-                 print(traces[b'Traces'])
-                # print(traces)
+                 #print("il",ilxl[0],"xl",ilxl[1],"distIL:",distIL,"distXL",distXL)
+                 #print(traces[b'Traces'])
+                 # print(traces)
                  interpTrace=bilinearTraceInterp(distIL,distXL,traces[b'Traces'])
                  interpTraces.append(interpTrace)
                
-        print(interpTraces)
+        #print(interpTraces)
         reshapedInterps=[[interpTraces[i][j] for i in range(0,len(interpTraces))] for j in range(0,len(interpTraces[0]))]
-        print(reshapedInterps)
-        seisTransect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, x0, y0, x1, y1, minZ, maxZ, numTraces)
-        print(seisTransect)
+        #print(reshapedInterps)
+        seisTransect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, x0, y0, x1, y1, minZ, maxZ, int(numTraces))
+        #print(seisTransect)
         self.assertFalse(seisTransect==None or seisTransect==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesTransect"))
         nTraces = seisTransect[b'NumTraces']
         tracesLength = seisTransect[b'TraceLength']
@@ -237,8 +236,8 @@ class TransectTestCase(unittest.TestCase):
        suite.addTest(TransectTestCase(server,repo,config,"testCreate3DSeismic"))
        suite.addTest(TransectTestCase(server,repo,config,"testPut3DSeisTraces"))
        
-       #suite.addTest(TransectTestCase(server,repo,config,"testGet3DSeisTracesTransect"))
-       #suite.addTest(TransectTestCase(server,repo,config,"testGet3DSeisTracesTransectCorners"))
+       suite.addTest(TransectTestCase(server,repo,config,"testGet3DSeisTracesTransect"))
+       suite.addTest(TransectTestCase(server,repo,config,"testGet3DSeisTracesTransectCorners"))
        suite.addTest(TransectTestCase(server,repo,config,"testGet3DSeisTracesTransectCloseToLine"))
        
        return suite

@@ -157,6 +157,7 @@ class SeismicTestCase(unittest.TestCase):
         gotData=GeoDataSync("get3DSeisTracesAll",self.server,self.repo.get3DSeismicID(SEISMIC3D_0),minZ,maxZ)
         self.assertFalse(gotData==None or gotData==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesAll"))
         returnedTraces=gotData[b'Traces']
+        #print(returnedTraces)
         self.assertTrue(len(returnedTraces)==len(volumeData)-2,"No. samples mismatch in returned data from get3DSeisTracesAll")
         self.assertTrue(len(returnedTraces[0])==len(volumeData[0]),"No. of traces mismatch in returned data from get3DSeisTracesAll")
         for i in range(len(returnedTraces)):
