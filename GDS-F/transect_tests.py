@@ -31,7 +31,9 @@ from test_utils import bilinearTraceInterp
 
 from constants import SEISMIC_COL_0
 from constants import SEISMIC_COL_1
+from constants import SEISMIC_COL_3
 from constants import SEISMIC3D_0
+from constants import SEISMIC3D_2
 from constants import SEISMIC2D_0
 
 GeoDataSync=None
@@ -39,6 +41,26 @@ IDComparison=None
 
 __unittest=True
 
+TestTransGeometry={
+        b'MinInline': 200,
+        b'MaxInline': 220,
+        b'InlineInc': 2,
+        b'MinXline': 300,
+        b'MaxXline': 330,
+        b'XlineInc': 3,
+        b'X0': 100.0,
+        b'Y0': 100.0,
+        b'X1': 200.0,
+        b'Y1': 200.0,
+        b'X2': 200.0,
+        b'Y2': 100.0,
+        b'MinZ': 0.0,
+        b'MaxZ': 0.1,
+        b'ZInc': 0.005,
+        b'InlineSep': 10.0,
+        b'XlineSep': 10.0,
+        b'isDepth': 0
+        }
 
 class TransectTestCase(unittest.TestCase):
 
@@ -225,9 +247,308 @@ class TransectTestCase(unittest.TestCase):
                 self.assertTrue(compareFloatLists(seisTransect[b'Traces'][i],reshapedInterps[i]),"get3DSeisTracesTransect data values do not match")
         
     
-   
+    # The following tests relate to a simple cube with the following geome
+    def testCreateSeismicCollectionForTransect(self):
+        seisColID=self.repo.createSeismicCollection(SEISMIC_COL_3)
+        self.assertFalse(seisColID is None or seisColID==0,GDSErr(self.server,"Failed to create Seismic Collection:"))
+    
+    def testCreate3DSeismicForTransect(self):
+        args = [self.repo.getSeismicCollectionID(SEISMIC_COL_3)]
+        geom = makeCreationGeometryFromFullGeometry(TestTransGeometry)
+        args.extend(list(geom.values()))
+        seisID=self.repo.create3DSeismic(SEISMIC3D_2,*args);
+        self.assertFalse(seisID is None or seisID==0, GDSErr(self.server,"Failed to create volume for transect"))
+ 
+    def testPut3DSeisTracesForTransect(self):
+        minZ = TestTransGeometry[b'MinZ']
+        maxZ = TestTransGeometry[b'MaxZ']
+        ZInc = TestTransGeometry[b'ZInc']
+        gotData=GeoDataSync("get3DSeisTracesAll",self.server,self.repo.get3DSeismicID(SEISMIC3D_2),minZ,maxZ)
+        self.assertFalse(gotData==None or gotData==0,GDSErr(self.server,"Failed GDS call to get3DSeisTracesAll"))
+        returnedTraces=gotData[b'Traces']
+        nTraces = len(returnedTraces[0])
+        traceLen = len(returnedTraces)
+        for i in range(nTraces):
+            for j in range(traceLen):
+                returnedTraces[j][i] = i+1 + j*ZInc;
+        # Now need to put back in volume.
+        success = GeoDataSync("put3DSeisTraces", self.server,self.repo.get3DSeismicID(SEISMIC3D_2),returnedTraces, gotData[b'Inlines'], gotData[b'Xlines'],gotData[b'NumTraces'],gotData[b'TraceLength'],gotData[b'Z0'])
+        self.assertTrue(success,GDSErr(self.server,"Failed GDS call put3DSeisTraces for transect"))
         
+    def compareTransect(self,transect, Expected_NumTraces, Expected_TraceLength, Expected_Z0 ,Expected_ZInc,Expected_XCoords,Expected_YCoords,Expected_dists,Expected_vals0):
+        #print(" NumTraces: ",transect[b'NumTraces'])
+        self.assertTrue(transect[b'NumTraces'] == Expected_NumTraces, GDSErr(self.server,"Wrong number of traces returned"))
         
+        #print("Tracelength: ",transect[b'TraceLength'])
+        self.assertTrue(transect[b'TraceLength'] == Expected_TraceLength, GDSErr(self.server,"Wrong trace length returned"))
+        
+        #print("Z0: ",transect[b'Z0'])
+        self.assertTrue(transect[b'Z0'] == Expected_Z0, GDSErr(self.server,"Wrong Z0 value returned"))
+        
+        #print("ZInc: ",transect[b'ZInc'])
+        self.assertTrue(transect[b'ZInc'] == Expected_ZInc, GDSErr(self.server,"Wrong ZInc value returned"))
+    
+        # Check that know 'good' values are returned for traces   
+        ans = compareFloatLists(Expected_XCoords, transect[b'XCoords'])
+        self.assertTrue(ans==True, GDSErr(self.server,"Incorrect Xlines returned"))
+
+        ans = compareFloatLists(Expected_YCoords, transect[b'YCoords'])
+        self.assertTrue(ans==True, GDSErr(self.server,"Incorrect Ylines returned"))
+        
+        ans = compareFloatLists(Expected_dists, transect[b'Distance'])
+        self.assertTrue(ans==True, GDSErr(self.server,"Incorrect distance returned"))
+        
+        returnedTops = transect[b'Traces'][0]
+        ans = compareFloatLists(Expected_vals0, returnedTops)
+        self.assertTrue(ans==True, GDSErr(self.server,"Incorrect Traces returned"))
+
+        return
+
+    def testBottomComplete(self):
+        seisID = self.repo.get3DSeismicID(SEISMIC3D_2)
+        # inputs
+        X1 = 100.0
+        Y1 = 100.0
+        X2 = 120.0
+        Y2 = 100.0
+        # Expected returns
+        Expected_NumTraces = 11
+        Expected_TraceLength = 21
+        Expected_Z0 = 0.0
+        Expected_ZInc = 0.005
+        Expected_XCoords = [100.0, 102.0, 104.0, 106.0, 108.0, 110.0, 112.0, 114.0, 116.0, 118.0, 120.0]
+        Expected_YCoords = [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+        Expected_dists = [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
+        Expected_vals0 = [1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4, 2.6, 2.8, 3.0]
+        # Test
+        transect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, X1, Y1, X2, Y2, 0.0, 0.1, 11)
+        self.assertFalse(transect==None or transect ==0, GDSErr(self.server, "Failed to get transect"))
+        self.compareTransect(transect, Expected_NumTraces, Expected_TraceLength, Expected_Z0 ,Expected_ZInc,Expected_XCoords,Expected_YCoords,Expected_dists,Expected_vals0)
+        
+    def testAboveBottomComplete(self):
+        seisID = self.repo.get3DSeismicID(SEISMIC3D_2)
+        # inputs
+        X1 = 100.0
+        Y1 = 105.0
+        X2 = 120.0
+        Y2 = 105.0
+        # Expected returns
+        Expected_NumTraces = 11
+        Expected_TraceLength = 21
+        Expected_Z0 = 0.0
+        Expected_ZInc = 0.005
+        Expected_XCoords = [100.0, 102.0, 104.0, 106.0, 108.0, 110.0, 112.0, 114.0, 116.0, 118.0, 120.0]
+        Expected_YCoords = [105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0]
+        Expected_dists = [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
+        Expected_vals0 = [6.5, 6.7, 6.9, 7.1, 7.3, 7.5, 7.7, 7.9, 8.1, 8.3, 8.5]
+        # Test
+        transect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, X1, Y1, X2, Y2, 0.0, 0.1, 11)
+        self.assertFalse(transect==None or transect ==0, GDSErr(self.server, "Failed to get transect"))
+        self.compareTransect(transect, Expected_NumTraces, Expected_TraceLength, Expected_Z0 ,Expected_ZInc,Expected_XCoords,Expected_YCoords,Expected_dists,Expected_vals0)        
+
+    def testBottomFromBefore(self):
+        seisID = self.repo.get3DSeismicID(SEISMIC3D_2)
+        # inputs
+        X1 = 90.0
+        Y1 = 100.0
+        X2 = 120.0
+        Y2 = 100.0
+        # Expected returns
+        Expected_NumTraces = 7
+        Expected_TraceLength = 21
+        Expected_Z0 = 0.0
+        Expected_ZInc = 0.005
+        Expected_XCoords = [102.0, 105.0, 108.0, 111.0, 114.0, 117.0, 120.0]
+        Expected_YCoords = [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+        Expected_dists = [3.0, 3.0, 3.0, 3.0, 3.0, 3.0]
+        Expected_vals0 = [1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0]
+        # Test
+        transect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, X1, Y1, X2, Y2, 0.0, 0.1, 11)
+        self.assertFalse(transect==None or transect ==0, GDSErr(self.server, "Failed to get transect"))
+        self.compareTransect(transect, Expected_NumTraces, Expected_TraceLength, Expected_Z0 ,Expected_ZInc,Expected_XCoords,Expected_YCoords,Expected_dists,Expected_vals0)        
+
+    def testBottomFromBeforeShorter(self):
+        seisID = self.repo.get3DSeismicID(SEISMIC3D_2)
+        # inputs
+        X1 = 90.0
+        Y1 = 100.0
+        X2 = 110.0
+        Y2 = 100.0
+        # Expected returns
+        Expected_NumTraces = 6
+        Expected_TraceLength = 21
+        Expected_Z0 = 0.0
+        Expected_ZInc = 0.005
+        Expected_XCoords = [100.0, 102.0, 104.0, 106.0, 108.0, 110.0]
+        Expected_YCoords = [100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+        Expected_dists = [2.0, 2.0, 2.0, 2.0, 2.0]
+        Expected_vals0 = [1.0, 1.2, 1.4, 1.6, 1.8, 2.0]
+        # Test
+        transect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, X1, Y1, X2, Y2, 0.0, 0.1, 11)
+        self.assertFalse(transect==None or transect ==0, GDSErr(self.server, "Failed to get transect"))
+        self.compareTransect(transect, Expected_NumTraces, Expected_TraceLength, Expected_Z0 ,Expected_ZInc,Expected_XCoords,Expected_YCoords,Expected_dists,Expected_vals0)        
+
+    def testBottomFromBeforeOverlapEachEnd(self):
+        seisID = self.repo.get3DSeismicID(SEISMIC3D_2)
+        # inputs
+        X1 = 50.0
+        Y1 = 100.0
+        X2 = 250.0
+        Y2 = 100.0
+        # Expected returns
+        Expected_NumTraces = 5
+        Expected_TraceLength = 21
+        Expected_Z0 = 0.0
+        Expected_ZInc = 0.005
+        Expected_XCoords = [110.0, 130.0, 150.0, 170.0, 190.0]
+        Expected_YCoords = [100.0, 100.0, 100.0, 100.0, 100.0]
+        Expected_dists = [20, 20, 20, 20]
+        Expected_vals0 = [2.0, 4.0, 6.0, 8.0, 10]
+        # Test
+        transect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, X1, Y1, X2, Y2, 0.0, 0.1, 11)
+        self.assertFalse(transect==None or transect ==0, GDSErr(self.server, "Failed to get transect"))
+        self.compareTransect(transect, Expected_NumTraces, Expected_TraceLength, Expected_Z0 ,Expected_ZInc,Expected_XCoords,Expected_YCoords,Expected_dists,Expected_vals0)        
+
+    def testBottomOneTraceReturned(self):
+        seisID = self.repo.get3DSeismicID(SEISMIC3D_2)
+        # inputs
+        X1 = 90.0
+        Y1 = 100.0
+        X2 = 100.0
+        Y2 = 100.0
+        # Expected returns
+        Expected_NumTraces = 1
+        Expected_TraceLength = 21
+        Expected_Z0 = 0.0
+        Expected_ZInc = 0.005
+        Expected_XCoords = [100.0]
+        Expected_YCoords = [100.0]
+        Expected_dists = [0]
+        Expected_vals0 = [1]
+        # Test
+        transect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, X1, Y1, X2, Y2, 0.0, 0.1, 11)
+        self.assertFalse(transect==None or transect ==0, GDSErr(self.server, "Failed to get transect"))
+        self.compareTransect(transect, Expected_NumTraces, Expected_TraceLength, Expected_Z0 ,Expected_ZInc,Expected_XCoords,Expected_YCoords,Expected_dists,Expected_vals0)        
+
+    def testDiagonalOverlap(self):
+        seisID = self.repo.get3DSeismicID(SEISMIC3D_2)
+        # inputs
+        X1 = 90.0
+        Y1 = 120.0
+        X2 = 120.0
+        Y2 = 90.0
+        # Expected returns
+        Expected_NumTraces = 3
+        Expected_TraceLength = 21
+        Expected_Z0 = 0.0
+        Expected_ZInc = 0.005
+        Expected_XCoords = [102.0, 105.0, 108.0]
+        Expected_YCoords = [108.0, 105.0, 102.0]
+        Expected_dists = [4.2426, 4.2426]
+        Expected_vals0 = [10.0, 7.0, 4.0]
+        # Do the test
+        transect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, X1, Y1, X2, Y2, 0.0, 0.1, 11)
+        self.assertFalse(transect==None or transect ==0, GDSErr(self.server, "Failed to get transect"))
+        self.compareTransect(transect, Expected_NumTraces, Expected_TraceLength, Expected_Z0 ,Expected_ZInc,Expected_XCoords,Expected_YCoords,Expected_dists,Expected_vals0)        
+
+    def testDiagonalTouchBothEdges(self):
+        seisID = self.repo.get3DSeismicID(SEISMIC3D_2)
+        # inputs
+        X1 = 100.0
+        Y1 = 130.0
+        X2 = 120.0
+        Y2 = 100.0
+        # Expected returns
+        Expected_NumTraces = 11
+        Expected_TraceLength = 21
+        Expected_Z0 = 0.0
+        Expected_ZInc = 0.005
+        Expected_XCoords = [100.0, 102.0, 104.0, 106.0, 108.0, 110.0, 112.0, 114.0, 116.0, 118.0, 120.0]
+        Expected_YCoords = [130.0, 127.0, 124.0, 121.0, 118.0, 115.0, 112.0, 109.0, 106.0, 103.0, 100.0]
+        Expected_dists = [3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056]
+        Expected_vals0 = [34.0, 30.9, 27.8, 24.7, 21.6, 18.5, 15.4, 12.3, 9.2, 6.10, 3] 
+        # Do test
+        transect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, X1, Y1, X2, Y2, 0.0, 0.1, 11)
+        self.assertFalse(transect==None or transect ==0, GDSErr(self.server, "Failed to get transect"))
+        self.compareTransect(transect, Expected_NumTraces, Expected_TraceLength, Expected_Z0 ,Expected_ZInc,Expected_XCoords,Expected_YCoords,Expected_dists,Expected_vals0)        
+
+    def testDiagonalInside(self):
+        seisID = self.repo.get3DSeismicID(SEISMIC3D_2)
+        # inputs
+        X1 = 110.0
+        Y1 = 140.0
+        X2 = 130.0
+        Y2 = 110.0
+        # Expected returns
+        Expected_NumTraces = 11
+        Expected_TraceLength = 21
+        Expected_Z0 = 0.0
+        Expected_ZInc = 0.005
+        Expected_XCoords = [110.0, 112.0, 114.0, 116.0, 118.0, 120.0, 122.0, 124.0, 126.0, 128.0, 130.0]
+        Expected_YCoords = [140.0, 137.0, 134.0, 131.0, 128.0, 125.0, 122.0, 119.0, 116.0, 113.0, 110.0]
+        Expected_dists = [3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056]
+        Expected_vals0 = [46.0, 42.9, 39.8, 36.7, 33.6, 30.5, 27.4, 24.3, 21.2, 18.1, 15.0] 
+        # Do test
+        transect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, X1, Y1, X2, Y2, 0.0, 0.1, 11)
+        self.assertFalse(transect==None or transect ==0, GDSErr(self.server, "Failed to get transect"))
+        self.compareTransect(transect, Expected_NumTraces, Expected_TraceLength, Expected_Z0 ,Expected_ZInc,Expected_XCoords,Expected_YCoords,Expected_dists,Expected_vals0)        
+
+    def testDiagonalInside(self):
+        seisID = self.repo.get3DSeismicID(SEISMIC3D_2)
+        # inputs
+        X1 = 110.0
+        Y1 = 140.0
+        X2 = 130.0
+        Y2 = 110.0
+        # Expected returns
+        Expected_NumTraces = 11
+        Expected_TraceLength = 21
+        Expected_Z0 = 0.0
+        Expected_ZInc = 0.005
+        Expected_XCoords = [110.0, 112.0, 114.0, 116.0, 118.0, 120.0, 122.0, 124.0, 126.0, 128.0, 130.0]
+        Expected_YCoords = [140.0, 137.0, 134.0, 131.0, 128.0, 125.0, 122.0, 119.0, 116.0, 113.0, 110.0]
+        Expected_dists = [3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056, 3.6056]
+        Expected_vals0 = [46.0, 42.9, 39.8, 36.7, 33.6, 30.5, 27.4, 24.3, 21.2, 18.1, 15.0] 
+        # Do test
+        transect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, X1, Y1, X2, Y2, 0.0, 0.1, 11)
+        self.assertFalse(transect==None or transect ==0, GDSErr(self.server, "Failed to get transect"))
+        self.compareTransect(transect, Expected_NumTraces, Expected_TraceLength, Expected_Z0 ,Expected_ZInc,Expected_XCoords,Expected_YCoords,Expected_dists,Expected_vals0)        
+
+    def testWhollyOutside(self):
+        seisID = self.repo.get3DSeismicID(SEISMIC3D_2)
+        # inputs
+        X1 = 10.0
+        Y1 = 40.0
+        X2 = 30.0
+        Y2 = 10.0
+        # Expected return: "No traces returned on the transect."
+        # Do test
+        transect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, X1, Y1, X2, Y2, 0.0, 0.1, 11)
+        self.assertFalse(transect,GDSErr(self.server,"Succeeded GDS call but with invalid transect"))
+        errMsg=GeoDataSync("getLastError",self.server)
+        self.assertTrue(errMsg==b'No traces returned on the transect.')
+
+    def testVerySmall(self):
+        seisID = self.repo.get3DSeismicID(SEISMIC3D_2)
+        # inputs
+        X1 = 105.0
+        Y1 = 105.0
+        X2 = 106.0
+        Y2 = 105.0
+        # Expected returns
+        Expected_NumTraces = 11
+        Expected_TraceLength = 21
+        Expected_Z0 = 0.0
+        Expected_ZInc = 0.005
+        Expected_XCoords = [105.0, 105.1, 105.2, 105.3, 105.4, 105.5, 105.6, 105.7, 105.8, 105.9, 106.0]
+        Expected_YCoords = [105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0]
+        Expected_dists = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+        Expected_vals0 = [7.00, 7.01, 7.02, 7.03, 7.04, 7.05, 7.06, 7.07, 7.08, 7.09, 7.10] 
+        # Do test
+        transect = GeoDataSync("get3DSeisTracesTransect",self.server, seisID, X1, Y1, X2, Y2, 0.0, 0.1, 11)
+        self.assertFalse(transect==None or transect ==0, GDSErr(self.server, "Failed to get transect"))
+        self.compareTransect(transect, Expected_NumTraces, Expected_TraceLength, Expected_Z0 ,Expected_ZInc,Expected_XCoords,Expected_YCoords,Expected_dists,Expected_vals0)        
+		
     
     def getTestSuite(server,repo,config):
        suite=unittest.TestSuite()
@@ -240,6 +561,26 @@ class TransectTestCase(unittest.TestCase):
        suite.addTest(TransectTestCase(server,repo,config,"testGet3DSeisTracesTransectCorners"))
        suite.addTest(TransectTestCase(server,repo,config,"testGet3DSeisTracesTransectCloseToLine"))
        
+	   # Additional transect tests using a known small volume
+       suite.addTest(TransectTestCase(server,repo,config,"testCreateSeismicCollectionForTransect"))
+       suite.addTest(TransectTestCase(server,repo,config,"testCreate3DSeismicForTransect"))
+       suite.addTest(TransectTestCase(server,repo,config,"testPut3DSeisTracesForTransect"))
+       #Transects along an edge
+       suite.addTest(TransectTestCase(server,repo,config, "testBottomComplete"))
+       suite.addTest(TransectTestCase(server,repo,config, "testAboveBottomComplete"))
+       suite.addTest(TransectTestCase(server,repo,config, "testBottomFromBefore"))
+       suite.addTest(TransectTestCase(server,repo,config, "testBottomFromBeforeShorter"))
+       suite.addTest(TransectTestCase(server,repo,config, "testBottomFromBeforeOverlapEachEnd"))
+       suite.addTest(TransectTestCase(server,repo,config, "testBottomOneTraceReturned"))
+       #Transects along a diagonal
+       suite.addTest(TransectTestCase(server,repo,config, "testDiagonalOverlap"))
+       suite.addTest(TransectTestCase(server,repo,config, "testDiagonalTouchBothEdges"))
+       suite.addTest(TransectTestCase(server,repo,config, "testDiagonalInside"))
+       suite.addTest(TransectTestCase(server,repo,config, "testWhollyOutside"))
+       #Very small transect
+       suite.addTest(TransectTestCase(server,repo,config,"testVerySmall"))
+	   
+              
        return suite
             
 
