@@ -358,7 +358,7 @@ class HorizonTestCase(unittest.TestCase):
         idList=GeoDataSync("get2DHorzIDList",self.server)
         self.assertFalse(idList==None or idList==0,GDSErr(self.server,"Failed to get2DHorzIDList"))
         hID=self.repo.getHorizon2DID(HORIZON2D_0)
-        self.assertTrue(IDInList(hID,idList),"Failed to find 2D horizon in list")
+        self.assertTrue(IDInList(IDComparison, hID, idList),"Failed to find 2D horizon in list")
         
     def testPut2DHorzValues(self):
         horzID=self.repo.getHorizon2DID(HORIZON2D_0)
@@ -368,7 +368,7 @@ class HorizonTestCase(unittest.TestCase):
 
     def testGet2DHorzValsAll(self):
         horzID=self.repo.getHorizon2DID(HORIZON2D_0)
-        retVals=GeoDataSync("get2DHorzValsAll",horzID)
+        retVals=GeoDataSync("get2DHorzValsAll",self.server,horzID)
         horzVals=self.config.get2DHorizonVals()
         self.assertTrue(compareFloatLists(retVals[b'XCoords'],horzVals["XCoords"]),"XCoords did not match in get2DHorzValsAll")
         self.assertTrue(compareFloatLists(retVals[b'YCoords'],horzVals["YCoords"]),"YCoords did not match in get2DHorzValsAll")
@@ -422,7 +422,7 @@ class HorizonTestCase(unittest.TestCase):
         suite.addTest(HorizonTestCase(server,repo,config,"testCreate2DHorz"))
         suite.addTest(HorizonTestCase(server,repo,config,"testGet2DHorzListAndVerify"))
         suite.addTest(HorizonTestCase(server,repo,config,"testPut2DHorzValues"))
-        #suite.addTest(HorizonTestCase(server,repo,config,"testGet2DHorzValsAll"))
+        suite.addTest(HorizonTestCase(server,repo,config,"testGet2DHorzValsAll"))
         
         return suite
     
